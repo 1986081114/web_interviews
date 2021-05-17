@@ -1,0 +1,54 @@
+原始值： 指的是原始类类型的值， 也叫做基本类型 例如 number， string等，存储在栈中
+引用值： 指的是引用类型的值， object， array， data， 存储在堆中
+
+涉及隐式转换最多的两个运算符 + == 
++运算符可以数字相加也可以字符串相加， 所以转换起来很麻烦， ==不同于===，故也存在也是转换
+- * / 这些运算符只会针对number类型， 故转换结果只是转换成number
+
+隐式转换主要涉及三种转换：
+  1.将值转为原始值， toPrimitive()
+  2.将值转为数字， ToNumber()
+  3.将值转为字符串， toString()
+
+
+toString方法对于值类型数据而言， 效果相当于数据转换， 将原类型转换成字符串
+toValue返回原始类型
+
+var obj = {};
+console.log(obj.toString());    //[object Object] 返回对象类型
+console.log(obj.valueOf());     //{} 返回对象本身
+
+valueof重写规则：
+   array    数组本身
+   boolean  布尔值
+   data      返回毫秒格式时间戳
+   function  函数本身
+   number    数字值
+   string    字符串值
+   object    对象本身
+
+toString转换规则：
+   array     以逗号分割的字符串
+   boolean    “true/false”
+   data        可读的时间字符串
+   function    函数声明的字符串
+   objece         [object, object]
+   string        字符串
+
+   var a = {};
+var b = {};
+var c = {};
+c[a] = 1;
+c[b] = 2;
+
+console.log(c[a]);
+console.log(c[b]);
+由于对象的key是字符串，所以c[a]和c[b]中的a和b会执行[对象到字符串]的转换。
+根据转换规则, a和b都转换为了[object Object]，所以c[a]和c[b]操作的是同一个键。
+答案是输出两个2，c对象的最终结构如下：
+{
+  '[object Object]':2
+}
+
+
+
