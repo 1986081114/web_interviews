@@ -1,0 +1,87 @@
+请求报文：
+    请求行      ：       方法 URL 版本
+    请求头               首部 值域
+    空行
+    请求体              实体，请求数据
+
+    POST /user HTTP/1.1                       // 请求行
+    Host: www.user.com
+    Content-Type: application/x-www-form-urlencoded
+    Connection: Keep-Alive
+    User-agent: Mozilla/5.0.                  // 以上是请求头
+    （此处必须有一空行 |                         // 空行分割header和请求内容 
+    name=world    
+
+    请求行： 包括三个部分： 请求方法，请求路径， http协议版本号
+            
+    请求体： 
+        get没有请求数据，post有
+        与请求数据最长使用的请求头 Content-type， Content-Length
+        
+
+
+响应报文： 
+        状态行： 服务器http版本协议 影响状态码 状态码文本描述
+        响应首部： 
+        空行
+        相应实体： 实体包含web客户端请求的对象， Content-type和 Content-Length用于计算实体的位置，数据类型，数据长度。
+    
+
+常见的首部可以分为四种首部，
+请求首部：
+          Host: 请求资源所处的互联网的主机名和端口号， 虚拟主机运行在同一个ip上，可以使用host加以区分
+          User-agent: 创建请求的浏览器和用户代理名称等信息，传给服务器
+          If-Match
+              服务端有个ETag（实体标记）的字段，与特定资源关联的确定值，当资源更新后Etag也会随之更新。
+             所以当客户端If-Match的值若与服务端的ETag一致，才会执行请求，否则会拒绝412
+           if-range：If-Range 字段值若是更 ETge 值或更新日期时间一致，那么就作为范围请求处理。若不一致，则忽略范围请求，返回全部资源。
+          if-none-Match：
+          if-modified-since： 
+          Accept: 告诉服务器，客户端希望接收的数据类型，以及设置接收优先级
+                    文本类型： text/html， application/json
+                     图片： image/gif image/png
+                     视频文件： video/mpeg
+                 想要给接受类型设置优先级，使用q增加额外权重， q范围0-1（最大）
+        Accept-charset： 客户端支持的字符集，也可以设置优先级
+        appept-Encoding： 客户端支持的编码方式
+                   如gzip压缩 compress
+        accept-language： 客户端能够处理的语言
+        Authorization：用户代理的认证信息
+     
+响应首部：
+ Accept-range：接受的请求的字节范围，分段下载
+ Etag：资源的匹配信息
+ age：该实体从产生到如今经过多长时间了
+ 
+ last-modified:用于指示资源最后的修改日期及时间
+ Location： 客户端重定向的URL
+  
+
+通用首部：
+Cache-control:控制缓存策略
+connection： 管理持久连接 Connection: keep-alive 保持连接 ,http请求每次都需要tcp连接，并且使用一次之后就断开， 使用keep-alive可以改善这个状态， 即可以发送多个请求， 减少等待时间， 但是如果配置不当的keepalive，可能会浪费资源，
+date：创建报文的日期和时间
+content-length： 实体的大小
+contnet-type： 内容编码类型
+
+
+ 常见的content type ：
+   内容编码类型，contentType用于表明发送数据流的类型，服务器根据编码类型使用特定的解析方式，获取数据流中的数据。
+     3.1 application/x-www-form-urlencoded 
+        HTTP会将请求参数用key1=val1&key2=val2的方式进行组织，中文或特殊字符如"/"、","、“:" 等会自动进行URL转码并放到请求实体里面，一般用于表单提交。
+    3.2 multipart/form-data
+        需要在表单中进行文件上传时，就需要使用该格式，
+        首先生成了一个 boundary 用于分割不同的字段，在请求实体里每个参数以------boundary开始，然后是附加信息和参数名，然后是空行，最后是参数内容
+
+    3.3application/json： JSON数据格式
+    text/html ： HTML格式  
+    text/xml ： XML格式
+    image/gif ：gif图片格式
+    image/jpeg ：jpg图片格式
+    image/png：png图片格式
+    application/xml： XML数据格式
+    【text忽略xml的编码格式的设定 采用us-ascall编码，application会采用头部编码格式的设定】
+
+
+
+          

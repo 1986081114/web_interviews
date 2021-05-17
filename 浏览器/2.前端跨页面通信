@@ -1,0 +1,101 @@
+浏览器可以同时打开多个tab页面，每个页面可以粗略理解为一个独立的运行环境。即使是全局对象也不会再多个tab间共享
+然而，怎么在这些独立的tab页面之间同步页面数据呢？
+
+同源：
+1.localStorage
+    通过loaclstorage监听共享域获取值，其他页面监听storage事件获取值 loaclStorage.get(key)取值
+    页面loaclstorage值未改变，不会触发onstorage事件（可以加个时间戳）
+    safari隐身模式无法设置loaclstorage
+    浏览器支持性能好， 设置直观
+
+2.url：
+   页面携带query参数， 在页面b初始化获取参数
+   仅限于a页面下打开的b页面
+   数据多会造成url臃肿
+   浏览器支持性能好
+
+3.broadCast channel：
+  为了解决postMessage只能点对点通信问题，广播形式在同源页面下进行一对多通信
+    // a页面
+      var bc = new BroadcastChannel('qwer')
+      bc.postMessage('发送数据')
+
+      // b页面
+      var bc = new BroadcastChannel('qwer')
+      bc.onmessage = function(e) {
+      console.log(e)
+      }
+      /** 消息发送后，所有连接到该频道的 BrocastChannel对象上都会触发 meaasge事件，
+      该事件没有默认行为，可以使用`onmessage`事件处理程序来定义一个函数处理消息
+**/
+ 4.share Work:
+   Shared Worker 是 Worker 家族的另一个成员。普通的 Worker 之间是独立运行、
+   数据互不相通；而多个 Tab 注册的 Shared Worker 则可以实现数据共享。
+   Shared Worker 在实现跨页面通信时的问题在于，它无法主动通知所有页面，因此，我们会使用轮询settimeout的方式，
+     来拉取最新的数据。思路如下：
+    通过port.postMeaasge发送数据， 监听message事件， 
+    // 1.html
+         var sharedworker = new SharedWorker('worker.js')
+         sharedworker.port.start()
+
+         workerBtn.onclick = function(){
+            // 发送消息
+            sharedworker.port.postMessage('hello')
+         }
+         // 2.html
+         var sharedworker = new SharedWorker('worker.js')
+         sharedworker.port.start()
+         // 接收消息
+         sharedworker.port.onmessage = evt => {
+            // evt.data
+            console.log(evt)
+         }
+
+   5.service work：
+       是一个可以长期运行在后台的work，可以实现页面的双向通信，多页面共享可以共享service worker
+       将service work作为消息处理中心，实现一个主页面发送消息，worker搜到信息向所有的页面派发消息(当前页面除外)
+   6.indexedDB:
+      C除了可以利用 sharework共享数据，  Shared Worker 方案类似，消息发送方将消息存至 IndexedDB 中；
+      接收方（例如所有页面）则通过轮询去获取最新的信息。
+跨源：
+ 1.postMessage：
+   a通过window.open获取b的语柄， 通过otherwindow.postMessage：传递数据，
+   b同各国window.onmessage = (()=>{})获取数据
+    该方案允许跨源通信，可以设置name限制接收方
+    点对点通信， 跨域可以使用
+    使用面小， 高度依赖window.open,比如a标签打开b页面无法使用
+
+ 2.iframe：
+    由于 iframe 与父页面间可以通过指定origin来忽略同源限制，非同源页面之间的通信通过iframe实现。
+    各个需要通信的页面加载应该相同的iframe，这些iframe之间使用的是同一个url，属于同源，
+    可以相互通信，接收到消息后postMessage到主页面即可。
+    // iframe中的代码
+const bc = new BroadcastChannel('cpc')
+window.addEventListener('message', function(e) {
+  console.log(e)
+  if(e.origin === 'https://magazine.heytapimage.com' || e.origin === 'https://magazine-static-cpc.heytapimage.com') {
+    bc.postMessage(e.data)
+    console.log('bc postMessage')
+  }
+})
+bc.onmessage = function(e) {
+  window.parent.postMessage(e.data, 'https://magazine.heytapimage.com') //  支持传入指定域名或*
+  console.log('bc receiveMessage')
+}
+
+    <iframe src="https://dhfs-test-cpc.wanyol.com/iframe.html"></iframe>
+<script>
+  window.addEventListener('message', function (e) {
+    console.log('b页面接收到数据')
+    if(e.data.atob) {
+      console.log(e.data)
+    }
+  });
+</script>
+
+
+   
+广播模式：Broadcast Channe / Service Worker / LocalStorage + StorageEvent
+共享存储模式：Shared Worker / IndexedDB / cookie
+口口相传模式：window.open + window.opener
+基于服务端：Websocket / Comet / SSE 等

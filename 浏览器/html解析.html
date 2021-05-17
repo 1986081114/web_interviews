@@ -1,0 +1,104 @@
+<!-- 
+
+页面加载事件： window.onload（只能有一个） // window.addEventListener("load",function)（可以有多个）
+ 页面加载事件load， 当文档内容完全加载完成就会触发该事件（包括图像， 脚本文件，css）
+ 当dom页面结构中的js css 图片 js异步加载的js css 图片都加载完成后，才会触发load（video audio， flash 不会影响）
+
+窗口加载事件DOMContentLoaded：
+  仅当DOM加载完成， 不包括 样式表， 图片，flash ie9以上支持
+
+  ，load 事件与 DOMContentLoaded 事件触发所花费的时间，可以利用 performance 这个对象的一些属性进行统计，
+  以DomContentLoaded事件标识dom树的构建
+ -->
+
+<!-- 
+     1.异步script：
+       当解析器读取到 《script》内联标签，会阻塞dom构建，他会立即触发执行脚本， 原因是这些脚本会影响到dom元素，
+        因此之后脚本结束之后，才会触发 domContnetLoaded
+        async 和defer属性可以让外部脚本延后执行， 不影响浏览器的解析， async和defer只对<script src=''> 情形下起作用，
+          对内联脚本没有作用。 
+  -->
+<!-- 
+浏览器阻塞加载：  也叫做同步加载， 或者阻塞加载， 因为在加载js文件时，会阻塞浏览器解析html文档等到下载并执行完成之后，
+ 才会解析html文档， 如果加载时间过长 ，就会造成浏览器假死， 页面空白， 而且放在head中的同步加载的js还不能对都没进行操作，
+  一位内dom元素还没有解析，会报错。
+  浏览器一边下载 HTML 网页，一边开始解析。也就是说，不等到下载完，就开始解析。
+解析过程中，浏览器发现<script>元素，就暂停解析，把网页渲染的控制权转交给 JavaScript 引擎。
+如果<script>元素引用了外部脚本，就下载该脚本再执行，否则就直接执行代码。
+JavaScript 引擎执行完毕，控制权交还渲染引擎，恢复解析 HTML 网页。
+
+js异步加载：
+   1.把script标签放在body底部：
+    严格来说这并不算异步加载， 但是最常用的方式。 一是不会造成页面的阻塞， 就算加载时间过长也不会看到页面一片空白， 而且也可以在脚本中操作dom
+
+    2.defer： 
+       通过给script标签设置defer书香，将脚本设为延迟加载，当浏览器遇到带有defer的script标签时，
+       就会在开启一个线程去下载js文件， 同时继续解析html文档，等全部的html全部解析完成dom之后再去执行加载好的js文件（DomContentLoaden执行之后在执行）
+       这种方式只适用于引用外部的js文件的script，可以保证多个js执行顺序就是他们的defer顺序，
+       但是添加了defer的文件不应该使用document.write方法。
+    3.async：
+     和defer类似，也是会开启一个新线程去加载js文件， 但和defer不同， 它会在加载完成后立即执行， 
+     而不是等到dom加载完之后在执行。所以可能会造成阻塞（可以在DOMContnetLoaded之前执行）
+      同样的async也只是用于外部文件， 也不能再js中使用write方法， 但是对于对各async，
+      他不能像defer那样保证顺序的h执行， 时那个先下载完，那个先执行
+    
+    4.动态创建script标签：
+     但是也会阻塞onload事件
+ -->
+
+<!-- 
+head 中资源的加载
+
+head 中 js 资源加载都会停止后面 DOM 的构建，但是不影响后面资源的下载。
+css资源不会阻碍后面 DOM 的构建，但是会阻碍页面的首次渲染。
+
+body 中资源的加载
+
+body 中 js 资源加载都会停止后面 DOM 的构建，但是不影响后面资源的下载。
+css 资源不会阻碍后面 DOM 的构建，但是会阻碍页面的首次渲染。
+  -->
+
+<!-- 
+解析html
+
+1.浏览器解析html页面的dom元素
+2.开启下载线程对文档中的所有资源按照优先级排序
+3.到达head节点： head里的外部资源无非就是外联css，和外联js   如果是外联js停止解析后续内容， 等待资源下载
+                            下载完再继续执行， 如果是外联css继续解析后续内容
+4.解析body：
+   只有dom时：  dom树构建完，页面渲染到本地
+   由dom 外联js：
+        当解析到外联js，该js未下载到本地，则js之前的dom会被渲染到页面，，同时js会阻止后面dom的构建， 
+        即后面的dom节点不会添加到文档的dom树，所以js执行完之前，我们在页面上看不到js后面的dom元素
+     有dom外联css：
+       外联css不会影响后面dom树的构建，但是会阻碍渲染， 简单来说， 外联css加载完，页面会白屏
+    有dom， 外联js外联css：
+      外联js和外联css的顺序会形象到页面的渲染， 当body中的js之前的外联css未加载完，页面不会渲染
+       当body中的js之前的外联css加载完之后 ，ji之前的dom树和css合并成渲染树， 页面渲染出js之前的dom解构
+
+5.文档解析完毕， 页面重新渲染， 当页面引用的js同步代码执行完毕， 触发 DomContneLoaded事件
+6.页面文档中的图片资源， js代码中有异步加载的cssjs 图片资源加载完成后。load触发
+  -->
+
+<!-- 
+阻塞dom解析的资源：
+ 内联css
+ 内联js
+ 外联普通的js
+ 外联defer js     以DomContentLoaded事件标识dom树的构建，而defer js是在该事件派发之前请求的因此也属于阻塞性，但实际上defer js实际上是dom树构架完， 与派发domcontnetloaded之间执行的
+ js标签之前的外联css  dom树构建受到js阻塞，而js执行时有可能使用style之类的样式api获取dom样式。因此浏览器遇到script时，将标签之前的外联css请求并执行， 
+ 
+ 非阻塞性：
+  js标签之后的css
+  image 
+  iframe
+   外联的async js
+
+   这些阻塞型的资源请求并执行完之后dom树的解析便完成了，这时document对象就会派发DOMContentLoaded事件，
+    表示dom树构建完成。
+    domcontnetloaded事件标识dom'树构建完成的， load判断非阻塞资源加载成功， 
+
+    css加载不会阻塞DOM树的解析
+      css加载会阻塞DOM树的渲染
+    css加载会阻塞后面js语句的执行
+   -->
