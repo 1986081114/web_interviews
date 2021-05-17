@@ -1,0 +1,87 @@
+beforeCreate----创建前
+created--创建完成
+beforeMount---挂载前
+mounted--挂载完成
+beforeUpdate--更新前
+updated---更新完成
+beforeDestroy--销毁前
+destoryed--销毁完成
+
+new vue（）
+ 初始化事件和生命周期
+ beforeCreate：
+    实例初始化之后， 数据观测（data observe ）和event/watcher事件配置之前
+    在new一个vue实例后，只有一些默认的生命周期钩子和默认事件，其他的东西都还没创建。在beforeCreate生命周期执行的时候，
+    data和methods中的数据都还没有初始化。不能在这个阶段使用data中的数据和methods中的方法
+ created
+    实例创建完成被调用， 在这一步实例已经完成以下配置， data（数据观测），属性和方法的运算，watch/event事件回调
+    然而挂载还没有开始$el属性还不可见
+    可以调用methods方法， 访问修改data数据出发响应式渲染dom
+    一般在created进行数据请求
+ created-》 beforeMounte：
+      判断是否存在el选项， 若不存在停止编译， 直到调用vm$mounte(el)继续编译
+      存在el，判断是否存在template，存在，将template编译成render函数，不存在，直接编译el所对应的外部html
+      若存在render，首先进行编译
+      优先级L:render》template》outHtml
+ beforeMount:
+    执行到这个钩子的时候，在内存中已经编译好了模板了，但是还没有挂载到页面中，此时，页面还是旧的
+    在挂载开始之前相关的render首次被调用， 该函数在服务器渲染期间不被调用
+    此阶段可以获取vm.el,但是并没有挂载在el上
+ beforeMounte-》mounted：
+     vm.$el生成的DOM替换了el选项所对应的DOM*
+ mounted：
+     执行到这个钩子的时候，就表示Vue实例已经初始化完成了。此时组件脱离了创建阶段，
+     进入到了运行阶段。如果我们想要通过插件操作页面上的DOM节点，最早可以在和这个阶段中进行
+     vm.el完成dom挂载与渲染， 但是mounted不会承诺所有的子组件也被挂载， 如果希望等到所有试图都渲染完毕， 
+     可以使用vm.$nextTick替换mounted， 该钩子在服务器渲染期间不会调用’
+ beforeUpdata：
+    数据更新时调用，发生在dom操作之前，该钩子在服务器渲染期间不被调用， 因为只有在出粗渲染会在服务器运行
+    当执行这个钩子时，页面中的显示的数据还是旧的，data中的数据是更新后的， 页面还没有和最新的数据保持同步
+ update：
+    数据更改导致xunidom更改，diff算法进行更新、添加、删除等操作生成真实的DOM节点 在这之后调用这个函数，意味着dom已经更新更新结束了，updata也不会承诺所有的子组件都被重新渲染，
+    如果希望等到整个视图都重绘完， vm$nextTick替换updated
+    页面显示的数据和data中的数据已经保持同步了，都是最新的
+ beforeDestory：
+    实例销毁之前调用， 该钩子在服务器渲染期间不被调用
+ destoryed：
+    vue实例销毁后调用， 调用后vue实例指示的搜索东西被解绑， 所有的事件监听被移除， 子实例被销毁，
+     该狗子在服务器渲染期间不被调用。
+
+beforecreate : 譬如常见的加loading事件
+created ：在这结束loading，还做一些初始化，实现函数自执行，需要异步请求数据的方法可以在此时执行，完成数据的初始化
+mounted通常是在一些插件的使用或者组件的使用中进行操作 也就是页面渲染之后执行 
+beforeDestory： 你确认删除XX吗？ destoryed ：当前组件已被删除，清空相关内容
+
+因为在 created 钩子函数中调用异步请求有以下优点：
+
+能更快获取到服务端数据，减少页面 loading 时间；
+ssr 不支持 beforeMount 、mounted 钩子函数，所以放在 created 中有助于一致性；
+
+created和mounted区别：
+ create在模板渲染成html前调用， 通常初始化某些值，然后再渲染，
+  mounted在模板渲染成html后调用， 通常页面初始化之后，要对一些dom节点操作
+      beforecreated： el和data并门卫处初始化
+      created完成了data数据初始化， el没有，事件初始化
+      beforeMounted 完成了el初始化，但没有挂载
+      mounted完成了挂载和渲染， 
+    所有的生命周期钩子函数中，只有 beforeCreate 和 created 会在服务器端渲染(SSR)过程中被调用
+
+
+Vue 的父组件和子组件生命周期钩子函数执行顺序可以归类为以下 4 部分：
+
+组件的调用顺序都是先父后子,渲染完成的顺序是先子后父。
+组件的销毁操作是先父后子，销毁完成的顺序是先子后父。
+
+加载渲染： 
+父 beforeCreate -> 父 created -> 父 beforeMount -> 子 beforeCreate -> 子 created -> 子 beforeMount -> 子 mounted -> 父 mounted
+子组件更新过程
+父 beforeUpdate -> 子 beforeUpdate -> 子 updated -> 父 updated
+父组件更新过程
+父 beforeUpdate -> 父 updated
+销毁过程
+父 beforeDestroy -> 子 beforeDestroy -> 子 destroyed -> 父 destroyed
+
+
+
+    
+    

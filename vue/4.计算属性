@@ -1,0 +1,46 @@
+计算属性：
+
+computed:{
+				 // fullName: function(){
+				 // 			return this.firstname + ' ' + this.lastname
+				 // },
+				 //计算属性一般没有set方法只读属性
+				 fullName:{
+					 
+					 set: function (newValue) {
+						 console.log('-------------', newValue);
+						 const name = newValue.split(' ');
+						 this.firstname = name[0];
+						 this.lastname = name[1];
+				
+					 },
+					 get: function () {
+						 console.log('-------------');
+						 return this.firstname + ' ' + this.lastname
+						  }
+					},
+
+ 计算属性本质就是直接实现一个getter方法，是一个属性不是函数
+ computed和methods： 
+   vue中method就是一个函数域，定义方法进行属性数据修改，
+   计算属性
+   computed是一个属性，而methods是一个方法，使用需要加括号。
+   computed是有缓存的当数据未改变，从缓存拿，只运行一次，而methods每次都会运算
+
+ 计算属性和watched：
+  computed是计算属性， 依赖于其他属性值， 并且computed的值有缓存， 只有他依赖的属性值发生改变， 
+   下一次获取computed值才会重新计算，不支持异步操作
+  watch没有缓存， 更多的是观察作用， 类似于某些数据的监听回调，当数据变化执行回调进行后续操作 
+    在回调中传入newvla， oldval两个参数。支持异步操作
+  相同点：他们两者都可以观察页面数据变化的。
+  computed 是计算一个新的属性，并将该属性挂载到 vm（Vue 实例）上，
+    而 watch 是监听已经存在且已挂载到 vm 上的数据，所以用 watch 同样可以监听 computed 计算属性的变化（其它还有 data、props）
+   从使用场景上说，computed 适用一个数据被多个数据影响，而 watch 适用一个数据影响多个数据；
+
+
+   computed缓存原理：
+
+在watcher里面有dirty默认是false，只有在watcherupdate触发了，dirty才会变成true
+watcher.dirty 是实现计算属性缓存的触发点，watcher.evaluate 对计算属性重新求值
+       
+   
