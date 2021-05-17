@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- translate类似于定位 最大的优点不会影响其他元素位置 类似于相对定位
+     但offsetLeft 和 offsetTop不会改变这也是与相对定位最大的不同。
+    对行内标签没有作用  -->
+    <style>
+        div {
+            position: relative;
+            height: 800px;
+            width: 800px;
+            background-color: pink;
+            margin: 200px auto;
+        }
+
+        p {
+            position: absolute;
+            height: 50px;
+            width: 50px;
+            background-color: purple;
+            /* 让元素水平居中 */
+            left: 50%;
+            top: 50%;
+            /* 如果参数时% 则移动自身的宽度/高度的%  这里时25px*/
+            transform: translate(-50%, -50%);
+
+        }
+    </style>
+
+</head>
+
+<body>
+    <div>
+        <p></p>
+    </div>
+
+</body>
+
+</html>

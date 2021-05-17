@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box {
+            margin-top: 200px;
+            width: 60px;
+            height: 60px;
+            background-color: blueviolet;
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="forward">forward</button>
+    <button class="backward">backward</button>
+    <div class="box"></div>
+</body>
+<script>
+    //动画函数封装
+    function animate(obj, target) {
+        //先清除之前的定时器
+        clearInterval(obj.timer)
+        obj.timer = setInterval(function () {
+            //大于目标值，清除动画
+
+            //缓动动画. 每次走的step不一样 （目标距离 - 当前距离）/10
+
+            var step = (target - obj.offsetLeft) / 10
+            //step可能有小数所以如果是正数，就向上取，负数向下取
+            step = step > 0 ? Math.ceil(step) : Math.floor(step)
+            if (obj.offsetLeft == target) {
+                clearInterval(obj.timer)
+            }
+            //这一定要加上绝对定位
+            obj.style.left = obj.offsetLeft + step + 'px'
+
+        }, 200)
+
+    }
+    var box = document.querySelector('.box')
+    var forward = document.querySelector('.forward');
+    var backward = document.querySelector('.backward')
+    forward.addEventListener('click', function () {
+        animate(box, 600)
+    })
+    backward.addEventListener('click', function () {
+        animate(box, 200)
+    })
+
+</script>
+
+</html>

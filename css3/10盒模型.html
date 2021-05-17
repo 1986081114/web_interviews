@@ -1,0 +1,53 @@
+<!-- 
+当浏览器对文档进行布局时，渲染引擎将所有元素表现成一个个矩形的盒子，称为盒模型，
+盒模型由外到内主要包括 margin border padding
+
+标准盒模型和ie盒模型（怪异）
+box-sizing:content-box(标准)/border-box（ie）
+
+区别：
+  标准盒模型盒子宽度 =  border + padding + content
+  标准盒模型所占据的位置（不是大小） = margin + border + padding + content
+  ie盒模型宽度 = css设置的width = content  + margingg + border
+
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .content {
+      width: 200px;
+      height: 200px;
+      margin: 10px;
+      border: 20px;
+      padding: 20px;
+      background-color: blue;
+      box-sizing: content-box;
+    }
+
+    .border {
+      width: 200px;
+      height: 200px;
+      margin: 10px;
+      border: 20px;
+      padding: 20px;
+      background-color: blue;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="content"></div>
+  <div class="border"></div>
+
+</body>
+
+</html>

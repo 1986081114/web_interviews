@@ -1,0 +1,87 @@
+<!-- /* 
+懒加载也叫延迟加载，指的是在网页中延迟加载图像，是一种很好的优化网络性能的方式。
+    用户滚动到他们之前， 可视区域外的图像不会被加载。
+
+ 使用原因： 
+    1.提升用户体验， 不必等待所有图片加载成功， 更待时间缩短，提高用户体验
+    2.较少无效资源加载：明显减少服务器的压力，减少浏览器的负担
+    3.方式并发加载的资源过多会阻塞js的加载。
+
+ 懒加载原理： 
+    1.首先将图片上的src属性设为空字符串或者默认的图片属性
+    2.将图片的真实路径存在自定义属性如data-src，
+    3.监听滚动区域，当图片出现在窗口内，就将data内的地址放在src内
+*/ -->
+<!-- 
+预加载：
+   preload
+   rel=preload
+   将搜需要的资源提前加载到本地，这样后面用到直接使用
+   使用原因：
+      更好的体验。
+      将加载和执行分离开，可不阻塞渲染和 document 的 onload 事件
+      提前加载指定资源，不再出现依赖的font字体隔了一段时间才刷出
+
+ -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <title>Lazyload</title>
+   <style>
+      .image-item {
+         display: block;
+         margin-bottom: 50px;
+         height: 200px;
+         width: 200px;
+      }
+   </style>
+</head>
+
+<body>
+   <img src="dog.jpg" class="image-item" data="dog.jpg" />
+   <img src="" class="image-item" data="dog.jpg" />
+   <img src="" class="image-item" lazyload="true" data="dog.jpg" />
+   <img src="" class="image-item" lazyload="true" data="dog.jpg" />
+   <img src="" class="image-item" lazyload="true" data="dog.jpg" />
+   <img src="" class="image-item" lazyload="true" data="dog.jpg" />
+   <img src="" class="image-item" lazyload="true" data="dog.jpg" />
+   <img src="" class="image-item" lazyload="true" data="dog.jpg" />
+   <img src="" class="image-item" lazyload="true" data="dog.jpg" />
+   <img src="" class="image-item" lazyload="true" data="dog.jpg" />
+   <img src="" class="image-item" lazyload="true" data="dog.jpg" />
+   <img src="" class="image-item" lazyload="true" data="dog.jpg" />
+   <img src="" class="image-item" lazyload="true" data="dog.jpg" />
+   <img src="" class="image-item" lazyload="true" data="dog.jpg" />
+
+
+
+
+   <script>
+      const io = new IntersectionObserver((LazyImages) => {
+         //节流标志
+         //获取所有class包括lazy的标签
+         let timer;
+         if (!timer) {
+            timer = setTimeout(() => {
+               timer = null;
+               LazyImages.forEach(lazyImage => {
+                  if (lazyImage.isIntersecting) {
+                     lazyImage.target.setAttribute("src", lazyImage.target.getAttribute("data"))
+                     io.unobserve(lazyImage.target)
+                  }
+               })
+            }, 5000)
+         }
+
+      })
+
+      let lazyImgs = document.querySelectorAll(".image-item")
+      lazyImgs.forEach(item => {
+         io.observe(item)
+      })
+   </script>
+</body>
+
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!--    rotate  在二位平面呢旋转
+        rotate里面跟读书deg 正顺时针， 负逆时针，默认是中心点旋转
+         transform-origin 设置旋转中心点
+    -->
+    <style>
+        div {
+            height: 200px;
+            width: 200px;
+            margin: 100px auto;
+            border: 1px solid red;
+            overflow: hidden;
+
+        }
+
+        div::after {
+            content: '旋转';
+            display: block;
+            height: 100%;
+            width: 100%;
+            background-color: salmon;
+            transform: rotate(180deg);
+            transform-origin: left bottom;
+            translate: transfrom 0.4s;
+
+        }
+
+        div:hover::after {
+            transform: rotate(60deg);
+        }
+    </style>
+</head>
+
+<body>
+    <div></div>
+
+</body>
+
+</html>

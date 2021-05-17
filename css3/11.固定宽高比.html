@@ -1,0 +1,67 @@
+<!-- 
+    只能实现高随着宽度变化
+    margin padding的百分比都是基于父元素设置的
+    padding-top/-bottom 百分比是基于元素宽度白分比
+   1. height 设为0， 高度由padding决定。
+
+   问题1： 为什么 padding-top是基于父元素的宽度而不是高度？
+    父元素的高度由子元素填充而来。如果改变了margintop比例增加，相应的，父元素高度也会进行适当的增加，此时父元素高度增加的同时，margintop若以父元素高度为基准，则实际数值优惠发生适应性变化，
+    双向因果会造成循环。
+ -->
+<!-- 
+    既可以宽随高变化，也可以高随宽变化。
+    或者(某些浏览器不支持)
+  vw；视口宽度的1%；
+  vh 视口高度的百分之1
+  vmin:选取vm和vh中最小的那个。
+   vmax:选取vm和vh中最大的那个。
+，视口指的是在PC端，指的是浏览器的可视区域；
+  -->
+<!-- 
+      aspect-radio : 1/3; 宽高比
+   -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        .test1 {
+            background-color: blue;
+            width: 10%;
+            height: 30vw
+        }
+
+        .test2 {
+            background-color: blueviolet;
+            width: 10%;
+            height: 0;
+            padding-bottom: 30%;
+        }
+
+        .test3 {
+            background-color: chartreuse;
+            width: 10%;
+            aspect-ratio: 1/3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="test1"></div>
+    <div class="test2"></div>
+    <div class="test3"></div>
+
+</body>
+
+</html>

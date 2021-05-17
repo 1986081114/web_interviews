@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .preview {
+            width: 400px;
+            height: 400px;
+            position: relative;
+            border: 1px solid black;
+        }
+
+        .previewImg {
+            width: 300px;
+            height: 300px;
+            display: block;
+            margin: auto;
+            margin-top: 50px;
+        }
+
+        .mask {
+            display: none;
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+            background-color: yellowgreen;
+            opacity: 0.6;
+        }
+
+        .imgBig {
+
+            width: 550px;
+            height: 500px;
+            position: absolute;
+            left: 410px;
+            top: 0;
+            background-color: pink;
+            border: 1px solid black;
+            overflow: hidden;
+        }
+
+        .bigImg {
+            width: 500px;
+            height: 600px;
+            display: block;
+            margin: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="preview">
+        <img class="previewImg" src="../dog.jpg" alt="">
+        <div class="mask"></div>
+        <div class="imgBig">
+            <img class="bigImg" src="../dog.jpg" alt="">
+        </div>
+    </div>
+    <!-- 
+           offset client style scroll 区别：
+           offset 可以得到任意样式的样式值
+                   获取的数值没有单位
+                    offsetWidth包括 padding + border + width
+                    只读属性，不能复制
+                    获取元素大小更适合
+            style：只能得到行内样式表中的样式值
+                   获取的数值有单位
+                   style.width只有width
+                   可读写。可以获取也可以赋值
+                   元素更改更合适
+            client: 
+              clientWidth: 得到 padding + width  不包括边框 border ，不带单位
+              clientTop/Left： 返回元素上/左边框大小
+            scroll： 返回超出边框的大小 返回值不带单位 返回自身的宽度 滚动距离
+
+    
+             mouseenter： 鼠标只有经过自身盒子才会触发。 不会冒泡
+            mouseleave：当鼠标移出某元素时触发。
+            mouseover：当鼠标移入某元素时触发，移入和移出其子元素时也会触发。
+            mouseout：当鼠标移出某元素时触发，移入和移出其子元素时也会触发。
+
+            mousemove：鼠标在某元素上移动时触发，即使在其子元素上也会触发。
+        -->
+    <script>
+        //1.鼠标经过/离开小图片，遮拦层与大图片显示/隐藏
+        var smallImg = document.querySelector('.preview');
+        var mask = document.querySelector('.mask');
+        var imgBig = document.querySelector('.imgBig')
+        smallImg.addEventListener('mouseover', function () {
+            mask.style.display = 'block';
+            imgBig.style.display = 'block';
+        })
+        smallImg.addEventListener('mouseout', function () {
+            mask.style.display = 'none';
+            imgBig.style.display = 'none';
+        })
+
+        //将鼠标在盒子内的坐标赋值给盒子
+        smallImg.addEventListener('mousemove', function (e) {
+            var x = e.pageX - this.offsetLeft;
+            var y = e.pageY - this.offsetTop;
+            //为了让鼠标再mask中间，只需要在赋值时让mask少赋值自身的一半
+            //mask不能超出小盒子 最小是在左侧 0 最大是在右侧距离左侧的距离是 smallIm宽度-mask宽度
+            var maskx = x - mask.offsetWidth / 2;
+            var masky = y - mask.offsetWidth / 2;
+            //遮挡曾最大移动距离
+            maskMaxX = smallImg.offsetWidth - mask.offsetWidth
+            maskMaxY = smallImg.offsetHeight - mask.offsetHeight
+            if (maskx <= 0) {
+                maskx = 0
+            } else if (maskx >= maskMaxX) {
+                maskx = smaskMaxX
+            };
+            if (masky <= 0) {
+                masky = 0
+            } else if (masky >= maskMaxY) {
+                masky = maskMaxY
+            }
+            mask.style.left = maskx + 'px';
+            mask.style.top = masky + 'px'
+            // 按照比例算： 大图移动距离 = 遮挡曾移动距离 * 大图最大移动距离 / 遮挡曾最大移动距离
+            var bigImg = document.querySelector('.bigImg')
+            var bigImgMaxX = imgBig.offsetWidth - bigImg.offsetWidth;
+            var bigImgMaxY = imgBig.offsetHeight - bigImg.offsetHeight;
+            var bigX = maskx * bigImgMaxX / maskMaxX;
+            var bigY = masky * bigImgMaxY / maskMaxY;
+            bigImg.style.left = -bigX + 'px';
+            bigImg.style.top = -bigY + 'px';
+        })
+
+
+    </script>
+</body>
+
+</html>

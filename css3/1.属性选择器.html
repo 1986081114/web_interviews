@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- 
+ 简单选择器
+     类选择器
+     id选择器
+     通用选择器*
+ 属性选择器
+ 伪类
+ 伪元素
+ 组合选择器： 
+    组合器：
+        组合器允许您将多个选择器组合在一起。
+        后代选择器（空格）
+        子选择器：（>） 该元素是另一个元素的直接子元素（所有符合条件儿子元素）
+        相邻兄弟选择器（+）： 在同一层次，是另一个元素的直接兄弟 向后选择
+        通用兄弟选择器（~）： 在同一层次，但是不一定相邻，向后选择
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>属性选择器</title>
+    <style>
+        .num1 input[value] {
+            color: pink;
+        }
+
+        .num2 input[type=text] {
+            color: pink;
+        }
+
+        /* 首先是div之后是class以icon开头 */
+        div[class^=icon] {
+            color: pink;
+        }
+
+        /* 首先是section,class的值结尾包含End 区分大小写 */
+        section[class$=End] {
+            color: red;
+        }
+
+        header[class*=header] {
+            color: red;
+
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 
+        [attribute]	用于选取带有指定属性的元素。
+        [attribute=value]	用于选取带有指定属性和值的元素。
+        [attribute~=value]	用于选取属性值中包含指定词汇(整个都是)的元素。
+        [attribute|=value]	用于选取带有以指定值开头的属性值的元素，该值必须是整个单词。
+        [attribute^=value]	匹配属性值以指定值开头的每个元素。
+        [attribute$=value]	匹配属性值以指定值结尾的每个元素。
+        [attribute*=value]	匹配属性值中包含指定值的每个元素。
+     -->
+    <!-- 1.利用属性选择器属性【att]可以不接著类或者id选择器 -->
+    <div class="num1">
+        <input type="text" value="属性选择器">
+        <input type="text">
+    </div>
+    <!-- 2.利用属性选择器  [att = "val"] 属性 = 值 -->
+    <div class="num2">
+        <input type="text" value="属性等于值">
+        <input type="email" value="1986081114@qq.com">
+    </div>
+    <!-- 3.利用属性选择器 [att ^= "val"] 具有att属性且以val开头元素  -->
+    <div class="icon">我是图标</div>
+    <div class="icon2">我是图标2</div>
+    <div class="icon3">我是图标3</div>
+    <div class="icon4">我是图标4</div>
+    <div>我是打酱油的</div>
+    <!-- 4.利用属性选择器 [att $= "val"] 具有att属性且以val结尾元素  -->
+    <section class="icon1End">包含val结尾</section>
+    <section class="icon2End">包含val结尾</section>
+    <section class="icon3end">包含val结尾区分大小写</section>
+    <section class="End">包含val结尾</section>
+    <section class="icon3">包含val结尾</section>
+
+    <!-- 5.利用属性选择器 [att*= "val"] 具有att属性且包含val结尾 -->
+    <header class="icdo-header">选择属性包含val</header>
+    <header class="header-icdo-header">选择属性包含val</header>
+    <header class="header-icdo">选择属性包含val</header>
+    <header class="icdo-header-end">选择属性包含val</header>
+    <header class="header">选择属性包含val</header>
+
+</body>
+
+</html>
+<!-- 
+    　p~ul选择器 p之后出现的所有ul。两种元素必须拥有相同的父元素，但是 ul不必直接紧随 p。
+相邻选择器：+   紧跟着a 元素后面的b元素（同级）
+子代选择器：> 紧跟着a后面的直接子代b元素
+后代选择器： 紧跟着a元素后面的子代b元素（可以是孙子，也可以是重孙子）
+ -->

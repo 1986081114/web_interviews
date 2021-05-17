@@ -1,0 +1,7 @@
+window.devicePixelRatio
+Window 接口的devicePixelRatio返回当前显示设备的物理像素分辨率与CSS像素分辨率之比。 此值也可以解释为像素大小的比率：
+一个CSS像素的大小与一个物理像素的大小。 简单来说，它告诉浏览器应使用多少屏幕实际像素来绘制单个CSS像素。
+
+ .border1{
+        border-width: ${1/window.devicePixelRatio}px !important; 
+    }

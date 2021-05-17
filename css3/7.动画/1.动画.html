@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 动画可以实现更加复杂的效果，相比于过度，动画可以自动播放 连续播放，相比于过度（更多于鼠标放在上边才过度）
+    @keyframes定义动画
+    animation 关键帧动画，有7个属性：
+
+(1) animation-name：动画名称
+(2) animation-duration: 间隔时间
+(3) animation-timing-function: 动画曲线 ease(默认)开始慢加速，最后减速 ； linear匀速；steps()指定函数中间隔数量
+(4) animation-delay: 延迟
+(5) animation-iteration-count：n | infinite；动画播放次数
+
+(6) animation-direction: normal | alternate;
+normal： 正常播放动画
+alternate: 轮流反向播放动画，奇数次正向播放，偶数次反向播放
+
+(7) animation-fill-mode:
+none 表示 等待期和完成期，元素样式都为初始状态样式，不受动画定义（@keyframes）的影响。
+both 表示 等待期样式为第一帧样式，完成期保持最后一帧样式。
+backwards 表示等待期为第一帧样式，完成期跳转为初始样式
+forwards 表示等待期保持初始样式，完成期间保持最后一帧样式。
+
+8 play-state: 控制暂停 paused runnning
+-->
+    <style>
+        body {
+            background-color: #333;
+        }
+
+        .map {
+            position: relative;
+            width: 747px;
+            height: 616px;
+            background: url(./map.png) no-repeat;
+            margin: 0 auto;
+        }
+
+        .city {
+            position: absolute;
+            top: 227px;
+            right: 193px;
+            color: #fff;
+
+        }
+
+        .dotted {
+            height: 8px;
+            width: 8px;
+            background-color: #09f;
+            border-radius: 50%;
+        }
+
+        .city div[class^=pulse] {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #009dfd;
+            animation: pulse 1.2s linear infinite;
+
+        }
+
+        .city div.pulse2 {
+            animation-delay: 0.4s;
+        }
+
+        .city div.pulse3 {
+            animation-delay: 0.7s;
+        }
+
+        @keyframes pulse {
+            0% {}
+
+            70% {
+                /* transform: scale(5);/* scale也会让阴影变大 */
+                width: 40px;
+                height: 40px;
+                opacity: 1;
+            }
+
+            100% {
+                /*  transform: scale(7); */
+                width: 70px;
+                height: 70px;
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="map">
+        <!-- 一个城市 -->
+        <div class="city">
+            <div class="dotted"></div>
+            <div class="pulse1"></div>
+            <div class="pulse2"></div>
+            <div class="pulse3"></div>
+        </div>
+    </div>
+
+</body>
+
+</html>

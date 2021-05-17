@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="Author" content="">
+    <meta name="Keywords" content="厉害很厉害" />
+    <meta name="Description" content="网易是中国领先的互联网技术公司，为用户提供免费邮箱、游戏、搜索引擎服务，开设新闻、娱乐、体育等30多个内容频道，及博客、视频、论坛等互动交流，网聚人的力量。" />
+    <title>3d</title>
+    <style>
+        .line {
+            height: 80px;
+            width: 150px;
+            background-color: pink;
+            margin: 200px auto;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .muliLine {
+            height: 80px;
+            width: 150px;
+            background-color: pink;
+            margin: 200px auto;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+        }
+
+        .person-card {
+            width: 300px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #fff;
+            display: flex;
+            background: #fff;
+            box-shadow: 1px 1px 4px 2px #eee;
+            margin: auto;
+        }
+
+        .info {
+            margin-left: 8px;
+            /* 让span一行显示 */
+            white-space: nowrap;
+        }
+
+        span {
+            background: #673AB7;
+            border-radius: 5px;
+            color: #fff;
+            padding: 2px 6px;
+            margin-right: 6px;
+        }
+
+        /* 下面两行让超出250px的块元素隐藏    若果使用 单行换行 不适用 安卓手机 因为display: inline-block 的转化后，
+        已经不再是严格意义上的内联元素了。 
+         解决就是使用多行换行 并且行数为1 值得注意的是，在使用 -webkit-line-clamp 的方案的时候，
+         一定要配合 white-space: normal 允许换行，而不是不换行。这一点，非常重要。
+        */
+        .person-card__desc {
+            width: 250px;
+
+            /* 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+             */
+            white-space: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+        }
+
+        /* 这句是整块隐藏， 若果没有 ，就只隐藏多出去的部分 */
+        .person-card__desc span {
+            display: inline-block;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="line">
+        一处文字使用省略号表示，表示
+    </div>
+    <div class="muliLine">
+        多行溢出有较大的兼容性问题，比较适合webkt浏览器或者移动端浏览器
+    </div>
+
+    <section class="person-card">
+        <div class="info">
+            <p class="person-card__name">Sb Coco</p>
+            <p class="person-card__desc">
+                <span>FE</span>
+                <span>UI</span>
+                <span>UX Designer</span>
+                <span>前端工程师</span>
+            </p>
+        </div>
+    </section>
+
+
+    <!-- 
+            字符太长超出部分换行： overflow-wrap： break-word
+         字符超出部分使用连字符在换行： hyphens： auto
+     -->
+
+</body>
+
+</html>

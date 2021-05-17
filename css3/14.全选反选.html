@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" id="check_all" />
+                </th>
+                <th>商品</th>
+                <th>价格</th>
+            </tr>
+        </thead>
+        <tbody id="check_one">
+            <tr>
+                <td>
+                    <input type="checkbox" />
+                </td>
+                <td>苹果</td>
+                <td>100</td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" />
+                </td>
+                <td>水蜜桃</td>
+                <td>500</td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" />
+                </td>
+                <td>水蜜桃</td>
+                <td>500</td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" />
+                </td>
+                <td>水蜜桃</td>
+                <td>500</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+<script>
+    var che_all = document.getElementById('check_all');
+    var che_one = document.getElementById('check_one').getElementsByTagName("input")
+
+    che_all.onclick = function () {
+        for (let i = 0; i < che_one.length; i++) {
+            che_one[i].checked = this.checked
+        }
+    }
+    for (let i = 0; i < che_one.length; i++) {
+
+        che_one[i].onclick = function () {
+            var flag = true;
+            for (let j = 0; j < che_one.length; j++) {
+                if (che_one[j].checked === false) {
+                    flag = false;
+                    break;
+                }
+            }
+            che_all.checked = flag;
+
+        }
+    }
+</script>
+
+</html>

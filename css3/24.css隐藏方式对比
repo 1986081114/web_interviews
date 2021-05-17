@@ -1,0 +1,33 @@
+opacity:0
+   指定一个元素的透明度0-1，如果超出范围，按照最近的范围展示，如-999 -》0；
+   兼容性很好，除了ie9之前
+
+visibility ：hidden
+   显示或者隐藏元素而不更改文档布局
+
+display：none
+  兼容性基本支持
+
+
+区别：
+    opacity： 存在页面            能触发点击事件，  不一定会重绘  不会回流  
+    visibility：hidden 存在页面   不能触发点击事件   一定重绘      回回流     
+    display：none 不存在页面，    不能触发点击事件   一定重绘       会回流   
+
+    继承：
+display: none和opacity: 0：是非继承属性，子孙节点消失由于元素从渲染树消失造成，通过修改子孙节点属性无法显示。
+visibility: hidden：是继承属性，子孙节点消失由于继承了hidden，通过设置visibility: visible;可以让子孙节点显式。
+
+场景：
+  display：none 显示一个不存在的元素
+  visibility：hidden，图片加载常我们会设置一个加载图片来告诉用户页面正在加载，然后通过回调函数，隐藏加载图片
+  opacity：可以跟transition搭配、过度，
+
+用 CSS 隐藏页面上的一个元素有哪几种方法？
+
+这道题绝大多数人的答案都是 display:none visibility:hiden opacity:0 
+
+设置 fixed 并设置足够大负距离的 left top 使其“隐藏”；
+用层叠关系 z-index 把元素叠在最底下使其“隐藏”；
+用 text-indent:-9999px 使其文字隐藏。
+    

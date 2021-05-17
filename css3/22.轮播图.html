@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        .box {
+            width: 300px;
+            height: 400px;
+            margin: 0 auto;
+            border: 1px solid black;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .imgBox {
+            width: 400%;
+            height: 100%;
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            position: absolute;
+        }
+
+        .imgBox li {
+            float: left;
+        }
+
+        .arrowL {
+            display: none;
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            text-decoration: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 20px;
+            background-color: burlywood;
+            text-align: center;
+            z-index: 99;
+
+        }
+
+        .arrowR {
+            display: none;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            text-decoration: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 20px;
+            background-color: burlywood;
+            text-align: center;
+            z-index: 99;
+
+        }
+
+        .circle {
+            position: absolute;
+            width: 80px;
+            height: 20px;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+        }
+
+        .circle div {
+            flex: 1;
+            margin: 0 2%;
+            width: 10px;
+            height: 20px;
+            border-radius: 20px;
+            border: 1px solid white;
+            background-color: black;
+            cursor: pointer;
+            color: white;
+            text-align: center;
+        }
+
+        .circle .selecd {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <!-- //左侧按钮 -->
+        <a href="#" class="arrowL">&lt;</a>
+        <!-- 右侧按钮 -->
+        <a href="#" class="arrowR">></a>
+
+        <!-- 核心滚动区域 -->
+        <ul class="imgBox">
+            <li><img style="width: 300px; height: 400px;" src="../dog.jpg" alt=""></li>
+            <li><img style="width: 300px; height: 400px;" src="../dog.jpg" alt=""></li>
+            <li><img style="width: 300px; height: 400px;" src="../dog.jpg" alt=""></li>
+
+        </ul>
+
+        <!-- 小圆圈 -->
+        <div class="circle">
+            <!-- <div class="selecd">1</div>
+            <div>2</div>
+            <div>3</div> -->
+        </div>
+    </div>
+    <script>
+        function animate(obj, target) {
+            //先清除之前的定时器
+            clearInterval(obj.timer)
+            obj.timer = setInterval(function () {
+                //大于目标值，清除动画
+
+                //缓动动画. 每次走的step不一样 （目标距离 - 当前距离）/10
+
+                var step = (target - obj.offsetLeft) / 10
+                //step可能有小数所以如果是正数，就向上取，负数向下取
+                step = step > 0 ? Math.ceil(step) : Math.floor(step)
+                if (obj.offsetLeft == target) {
+                    clearInterval(obj.timer)
+                }
+                //这一定要加上绝对定位
+                obj.style.left = obj.offsetLeft + step + 'px'
+
+            }, 10)
+
+        }
+        //1.鼠标经过轮播图显示左右按钮
+        let arrowL = document.querySelector('.arrowL')
+        let arrowR = document.querySelector('.arrowR')
+        let box = document.querySelector('.box')
+        box.addEventListener('mouseenter', function () {
+            arrowL.style.display = 'block'
+            arrowR.style.display = 'block'
+            //关闭轮播图自动播放
+            clearInterval(timer);
+        })
+        box.addEventListener('mouseleave', function () {
+            arrowL.style.display = 'none'
+            arrowR.style.display = 'none'
+            timer = setInterval(function () {
+                arrowR.click()
+            }, 2000)
+        })
+
+        //2.动态的生成小圆圈 根据图片个数
+        let imgBox = box.querySelector('.imgBox')
+        let circle = box.querySelector('.circle')
+        for (let i = 0; i < imgBox.children.length; i++) {
+            var div = document.createElement('div')
+            div.setAttribute("index", i)
+            div.innerHTML = i + 1
+            //3.排他思想，给每个小圆圈添加点击事件
+            div.addEventListener('click', function () {
+                for (let j = 0; j < circle.children.length; j++) {
+                    circle.children[j].className = '';
+                }
+                this.className = 'selecd'
+                //4.点击小圆圈 图片滑动 滑动的是ul 划定距离是 索引号 * 图片距离，注意是向左所以是负的
+                var index = this.getAttribute('index');
+                //num等于index避免点击小圆圈后再点击右侧按钮出错
+                num = index;
+                circleNum = index
+                var wid = box.offsetWidth;
+                animate(imgBox, -index * wid)
+            })
+
+            circle.appendChild(div)
+        }
+        circle.children[0].className = 'selecd'
+        //4.克隆第一个图片复制到最后一个
+        let clone = imgBox.children[0].cloneNode(true);
+        imgBox.appendChild(clone)
+        //5.点击右侧按钮滚动图片
+        /*
+          声明一个变量  num 点击一次自增
+          图片无缝滚动原理 把第一张图片复制到最后一个，当在最后时让ul不做动画的left = 0， 同时num = 0
+         */
+        var num = 0;
+        var circleNum = 0;
+        //可以使用节流阀阻止函数执行过快
+        arrowR.addEventListener('click', function () {
+            //num最开始进来是0到达的第二张图片，所以是imgBox.children.length - 1
+            if (num === imgBox.children.length - 1) {
+                num = 0
+                imgBox.style.left = 0
+            }
+            num++
+            animate(imgBox, -num * box.offsetWidth)
+            //6.小圆圈样式跟着右侧按钮变化
+            circleNum++;
+            //circleNum === circle.children.length-1 说明走到复制图片 ，第一个小圆圈显示样式
+            if (circleNum === circle.children.length) {
+                circleNum = 0;
+            }
+            for (let j = 0; j < circle.children.length; j++) {
+                circle.children[j].className = '';
+            }
+            circle.children[circleNum].className = 'selecd'
+        })
+        //左侧按钮
+        arrowL.addEventListener('click', function () {
+            //num最开始进来是0到达的第二张图片，所以是imgBox.children.length - 1
+            if (num === 0) {
+                num = imgBox.children.length - 1
+                imgBox.style.left = -num * box.offsetWidth + 'px'
+            }
+            num--
+            animate(imgBox, -num * box.offsetWidth)
+            //6.小圆圈样式跟着右侧按钮变化
+            circleNum--;
+            //circleNum === circle.children.length-1 说明走到复制图片 ，第一个小圆圈显示样式
+            if (circleNum < 0) {
+                circleNum = circle.children.length - 1;
+            }
+            for (let j = 0; j < circle.children.length; j++) {
+                circle.children[j].className = '';
+            }
+            circle.children[circleNum].className = 'selecd'
+        })
+        //10自动播放
+        var timer = setInterval(function () {
+            arrowR.click()
+        }, 2000)
+    </script>
+
+</body>
+
+</html>

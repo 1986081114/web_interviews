@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /*
+        固定宽高的块元素
+              1 absolute + 负margin
+              2 ABSOLUTE + margin auto
+              3 absolute + calc
+        */
+        /*  */
+        .box1 {
+            width: 200px;
+            height: 200px;
+            background-color: crimson;
+            position: relative;
+        }
+
+        .divcenter1 {
+            background-color: darkgreen;
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin: -50px 0 0 -50px;
+        }
+
+        .box2 {
+            width: 200px;
+            height: 200px;
+            background-color: darkkhaki;
+            position: relative;
+        }
+
+        .divcenter2 {
+            background-color: darkgreen;
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            margin: auto;
+
+        }
+
+        .box3 {
+            width: 200px;
+            height: 200px;
+            background-color: crimson;
+            position: relative;
+        }
+
+        .divcenter3 {
+            background-color: darkgreen;
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            left: calc(50% - 50px);
+            top: calc(50% - 50px)
+        }
+
+        /*  不固定宽高的块级盒子*/
+        /* 
+               1.absolute + transfrom
+               2.flex
+               3.grid
+               4.table-cell
+               5.line-height
+         */
+
+        .box4 {
+            width: 200px;
+            height: 200px;
+            background-color: blue;
+            position: relative;
+        }
+
+        .divcenter4 {
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: cadetblue;
+        }
+
+        .box5 {
+
+            width: 200px;
+            height: 200px;
+            background-color: red;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .divcenter5 {
+            width: 100px;
+            height: 100px;
+            background-color: cadetblue;
+        }
+
+        .box6 {
+            width: 200px;
+            height: 200px;
+            background-color: blue;
+            display: grid;
+
+        }
+
+        .divcenter6 {
+            width: 100px;
+            height: 100px;
+            background-color: cadetblue;
+            justify-self: center;
+            align-self: center;
+
+        }
+
+        .box7 {
+            width: 200px;
+            height: 200px;
+            background-color: brown;
+
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .divcenter7 {
+            width: 100px;
+            height: 100px;
+            background-color: cadetblue;
+
+            display: inline-block;
+
+        }
+
+        .box8 {
+            width: 200px;
+            height: 200px;
+            background-color: blue;
+            line-height: 200px;
+            text-align: center;
+        }
+
+        .divcenter8 {
+            width: 100px;
+            height: 100px;
+            background-color: cadetblue;
+
+            display: inline-block;
+            line-height: initial;
+            vertical-align: middle;
+
+        }
+
+
+        /* 文本水平居中 */
+        .textAlignCen {
+            text-align: center;
+            background-color: cyan;
+            width: 100%;
+        }
+
+        .textJusCen1 {
+            padding-top: 20px;
+            padding-bottom: 20px;
+            background-color: darkcyan;
+        }
+
+        .textJusCen2 {
+            height: 50px;
+            line-height: 50px;
+            background-color: darkgoldenrod;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 固定宽高块元素 -->
+    <div class="box1">
+        <div class="divcenter1"></div>
+    </div>
+    <div class="box2">
+        <div class="divcenter2"></div>
+    </div>
+    <div class="box3">
+        <div class="divcenter3"></div>
+    </div>
+    <!-- 不固定宽高的块元素 -->
+    <div class="box4">
+        <div class="divcenter4"></div>
+    </div>
+    <div class="box5">
+        <div class="divcenter5"></div>
+    </div>
+    <div class="box6">
+        <div class="divcenter6"></div>
+    </div>
+    <div class="box7">
+        <div class="divcenter7"></div>
+    </div>
+    <div class="box8">
+        <div class="divcenter8"></div>
+    </div>
+
+    <!-- 单行的文本， inline ， inline-block 元素 -->
+    <div style="font-size: 30px;">单行的文本，inline， inline-block元素</div>
+    <div class="textAlignCen">
+        单行文本水平居中
+    </div>
+    <!-- 
+      垂直居中
+      1.通过设置上下内间距一致, 但不要设置父元素高度，让自动撑开，或者占据父元素
+      2.height -line-height
+     -->
+    <div class="textJusCen1">
+        单行文本垂直居中通过设置上下内间距一致
+    </div>
+    <div class="textJusCen2">
+        单行文本垂直居中通过设置height line-height一致
+    </div>
+
+</body>
+
+</html>

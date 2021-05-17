@@ -1,0 +1,90 @@
+<!-- 响应式布局（RWD）：页面的设计与开发应当根据用户的设备环境进行相应的响应和调整 -->
+
+<!-- 
+    优点： 面对不同分辨率设备灵活性强， 可以快捷解决多设备适用问题。
+    缺点： 不能完全兼容浏览器，
+           代码累赘，会出现隐藏无用的元素， 加载时间长
+           一定程度改变网站原有布局， 会出现用户混淆的情况。
+ -->
+<!-- 视口：
+     布局视口（layout viewport）：
+          布局视口是指网页的宽度，一般移动端浏览器都默认设置了布局视口的宽度， 因为通常pc的分辨率较大，
+          而默认的布局窗口时980px； 所以在不设置viewport，pc端网页默认以布局视口为基准，
+          在移动端展示， 所以默认布局视口，pc网页在移动端展示很模糊
+    视觉视口：（visual viewport）
+       视觉视口表示浏览器内看到网站显示的区域，因此用户可以通过缩放查看网页显示区域， 改变视觉视口，
+        因此视觉视口不会影响布局视口的宽高
+     理想视口： 理想视口是指对设备来讲最理想的视口尺寸。采用理想视口的方式，可以使网页在移动端浏览器上获得最理想的
+     浏览和阅读的宽度。
+
+
+     1 CSS像素 = 物理像素／分辨率
+     px是相对单位， 显示器屏幕分辨率而言
+-->
+
+<!-- 
+ 实现： 
+       1.media query（媒介查询） @media功能，来判断终端设备宽度在多少像素内，然后执行与之对应的css样式
+       
+        注意 在手机设备上，我们要禁止用户缩放屏幕， 防止显示上错位。
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+       移动设备默认的viewport是layout viewport， 通过 viewport  让viewport的宽度等于设备的宽度，即 ideal viewport
+          user-scalable	是否允许用户进行缩放，值为"no"或"yes", no 代表不允许，yes代表允许
+          最大最小缩放等
+     2.百分比布局
+          通过百分比布局，使得浏览器中组建的宽和高随着浏览器的高度而变化
+            计算困难， 而且margin padding无论是宽高都是相对于父元素宽度， border-radius相对于自身， width，height 基于父元素的width，height， 造成百分比布局问题变得复杂
+     3.rem布局：
+       rem css3新增， rem单位都是相对于根元素的font-size来决定大小的，根元素的font-size提供一个聚准，
+       当页面的size发生变化时，只需要改变font-size值，就可以
+        =以rem为固定单位的元素的大小发生响应变化
+         缺点：响应式布局 要控制根元素 fontsiae ，css和js有了一定的耦合性，且必须将改变fontsize放在css样式前
+
+    4.视口单位  
+       vh：相对于视口的高度， 1vh等于视口高度的1%，即视口高度时100vh
+       vw： 视口的宽度
+       vmin： vw，vh中的较小值
+       vmax： vw,vh中的较大值
+
+       如果有些不支持小数，如宽度是650px， 不支持6.5px， 可能会默认是 7px，造成偏差，
+       依赖视口的大小布局， 如果视口过小，他也会过大过小， 可以限制最大最小宽度高度max-width， max-height
+
+       5.图片自适应：
+          大小适应  max-width： 100%
+        分辨率适应
+        6.em: 参考物是父元素的font-size，具有继承的特点。如果自身定义了font-size按自身来计算（浏览器默认字体是16px），
+        整个页面内1em不是一个固定的值。
+  -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background-color: rosybrown;
+        }
+
+        @media screen and (max-width: 1000px) {
+            body {
+                background-color: red;
+            }
+        }
+
+        @media screen and (max-width: 800px) {
+            body {
+                background-color: green;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+    简单的响应式布局
+</body>
+
+</html>

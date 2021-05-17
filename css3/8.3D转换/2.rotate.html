@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            perspective: 500px;
+        }
+
+        .box {
+            position: relative;
+            height: 200px;
+            width: 200px;
+            margin: 100px auto;
+            translate: all 2s;
+            /* 控制子元素是否开启3d立体空间默认不开启，写在父盒子但影响子盒子 */
+            transform-style: preserve-3d;
+
+        }
+
+        .box div {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: blue;
+        }
+
+        .box div:last-child {
+            background-color: brown;
+            transform: rotateX(60deg);
+        }
+
+        .box:hover {
+            transform: rotateY(60deg);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <div></div>
+        <div></div>
+
+    </div>
+
+</body>
+
+</html>

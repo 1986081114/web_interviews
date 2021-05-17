@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .pseudo {
+            position: relative;
+            width: 500px;
+            height: 300px;
+            margin: 200px auto;
+        }
+
+        .pseudo img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .pseudo::after {
+            display: none;
+            content: 'after';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, .3);
+        }
+
+        /*
+           
+         */
+        .pseudo:hover::after {
+            display: block;
+        }
+
+        .weilei::after {
+            content: 'after';
+            color: red;
+
+        }
+
+        .weilei::before {
+            content: 'before';
+            color: seagreen;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 
+        为元素选择器主要使用css创建新标签元素，而不需要html，简化htnl结构
+        主要是 
+          ::before 父元素之后创建
+          ::after  父元素之前创建
+          创建的元素属于行内元素，
+          创建的元素在文档中找不到吗，所以称为伪元素
+          权重位1
+          必须包含content属性
+          可以消除浮动 插入clear：both
+     -->
+    <!-- 
+ 伪类是一种处于特定状态的选择器， 可以理解为特定的css类， 只能选择哪些不能被普通选择器选择的文档之外的元素
+ 伪元素，类似于添加了一个新的dom节点到dom树中， 而不是改变元素的形状， 但不是真的增加一个节点， 实质上，元素被创建在文档外
+
+ 区别： 
+   伪类是操作文档已有的某些元素， 而伪元素是创建一个文档外的元素，
+   为了区分，伪类一般是单冒号， 伪元素是双冒号
+
+
+      -->
+
+    <div class="pseudo">
+        <img src="../dog.jpg" alt="">
+    </div>
+    <div class="weilei">这是原来的内容</div>
+
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /*   
+            first-child  匹配父元素中的第一个元素
+            last-child 匹配父元素中的最后一个元素
+            nth-child(n)  在执行时会先把所有子元素排序 先看nth-child（）的位置，在看前面的元素类型是否匹配
+               
+
+            E：first-of-type 指定类型E的第一个
+            E：last-of-type
+            E：nth-of-type(n)
+         */
+        .ul1 li:first-child {
+            color: red;
+        }
+
+        .ul1 li:last-child {
+            color: blue;
+        }
+
+        /*nth-chile(n) 
+          n可以是数字，关键字，表达式  
+          n是数字从1开始
+          n是表达式从0开始
+         */
+        .ul1 :nth-child(3) {
+            color: blueviolet;
+        }
+
+        /* 偶数even  奇数odd */
+        .ul1 :nth-child(even) {
+            background-color: cadetblue;
+        }
+
+        /* nth-child(n) 这里必须是n 从0开始，每次加一，直到最后 */
+        .ul2 :nth-child(n) {
+            background-color: chartreuse;
+        }
+
+        /*
+         常见公式 n 2n   
+         前五个: -n + 5
+         从第五个开始到最后： n + 5 可以用看来计算后几个
+         */
+        /* 
+          这里可以没有li 则默认就是任何类型都可以 ，但如果加上，li与:nthchild()不能有空格
+           */
+        .ul3 :nth-child(-n + 2) {
+            background-color: chocolate;
+        }
+
+        .ul3 li:nth-child(n+4) {
+            background-color: darkgoldenrod;
+        }
+
+
+        /* 
+           这两个执行顺序不同
+           nth-child()会把指定的元素进行排序
+           先看排序的位置nth-child(1) 在看、div是否符合
+
+           nth-of-type； 先看前面的p再看nth-of-type（1）
+           */
+        div div:nth-child(1) {
+            background-color: darkmagenta;
+        }
+
+        div p:nth-of-type(1) {
+            background-color: darkorange;
+        }
+    </style>
+</head>
+
+<body>
+    <ul class="ul1">
+        <li>我是第1个孩子</li>
+        <li>我是第2个孩子</li>
+        <li>我是第3个孩子</li>
+        <li>我是第4个孩子</li>
+        <li>我是第5个孩子</li>
+        <li>我是第6个孩子</li>
+    </ul>
+
+    <ul class="ul2">
+        <li>我是第1个孩子</li>
+        <li>我是第2个孩子</li>
+        <li>我是第3个孩子</li>
+        <li>我是第4个孩子</li>
+        <li>我是第5个孩子</li>
+        <li>我是第6个孩子</li>
+    </ul>
+    <ul class="ul3">
+        <li>我是第1个孩子</li>
+        <li>我是第2个孩子</li>
+        <li>我是第3个孩子</li>
+        <li>我是第4个孩子</li>
+        <li>我是第5个孩子</li>
+        <li>我是第6个孩子</li>
+    </ul>
+
+    <div>
+        <p>熊大</p>
+        <div>小二</div>
+        <div>小三</div>
+    </div>
+
+</body>
+
+</html>

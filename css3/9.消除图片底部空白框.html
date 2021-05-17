@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>3d</title>
+    <style>
+        /*产生空白缝隙的原因是图片（行内块元素）默认与文字基线对齐 
+        解决：1 使用vertical-align
+             2.将行内块元素转成block
+         */
+        div {
+            border: 2px solid red;
+
+        }
+
+        img {
+            /*  vertical-align: bottom; */
+            display: block;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="back">
+        <img src="../dog.jpg" alt="" />
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- transition： 过渡的属性（可以all）， 花费时间 运动曲线， 延迟执行的时间 -->
+    <!-- 
+        1 height是不能继承的
+
+         2 给一个元素的heigth设置100%的前提是该元素的父级的高度是确定的
+
+        3 一个元素的height： 1 可以不设置 2 可以设置百分比 3 设置固定的px的高度  	
+        4 可以设置auto
+        1 如果不设置，那么他的高度是由子元素来决定的
+        2 如果设置成百分比，那么他的高度是由父元素来决定的
+        3 如果设置成固定的px,那么就是他自己来决定的
+        4 如果设置成auto，和不设置是一样的，那么他的高度是由子元素来决定的
+     -->
+    <style>
+        .bar {
+            height: 10px;
+            width: 100px;
+            border: 1px solid red;
+            border-radius: 7px;
+        }
+
+        .bar-in {
+            height: 100%;
+            width: 50%;
+            background-color: red;
+            /* 谁做过渡给谁加 */
+            transition: width 0.5;
+        }
+
+        .bar:hover .bar-in {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bar">
+        <div class="bar-in"></div>
+    </div>
+
+</body>
+
+</html>

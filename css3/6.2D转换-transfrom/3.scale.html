@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- scale最大的优点 可以设置转换的中心点 默认以中心点扩大/缩小 而且不影响其他盒子
+    transform-origin: 设置中心点;-->
+    <style>
+        div {
+            height: 200px;
+            width: 200px;
+            margin: 100px auto;
+            border: 1px solid red;
+            background-color: salmon;
+        }
+
+        /* 这里图片放大的但不影响其他盒子 */
+        div:hover {
+            transform: scale(2, 2);
+        }
+    </style>
+</head>
+
+<body>
+    <div></div>
+    123
+
+</body>
+
+</html>
