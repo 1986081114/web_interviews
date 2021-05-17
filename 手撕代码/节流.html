@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input class="search" type="text">
+    <button class="cancel-btn">取消事件</button>
+    <script>
+        //延迟防抖 + 取消
+        function debounce(fn, delay, leading) {
+            var timer = null;
+            leading = leading || false;
+            var handleFn = function () {
+                if (timer) clearTimeout(timer);
+                // 获取this和argument
+                var _this = this;
+                var _arguments = arguments;
+
+                if (leading) {
+                    // 通过一个变量来记录是否立即执行
+                    var isInvoke = false;
+                    if (!timer) {
+                        fn.apply(_this, _arguments);
+                        isInvoke = true;
+                    }
+                    // 定时器通过修改timer来修改instant
+                    timer = setTimeout(function () {
+                        timer = null;
+                        if (!isInvoke) {
+                            fn.apply(_this, _arguments);
+                        }
+                    }, delay);
+                } else {
+                    timer = setTimeout(function () {
+                        // 在执行时，通过apply来使用_this和_arguments
+                        fn.apply(_this, _arguments);
+                    }, delay);
+                }
+            }
+            // 取消处理
+            handleFn.cancel = function () {
+                if (timer) clearTimeout(timer);
+            }
+
+            return handleFn;
+        }
+        // 1.获取输入框
+        var search = document.querySelector(".search");
+
+        // 2.监听输入内容,发送ajax请求
+        // 2.1.定义一个监听函数
+        var counter = 0;
+        function searchChange(e) {
+            counter++;
+            console.log("发送" + counter + "网络请求");
+            console.log(this);
+            console.log(e.target.value);
+        }
+
+        // 对searchChange处理
+        var _searchChange = debounce(searchChange, 3000, true);
+
+        // 绑定oninput
+        search.oninput = _searchChange;
+
+        // 3.取消事件
+        var cancelBtn = document.querySelector(".cancel-btn");
+        cancelBtn.onclick = function (event) {
+            _searchChange.cancel();
+        }
+    </script>
+    <script>
+        /* 节流  时间戳不执行最后一次*/
+        function throttle1(fn, interval) {
+            var last = 0;
+            return function () {
+                let _this = this
+                let _arguments = arguments
+                var now = new Date().getTime();
+                if (now - last > interval) {
+                    fn.apply(_this, _arguments);
+                    last = now
+                }
+            }
+        }
+        //定时器版不立即执行
+        function throttle2(fn, interval) {
+            let timer;
+            return function () {
+                let _this = this;
+                let _arguments = arguments;
+                if (!timer) {
+                    timer = setTimeout(() => {
+                        timer = null;
+                        fn.apply(_this, _arguments)
+                    }, interval)
+                }
+            }
+        }
+
+        function throttle(fn, interval, option) {
+            var last = 0;
+            var timer = null;
+            if (!option) option = {};
+
+            var trailing = option.trailing || false;
+
+            return function () {
+                // this和argument
+                var _this = this;
+                var _arguments = arguments;
+
+                var now = new Date().getTime();
+                if (now - last > interval) {
+                    if (timer) {
+                        clearTimeout(timer);
+                        timer = null;
+                    }
+                    fn.apply(_this, _arguments);
+                    last = now;
+                } else if (timer === null && trailing) { // 只是最后一次
+                    timer = setTimeout(function () {
+                        timer = null;
+                        fn.apply(_this, _arguments);
+                    }, interval);
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
+<!-- 防抖： 当持续触发事件，只有当一定时间没有再次触发，函数才会执行， 如果设定时间之前触发函数，则重新延时;
+   场景： 输入框频繁输入内容， 搜索或者提交内容
+         频繁点击按钮
+         监听浏览器点击事件
+         用户缩放resize
+         总之就是密集触发事件，希望只触发靠后的事件，
+ 节流： 当持续触发事件，保证一定时间内只能调用一次函数
+          页面滚动事件， 鼠标移动，频繁点击按钮
+         依旧是密集触发事件，但是这次密集事件触发过程中，不会等待最后一次才进行函数调用，而是按照一定频率进行调用
+
+
+
+防抖核心： 触发一个函数时，不会立即执行， 而是会延迟，
+ -->
