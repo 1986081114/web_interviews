@@ -1,0 +1,120 @@
+它是 JavaScript 的一个超集，而且本质上向这个语言添加了可选的静态类型和基于类的面向对象编程。
+TypeScript同JavaScript相比，最大的特点是强类型，支持静态和动态类型，和JavaScript不同，这种强类型相比弱类型，
+ 可以在编译期间发现并纠正错误，降低了试错的成本也提升了代码的规范性。
+
+ts在核心语法和类方面对js对象模型进行扩展，
+ts中的数据要求带有明确的类型， js不要求
+ts引入了js没有的类概念
+ts引入了模块的概念， 可以把数据，声明函数和类封装在模块中。
+
+
+布尔值
+     let isDone: boolean = false;
+数字：浮点值（number）
+    除了支持 十进制和十六进制，ts还支持二进制和八进制
+       let num: number = 6;
+       let num1：number = 0xf00d
+字符串：
+      let name: string = 'bob'
+      支持模板字符串
+      let sentence: string = `hello, my name ${name}`
+数组：
+     两种方式定义数组：
+      1） let list: number [] = [1,2,3]   在元素类型后面接上[];
+      2)let list: Array<number> = [1,2,3] Array<元素类型>
+元组 tuple:
+  元组类型允许表示一个以知元素数量和类型的数组，各元素的类型不必须相同， 但是类型顺序是特定的
+     let x: [string, number];
+     x = ['tuple',10]正确
+     x = [10, 'tuple'] 错误
+     当访问一个越界元素，会使用联合类型代替：
+      x[3] ='world'
+      x[4] = true; 错误， 布尔值不是string number 类型
+
+枚举 enum：
+  enum是对js标准类型的补充，使用枚举类型可以为一组数据赋予友好的名字。
+   enum color {red, Green, Blue}
+   let x: color = color.Green  //x 输出是1
+    
+     默认情况下从0开始为元素编号， 也可以手动指定成员的数值
+     enum color{red = 1, green, blue}
+      let x:color = color.green //此时x等于2
+
+      也可以全部赋予初始值，
+      枚举类型的便利就是可以通过枚举的值得到名字， 例如知道是5，但不确定color里的那个名字，
+        enum color{red = 1, green = 5,blue}
+        let colorname: string = color[5] //colorname 是green
+
+Any：
+   在编程阶段不确定变量的类型， 这些值可能来自动态类型， 比如第三方输入， 那么我们不希望检查器对这些值进行检查而是直接让他们通过编译阶段来检查。
+    let notsure: any = 4;
+    notsure = "any"
+    notsure = true;
+       
+       只知道一部分数据也可以
+    let list: any[] = [1, true, 'free']
+
+    这可能与object十分相似， 但是object类型的变量只是允许你给他赋值，但是却不能在它上面调用任意的方法， 即使真的有这些方法
+
+void : 
+   void与any相反，表示没有任何类型， 当一个函数没有返回值，通常返回类型就是void
+     function voidFun(): void {
+         console.log("void)
+     }
+     声明void类型的变量没有什么用处， 因为只能给它赋值 undefined 和nullet
+
+null和undefined：
+    ts里面undefined和null两者都有各自的类型，undefined和null，但是undefied和null是所有类型的子类型， 
+    可以把undefined hull赋值给number类型的变量。
+
+    如果指定了strictNullChecks标记， null undefined只能复制给自身和void
+
+Never：
+   never表示的是那些用不存在的值的类型，例如never类型是那些总是抛出异常，或不会有返回值的函数得返回值类型。
+   never类型是任何类型的子类型， 也可以赋予任何类型， 但是他们子类型， 即使是any也不能赋值给never
+        function error(message: string): never {
+            throw new Error(message);
+        }
+
+        // 推断的返回值类型为never
+        function fail() {
+            return error("Something failed");
+        }
+
+        // 返回never的函数必须存在无法达到的终点
+        function infiniteLoop(): never {
+            while (true) {
+            }
+        }
+
+Object:
+    表示非原始类型， 也就是除了number， string boolean， symbol， null， undefined之外的类型。
+    使用object类型，就好像使用object。create这样的api
+
+    function create(o: object | null): void;
+
+    create({prop:0});
+    create(null)
+
+    create(0) 错误
+    create(undefined) 错误
+    create("object) 错误
+
+断言类型：
+   断言类型相当于其它语言中的类型转换，但是不进行特殊的数据类型和解构
+     两种形式：
+        1）尖括号： 
+          let someval:any = "this is"
+          let stringval: number = (<String>someval).length;
+        2)as语法：
+          let someval:any = "this is"
+          let stringval: number = (someval as string).length;
+        
+联合类型： 
+合类型表示一个值可以是几种类型之一。 我们用竖线（ |）分隔每个类型，所以 number | string | boolean表示一个值可以是 number，
+     string，或 boolean。
+
+
+      
+  类型别名
+  类型断言

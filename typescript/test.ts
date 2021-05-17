@@ -1,0 +1,1 @@
+let a: [string, number] = ["ss", 5]
