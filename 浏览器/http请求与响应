@@ -35,8 +35,8 @@
               服务端有个ETag（实体标记）的字段，与特定资源关联的确定值，当资源更新后Etag也会随之更新。
              所以当客户端If-Match的值若与服务端的ETag一致，才会执行请求，否则会拒绝412
            if-range：If-Range 字段值若是更 ETge 值或更新日期时间一致，那么就作为范围请求处理。若不一致，则忽略范围请求，返回全部资源。
-          if-none-Match：
-          if-modified-since： 
+          if-none-Match： 本地资源未修改返回304（比较标记）
+          if-modified-since： 本地资源未修改返回304（比较事件）
           Accept: 告诉服务器，客户端希望接收的数据类型，以及设置接收优先级
                     文本类型： text/html， application/json
                      图片： image/gif image/png
@@ -50,19 +50,26 @@
      
 响应首部：
  Accept-range：接受的请求的字节范围，分段下载
- Etag：资源的匹配信息
- age：该实体从产生到如今经过多长时间了
- 
- last-modified:用于指示资源最后的修改日期及时间
+ Etag：资源的标识
+ age：资源在代理缓存存在的时间
+ server：服务器名字
  Location： 客户端重定向的URL
-  
 
 通用首部：
 Cache-control:控制缓存策略
 connection： 管理持久连接 Connection: keep-alive 保持连接 ,http请求每次都需要tcp连接，并且使用一次之后就断开， 使用keep-alive可以改善这个状态， 即可以发送多个请求， 减少等待时间， 但是如果配置不当的keepalive，可能会浪费资源，
 date：创建报文的日期和时间
-content-length： 实体的大小
-contnet-type： 内容编码类型
+
+实体字段：
+    allow： 资源的正确请求方式
+    content-encoding：内容的编码方式
+    contnet-language：内容使用的语言
+    contnet-length：请求体长度
+    expires： 内容过期时间
+    content-type： 内容的媒体类型
+    last-modified： 内容最后修改的时间
+
+
 
 
  常见的content type ：

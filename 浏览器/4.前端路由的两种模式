@@ -19,10 +19,11 @@ ajax异步获取，页面流畅，但是由于spa中用户的交互是通过js�
     最明显区别局势hash在浏览器地址添加#号，而history可以自定义地址
 
 hash模式：
- 使用window.location.hash属性及窗口的onhashchange事件，可以实现监听浏览器地址hash变化执行相应的js切换页面，
+  使用window.location.hash属性及窗口的onhashchange事件，可以实现监听浏览器地址hash变化执行相应的js切换页面，
      hash指的是地址中#以及后面的字符，也称散列值，也可称为锚点
      散列值是不会随请求发送到服务器端，所以改变hash是不会重新加载页面
      监听window的hashchange事件，当散列值改变，可以通过location.hash来获取和设置hash的值
+     通过hashchange事件实现页面内容的更新
      location.hash值的变化会直接反映到浏览器地址栏
 
 history模式：
@@ -35,6 +36,10 @@ history模式：
     history.replacState(state,title,url)用新的状态代替
     history.state： 返回当前状态
 
+区别:
+  url展示上， hash模式有#， history模式没有。
+  刷新页面时， hash可以正常加载到hash值对应的页面， 二historu没有处理会返回404， 一般需要后端将所有页面重定向
+  兼容性， hash可以兼容低版本浏览器和ie
   
 
    

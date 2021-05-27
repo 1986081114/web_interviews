@@ -26,6 +26,9 @@ promise和async/await
                 promise内部如何运行，检测很难， 处于pending状态， 无法得知目前进展到哪一阶段。
 
 */
+/* 
+async 是一个通过异步执行并隐式返回 Promise 作为结果的函数。
+*/
 
 /* generator实现async await */
 /* 
