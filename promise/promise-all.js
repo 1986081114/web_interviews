@@ -4,6 +4,8 @@
    所有执行结束返回结果，有一个报错返回cache
  即使中间有一个promise报错，也不会影响其他的promise执行，因为promise在实例化时已经执行了(他们都是同时执行，例如一个用2秒，一个用一秒，全部完成只需要2秒)，
    看到。then。all都已经执行结束了
+
+
   如果所有的Promise对象（p1,p2,p3）都变成fullfilled状态的话，生成的Promise对象（p）也会变成fullfilled状态，
    p1,p2,p3三个Promise对象产生的结果会组成一个数组返回给传递给p的回调函数；
    如果p1,p2,p3中有一个Promise对象变为rejected状态的话，p也会变成rejected状态，
@@ -71,5 +73,57 @@ function PromiseAll(promiseArray) {
 
 /* promise封装ajax */
 /* 终端promise */
+//根据all实现
+Promise.allSettled = function (promises) {
+    return Promise.all(promises.map(p => Promise.resolve(p).then(res => {
+      return { status: 'fulfilled', value: res }
+    }, error => {
+      return { status: 'rejected', reason: error }
+    })));
+  };
 
 
+  Promise.allSettled = function (promises) {
+    return new Promise(resolve => {
+      const data = [], len = promises.length;
+      let count = len;
+      for (let i = 0; i < len; i += 1) {
+        const promise = promises[i];
+        promise.then(res => {
+          data[i] = { status: 'fulfilled', value: res };
+        }, error => {
+          data[i] = { status: 'rejected', reason: error };
+        }).finally(() => { // promise has been settled
+          if (!--count) {
+            resolve(data);
+          }
+        });
+      }
+    });
+  }
+
+
+
+
+  let p1 = new Promise(function (resolve, reject) {
+    setTimeout(function () {
+        resolve(1)
+        // reject(new Error('error 1'))
+    }, 3000)
+})
+
+let p2 = new Promise(function (resolve, reject) {
+    setTimeout(function () {
+        reject(2)
+    }, 2000)
+})
+
+let p3 = new Promise(function (resolve, reject) {
+    setTimeout(function () {
+        resolve(3)
+    }, 1000)
+})
+
+Promise.allSettled([p1, p2, p3]).then(res => {
+    console.log(res) //(*)
+}).catch(console.log)

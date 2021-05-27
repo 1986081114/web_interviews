@@ -33,6 +33,8 @@ MVVM：
    model-view-viewModel；
 
      viewModel和view双向绑定， view变化自动反映到viewModel，
+     它借鉴了mvc思想，在前端页面把model用纯js对象表示， view负责显示，两者做到了最大限度的分离
+      mvvm设计思想就是，赶猪model的变化， 让mvvm自动更新dom状态， 从而把开发者从操作dom繁琐步骤脱离出来。
      视图模型
 
   视图模型是暴露公共属性和命令的视图的抽象。MVVM没有MVC模式的控制器，也没有MVP模式的presenter，有的是一个绑定器。

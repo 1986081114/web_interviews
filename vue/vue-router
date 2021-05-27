@@ -1,2 +1,74 @@
-vue-router 的导航守卫说一下有哪些? 有什么作用? 具体的应用场景
-vue-router 有哪些模式? 区别是什么? 具体是怎么实现的
+
+后端渲染阶段：浏览器请求网页，发送地址给服务器， 服务器把网页渲染好，返回给前端， 服务器中包含html + css + java（java作用是从数据库请求数据动态放在页面中）
+         没有ajax请求， 返回给前端后，前端只有html + css，如果在返回的网页内又点击了一个链接， 服务器又重现渲染网页返回给浏览器
+         此时页面和链接形成了映射关系， 保存在后端， 
+         后端处理url和页面映射关系叫后端路由 ，
+         在后端渲染好页面，不需要加载任何js和css，直接交给浏览器， 有利于seo优化
+         缺点：
+             整个页面的模块都有后端人员来编写维护的，如果前端人员开发网页，需要通过php或者java等语言编写后端代码
+             通常情况下html代码和数据以及对应的逻辑混合在一起，编写和维护非常麻烦。
+
+前后端分离阶段：
+      后端只负责提供数据，不负责任何阶段的内容，
+      浏览器输入url，去静态服务器获取html css js，js代码浏览器执行， ajax在浏览器执行向提供api接口的服务器获取数据， 获取数据再通过js代码渲染数据，
+      这也是前端渲染： 浏览器中显示的内容大部分都是由前端写的js代码在浏览器执行，最终渲染出网页。
+       最大的优势，前后端责任清晰， 后端专注于数据，前端专注于渲染，
+                  并且安卓端也可以使用后端提供的api，后端不用做任何处理，
+
+单页面富应用asp：
+   整个网页只有一个html页面， 在静态服务器，只有一套html+css+js（前后端分类可能有好几套url与页面的映射），但是js中可能也会有几套映射操作，
+    前端路由里包含着一个url映射一个组件，地址改变整个页面不刷新， 只更改部分内容。
+    spa最大的特点是在前后端分离的基础上加了一层前端路由， 管理url和组件的关系。
+ 优点：
+
+用户体验好、快，内容的改变不需要重新加载整个页面，避免了不必要的跳转和重复渲染；
+基于上面一点，SPA 相对对服务器压力小；
+前后端职责分离，架构清晰，前端进行交互逻辑，后端负责数据处理；
+
+缺点：
+
+初次加载耗时多：为实现单页 Web 应用功能及显示效果，需要在加载页面的时候将 JavaScript、CSS 统一加载，部分页面按需加载；
+前进后退路由管理：由于单页应用在一个页面中显示所有的内容，所以不能使用浏览器的前进后退功能，所有的页面切换需要自己建立堆栈管理；
+SEO 难度较大：由于所有的内容都在一个页面中动态替换显示，所以在 SEO 上其有着天然的弱势。
+
+
+
+
+ this.$router和this.$route区别：
+  router为VueRouter的实例，相当于一个全局的路由器对象，里面含有很多属性和子对象，例如history对象。。
+     。经常用的跳转链接就可以用this.$router.push，和router-link跳转一样。。。
+  route相当于当前正在跳转的路由对象。。可以从里面获取name,path,params,query等
+    
+query和params区别：
+   query是path和name来引用， params只能用name引用，在path会被忽略 分别是this.$routr.query.name , this.$route.params.name
+   url地址显示， query在url显示， params不显示
+   query刷新不会丢失query里面的数据 params刷新 会 丢失 params里面的数据。
+
+router-link-active
+
+动态路由：
+  /user/: id;
+  v-bind: to = " 'user/' + userId"   //router-link  userId是data里面的数据
+  
+路由懒加载：
+    路由懒加载的含义：把不同路由对应的组件分割成不同的代码块，然后当路由被访问的时候才加载对应组件
+
+
+路由传参：       this.$router.query,
+              /home/:abc  取值，this.$router.params.abc
+Vue-router 导航守卫有哪些
+
+全局前置/钩子：beforeEach、beforeResolve、afterEach
+路由独享的守卫：beforeEnter
+组件内的守卫：beforeRouteEnter、beforeRouteUpdate、beforeRouteLeave
+
+
+
+
+vue初始化页面闪动问题答：使用vue开发时，在vue初始化之前，由于 div 是不归 vue 管的，
+所以我们写的代码在还没有解析的情况下会容易出现花屏现象，看到类似于 {{message}} 的字样，虽然一般情况下这个时间很短暂，
+但是我们还是有必要让解决这个问题的。首先：在css里加上 [v-cloak] { display: none; } 。如果没有彻底解决问题，
+则在根元素加上 style="display: none;" :style="{display:  block }"
+
+
+    

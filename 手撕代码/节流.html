@@ -12,6 +12,16 @@
     <input class="search" type="text">
     <button class="cancel-btn">取消事件</button>
     <script>
+        //debounce
+            function debounce (fn,delay){
+            let timer = null;
+            return function (...args){
+                    clearTimeout(timer);
+                    timer = setTimeout(()=>{
+                        fn.apply(this,args)
+                    },delay)
+                }
+            }
         //延迟防抖 + 取消
         function debounce(fn, delay, leading) {
             var timer = null;

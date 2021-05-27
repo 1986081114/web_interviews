@@ -2,7 +2,7 @@
 /*
 flat 用于将数组拉平，变成一维数组， 返回一个新的数组，对原数组没有影响
  不传入参数，默认一层，可以传入一个整数，代表拉平的层数
- 如果值《=0，但会原数组，不拉平
+ 如果值《=0，返回原数组，不拉平
  Infinity转成一维数组
  如果原数组有空位，会跳过空位。
 */
@@ -61,7 +61,7 @@ function flat4(arr, num = 1) {
     return num > 0
         ? arr.reduce(
             (pre, cur) =>
-                pre.concat(Array.isArray(cur) ? flat4(cur, num - 1) : cur),
+                pre.concat(Array.isArray(cur) ? flat4(cur, num - 1) : curr),
             []
         )
         : arr.slice();
