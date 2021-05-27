@@ -1,0 +1,2 @@
+开发环境：npx vue-cli-service inspect --mode development >> webpack.config.development.js
+生产环境：npx vue-cli-service inspect --mode production >> webpack.config.production.js

@@ -1,0 +1,75 @@
+1.props/$emit:（父子）
+  父组件通过props的方式向子组件传递数据， 而通过$emit子组件可以像父组件通信。
+   props只可以从上一级组件传递给下一级组件，所谓的单向数据流， 而且props只读，不可修改。 
+
+  $emit绑定一个自定义事件，父组件使用v-on监听并接收参数
+
+2.$children/$parent：（父子）
+  子组件使用this.$parent访问父实例， 子实例被推入到$children组件内，$children 的值是数组，而$parent是个对象
+   $parent , $children可以访问组建的实例， 就可以访问组建的数据和方法了。
+
+   parent不能给父组件传值， children是个数组使用children[i],但是很难确定当前组件i的位置
+
+3.provide/inject：（任意关系组件）
+    父组件通过provider提供变量， 子组件通过inject注入变量。
+
+     export default {
+    name: "A",
+    provide: {
+      for: "demo"
+    },
+    components:{
+      comB
+    }
+  }
+
+  接收：inject: ['for'],
+
+  4.ref/refs：（父子）：直接访问子组件。
+     ref如果在普通的dom元素上使用， 引用指向就是dom元素， 如果用在组件上， 引用就是指向组件实例，可以访问组件内的数据或者方法。
+
+5.eventBus：
+   事件总线， 所有组件公用的事件中心， 可以发送接收事件， 不方便就是项目较大， 难以维护。
+
+        1.初始化： 
+        import Vue from 'vue'
+            export const EventBus = new Vue()
+            2.发送事件
+            import {EventBus} from './event-bus.js'
+            methods:{
+            additionHandle(){
+            EventBus.$emit('addition', {
+                num:this.num++
+            })
+            }
+        }
+        3.接收事件：
+         import { EventBus } from './event-bus.js'
+         mounted() {
+            EventBus.$on('addition', param => {
+            this.count = this.count + param.num;
+            })
+        }
+     4.移除：
+      EventBus.$off('addition', {})
+
+    7.localStorage/sessionStorage：
+
+    8.inheritAttrs + $attrs + $listeners：
+         在多层嵌套组件的业务中，使用$listeners可以使用更少的代码来完成事件通信。假设组件向孙子组件传递数据
+
+        $attrs：包含了父作用域中不被 prop 所识别 (且获取) 的特性绑定 (class 和 style 除外)。当一个组件没有声明任何 prop 时，
+        这里会包含所有父作用域的绑定 (class 和 style 除外)，并且可以通过 v-bind="$attrs" 传入内部组件。通常配合 interitAttrs 选项一起使用。
+
+        $listeners：包含了父作用域中的 (不含 .native 修饰器的) v-on 事件监听器。它可以通过 v-on="$listeners" 传入内部组件
+   
+       意思就是父组件传向子组件传的，子组件不prop接受的数据都会放在$attrs中，子组件直接用this.$attrs获取就可以了。
+       如过从父->孙传，就在子组件中添加v-bind='$attrs'，就把父组件传来的子组件没props接收的数据全部传到孙组件；
+       我觉得 $attrs 和 $listeners 属性像两个收纳箱，一个负责收纳属性，一个负责收纳事件，都是以对象的形式来保存数据；
+     
+      中间的父组件： <child-com2 v-bind="$attrs" v-on="$listeners"></child-com2>
+
+       // 默认为true，默认情况下父作用域的不被认作 props 的特性绑定 (attribute bindings) 将会“回退”且作为普通的 HTML 特性应用在子组件的根元素上。
+     // 通过设置 inheritAttrs到 false，这些默认行为将会被去掉。不会在子组件上显示
+     inheritAttrs: false, // 可以关闭自动挂载到组件根元素上的没有在props声明的属性
+
