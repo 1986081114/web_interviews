@@ -1,0 +1,16 @@
+1新增 document.queryselector和document.querySelectorAll
+2.媒体新增video和audio
+3.本地存储新增localstorage和sessionstorage
+4.语义化标签 footer header section
+5.全双工通信协议 websocket
+6.历史管理 history pushSatete replacestate
+
+移除元素：
+  对页面产生负影响元素：
+    frame， frameset
+
+iframe缺点：
+   iframe会阻塞onload事件
+   搜索引擎检索程序不会打开这种页面， 不利于seo
+   iframe与页面共享连接池， 浏览器对相同域的连接有限制， 会影响页面的并行加载
+   可以通过给iframe动态添加src属性，绕开上述两个问题。

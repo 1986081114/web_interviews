@@ -1,0 +1,114 @@
+1.react中事件都是合成时间，绑定在document， vue和dom在标签上是原生的
+
+2.受控组件和非受控组件
+   针对表单而言的
+     表单受控组件：
+       表单元素依赖于状态，表单元素需要默认实时映射到状态的时候就是受控组件， 这个和双向绑定类似，表单值的修改会实时映射到状态值
+       受控组件只有继承component才有状态
+       受控组件必须在表单上使用onChange事件绑定事件
+       而如果将React里的state属性和表单元素的值建立依赖关系，再通过onChange事件与setState()结合更新state属性，就能达到控制用户输入过程中表单发生的
+       操作。被React以这种方式控制取值的表单输入元素就叫做受控组件。
+
+    非受控组件即不受状态的控制，操作dom等。如文件上传
+    非受控组件的好处是很容易和第三方组件结合。
+
+3.setsTate:
+   不可变值
+     主要是为了性能优化，
+     改变数组api： shift, unshift, pop, push, reverse, sort, splice,
+     不会改变： concat，join， slice，filter，map，some，every，解构
+     所以不能用push等修改数组，因为违反了state的不可变性，
+     对象可以用深拷贝，解构
+    可能会合并
+
+   可能会异步更新
+        setState不一定是异步的
+         1.在生命周期或者react的合成事件中是异步的
+         2.在原生Dom或者setTimeOut是同步的
+    setState无所谓异步同步主要是看是否命中batchupdate机制，根据isBatchingUpdate判断
+       increment(){
+           isBathcingUpdate = true //默认系统做的事
+           this.setState()
+           isBathcingUpdate = false
+       }
+        increment(){
+            isBathcingUpdate = true
+            settimeout((
+                 this.setState()
+            ))
+            isBathcingUpdate = false
+            //在这里由于是回调函数， 等调用的时候，isBatchiingupdate已经变成false了
+        }
+
+        react注册的事件， 生命周期， 都可以明州batchupdate机制
+
+  
+     setState主流程：
+        this,setState(newState) , newState存入pending队列 之后判断是否处于batch update
+         是 异步更新
+         否 同步更新
+
+4.
+     函数式组件
+ * 没有this对象
+ * 没有内部状态
+ * 没有生命周期
+5.组件ccomponent 元素element 实例instance区别：
+    react元素（组件元素，dom元素）就是一个简单的js对象， 一个react元素和界面上的dom对应， 描述了这部分dom的结构和渲染效果，在编译阶段
+      被react.createElement调用
+    组件抽离： react通过组件思想，将界面拆分成一个个可以复用的模块， 每一个模块就是一个组件，组件么模块密不可分，
+     组件最核心的作用时返回react元素，组件负责调用createElement，共内部使用
+
+    实例： 实例特质react组建的实例， react组件是一个函数或者是类， ，实际工作中，发挥作用的是react组建的实例对象，只有
+    组件实例化了，每个组件才有props和state
+    节点是指：可以背react渲染的数据类型
+6.protals：
+   把组件渲染到其他盒子的时候
+      render() {
+    return ReactDOM.createPortal(
+        //model里的子组件
+        this.props.children,
+        document.getElementById("modal")
+        )
+    }，
+    逃离父组件，如父组件overflow hidden, 父组件z-index太小等
+
+7.context
+        context传值
+        1.创建contxt对象
+        const UserContext = React.createContext()
+        2.把把子组件放到context对象内
+        并且用value传值
+            <UserContext.Provider value={this.state}>
+                            <Profiles/>
+                        </UserContext.Provider>
+        3.给HeaderProfile组建的contexttype传值
+        HeaderProfile.contextType = UserContext;
+
+    8.异步组件
+      import 
+      reacrlazy
+      react。suspense
+
+    9.react性能优化：
+         react默认条件下， 父组件有更新子组件无条件更新，
+            shoulecomponentupdate（nextProps， nextState）{
+                配合state不可变性使用
+                通过比较值判断返回
+                默认会返回true
+                    true//重新渲染
+            }
+            shoulecomponentupdate为什么没有默认配置：
+                    不一定每次都需要， 所以系统并没有默认配置对比
+                    state数据不可变性， 如果有人按照规则改了state，但是nextState和this.state相同， 就不能重新渲染，bug
+
+        //pureComponent决定类组件是否渲染
+           通过浅层比较判断是否更新，shouldComponentUpdate同时存在会报错，如果强行执行，会按照 shouldComponentUpdate返回决定是否渲染
+       //memo决定函数式组件是否渲染
+        
+    10. 组件抽离：
+      hoc，
+       render Props： 通过一个函数将class组件的state作为props传递给纯函数组件
+
+    11.react-router
+    12.react合成事件机制

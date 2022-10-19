@@ -1,8 +1,0 @@
-keep-alive是vue内置的组件， 可以使被包含的组件保留状态， 避免重新渲染， 具有以下特性：
-  一般结合路由和动态组件一起使用， 用于缓存组件
-  提供include和exclude属性， 两者都支持字符串和正则表达式， include表示只有名称匹配的组件被缓存， exclude表示任何名称匹配的组件不被缓存， 
-    其中exclude的优先级更高
-
-  对应两个钩子函数， activated和deactivated，当组件被激活， 触发钩子函数，activated， 当组件被移除，触发钩子函数deactivated。
-
-  

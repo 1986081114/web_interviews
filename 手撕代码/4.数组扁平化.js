@@ -15,6 +15,7 @@ flat 用于将数组拉平，变成一维数组， 返回一个新的数组，�
 [].concat(...arr)
 concat + apply   [].concat.apply([],arr)
 */
+
 const arr = [1, 2, [3, 4], [1, 2, 3, [1, 2, 3, [1, 2, 3]]], , 5, "string", { name: "你好" }];
 console.log(arr.flat(Infinity))//
 //1.实现方法
@@ -67,3 +68,43 @@ function flat4(arr, num = 1) {
         : arr.slice();
 }
 console.log(flat4(arr, Infinity))
+
+
+
+/*
+ 数组扁平化方法：
+    1.redux    //空字符为null
+    2.toString/split   不会跳过空字符 显示0
+    3.join/split  空字符显示Nan
+    4.递归
+    5.flaten
+    6.es6扩展运算符  空字符显示undefined
+    7.正则
+       
+*/
+const arr = [1, 2, [3, 4], [1, 2, 3, [1, 2, 3, [1, 2, 3]]], , 5];
+
+function flatten2(arr) {
+    return arr.toString().split(',').map((item) => {
+      return Number(item) 
+    })
+  }  //[ 1, 2, 3, 4, 1, 2,3, 1, 2, 3, 1, 2, 3, 0, 5]
+
+  function flatten3(arr) {
+    return arr.join(',').split(',').map(function(item) {
+        return parseInt(item);
+    })
+  }//[1, 2, 3, 4, 1, 2,3, NaN, 5]
+  
+
+  function flatten(arr) {
+    while(arr.some(item=>Array.isArray(item))) {
+        arr = [].concat(...arr);
+    }
+    return arr;
+  }//[ 1, 2, 3, 4, 1, 2, 3, 1, 2, 3, 1, 2, 3, undefined, 5 ]
+
+    let ary =[1, 2, [3, 4], [1, 2, 3, [1, 2, 3, [1, 2, 3]]], , 5];;// -> [1, 2, 3, 4, 5, 6]
+    let str = JSON.stringify(ary);
+    ary = str.replace(/(\[|\])/g, '').split(',')
+    console.log(ary)

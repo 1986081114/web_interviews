@@ -1,3 +1,49 @@
+/* 
+  对象： 属性的集合，属性就是一个名和一个值
+     对象具有唯一的标识，即使两个完全相同的对象，也并非同一个对象
+     对象具有状态，同一个对象具有不同的状态
+     对象具有行为，即对象的状态会因为不同的行为产生变迁
+
+     let folder = {
+       size:2000,
+       name: 'folder',
+       'other objict': folder
+     }
+      
+     //快速访问对象
+     console.log(folder.size)
+     //访问对象
+     console.log(folder['other object'])
+
+     //[]也可以插入变量
+     let sizeKey = 'size'
+     console.log(folder[sizeKey], folder['na' + 'me'])
+
+     //删除某个属性
+     delete folder.name
+
+     一边来讲，对象的唯一标识都是内存地址，因为对象具有唯一标识的内存地址。
+     在js中对象具有高度的动态性，因为在js赋予了使用者在运行时为对象添改状态和行为的能力
+
+  对象的两个属性：数据属性和访问器属性（getter/setter）
+    数据属性四个特征：
+       value： 属性的值
+       writable： 决定属性是否被赋值
+       enumerable： 决定for in是否枚举该属性
+       configurable： 决定该属性是否能被修改或者改变特征值
+    访问器属性（getter/setter）
+       getter： 函数或undefined，在取属性值时被调用
+       setter： 函数或undefined， 在设置属性值时被调用
+       enumerable： 决定 for in是否美剧该属性
+       configurable： 决定该属性是否可以被删除或修改
+    Object.getOwnPropertyDescriptor查看属性设置
+    Object.defineProperty 来定义属性
+
+    var o = { get a() { return 1 } };
+    console.log(o.a); // 1
+
+
+*/
 /*
 Object.create(proto, [propertiesObject])，是浅拷贝
 创建一个新对象， 使用现有的对象提供新对象的__proto__，继承一个对象， 添加的属性是在原型上
@@ -82,4 +128,35 @@ person1.name = 'person1';
 console.log(person2.name); // kevin
 //修改person1.name的值，person2.name的值并未发生改变，并不是因为person1和person2有独立的 name 值，
 //而是因为person1.name = 'person1'，给person1添加了 name 值，并非修改了原型上的 name 值。
+
+
+
+/* 
+
+对象的key类型只能是，string， 如果是number会自动转成string类型， es6以后添加了symbol类型
+//通过.方式获取属性值，key是静态值，即{h:"value"}时，h是没有""，为静态值。
+    var someOne = {
+        name: "张三",
+        age: "四岁"
+    };
+    console.log(someOne);
+    // 通过[]获取属性值, key是动态的，可以是字符串，或者数字的形式(即Number类型)
+    var string = {
+        "String": "key为字符串"，
+        "other": "其他字符串"
+    };
+    var number = {
+        1: "key为数字类型",
+        2: "key为数字类型"
+    };
+    console.log(string["String"]);
+    console.log(number[1]);  // 注意这里的写法跟数组容易混淆，number仍是对象，不是数组
+    // 获取对象所有key的方法
+console.log(Object.keys(string));  // 输出[ 'key为字符串类型', '其他字符串类型' ]
+如果key是变量，就必须使用[].
+     
+obj.a.b.c和 obj[a][b][c]那个性能更好
+所以obj.a.b.c性能更好。因为如果是[],还要考虑是否为变量，
+
+*/
 

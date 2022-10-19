@@ -1,0 +1,28 @@
+编程思想可以看看《冒泡课堂》
+
+编程思想可以分为四类：
+  原则
+  范式
+  方法论
+  模式
+
+原则：
+   DRY(don't repeat yourself)
+      当第二次写同样结构，变化不大的代码时， 就要想是不是在repeat myself，如果是就要想着重构，封装，等
+   OPC:(open close principle)
+       对软件扩展开放， 对修改封闭，继承观察者都是实现opc原则
+范式：
+   GP: generic programming
+     范式编程：从抽象的角度看问题， 对算法和操作的数据解耦
+   MP: META programming
+    让代码更具有动态性
+方法论：
+   oop（object oriented programming）
+   aop（aspect oriented programming）
+   FP:(functional programming)
+     FP（函数式编程）
+模式：
+   模式是在系统开发的过程中反复被用到的一些解决具体问题的思想。设计模式（Design patterns）
+
+写代码是为了解决问题，而不是秀肌肉。脑袋里有了大原则，那么范式，方法论，模式这些实现手段哪个顺手，哪个更好地能解决问题就用哪个。
+代码写出来首先要为功能服务，其次为可读性服务，不是为某个思想服务的，也就是说，不要为了OO而OO，不要为了MP而MP，那样没有意义。

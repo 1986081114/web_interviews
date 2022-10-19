@@ -1,13 +1,13 @@
 模板 -》 ast -> render函数- > 虚拟dom -> 真实dom
 
-vue模板通过compiler编译成语法抽象树，然后将ast编译成对对应render函数， render函数然后生成虚拟dom节点 最后生成真实dom
-
 
 1. runtime-compiler
 template → ast → render函数 → virtual DOM → 真实DOM
 （template → ast → render函数）由vue-template-compiler实现。
 2. runtime-only （性能更高，打包后的代码量更少）
 render函数 → virtual DOM → 真实DOM
+
+
 
 编译原理：
 首先解析模版，生成AST语法树(一种用JavaScript对象的形式来描述整个模板)。 使用大量的正则表达式对模板进行解析，
@@ -32,37 +32,31 @@ Vue的数据是响应式的，但其实模板中并不是所有的数据都是�
     第一个就是运行updataComponent函数，updatecomponent里面运行vm.render函数
     第二个就是把updatacomponent函数传给Watcher创建watcher实例， 那么updatacomponent函数读取的数据都被watcher监听
 
+watcher会触发重新render函数
+//模板编译：就是将template转换成render函数的过程
 3.render函数生成 
-    vue内部定义的render方法来源有两种， 一种是用户手写的render方法， 那么vue会调用用户自己手写的render方法， 另一种是没有手写， vue会把template编译成render方法
+    vue内部定义的render方法来源有两种， 一种是用户手写的render方法， 那么vue会调用用户自己手写的render方法， 另一种是没有手写， 
+     vue会把template编译成render方法
       之前在上面也说了mounteComponent运行的条件是提供渲染函数，手写就直接运行，没有就生成render函数
     生成过程：
-      1）模板内容提取：
-        如果传入template并且是字符串以#开头，找到对应的dom元素，获取内容，保存在template变量中
-        如果传入的template时dom节点， 也是获取innerHtml内容存入到template变量中，
-        如果没有template，但是有el，获取el内容到template变量
-      2）模板编译成render，使用compileToFunction函数将模板编译成render函数
+      
+      模板编译成render，使用compileToFunction函数将模板编译成render函数
         compilerToFunction分为三个过程： 
           2.1） 解析模板字符串生成AST：
-               parse（）函数会用正则等方式解析temlate模板的指令， class，style等形成ast树。
+               parse（）函数会用正则加循环等方式解析temlate模板的指令， class，style等形成ast树。
          2.2）优化ast树，
            optimize（）， vue是数据响应的，但是template并不是所有数据都是响应的， 有很多数据渲染后不会改变， 这样可以做个标记， 为了后面diff算法跳过静态节点，优化性能
-        2.3）codegen（）将优化后的ast树转成可执行的代码。 就可以得到render函数了
+      
+      2.3 generator（ast）创建一种类似于vnode的拼接字符串 code
+      2.4 使用with改变作用域，实现模板引擎功能
+      2.5 return  new Function（with（this） code）生成render
 
 4.render到vnode生成：
-   调用render.call（）函数返回虚拟节点，这里主要使用createElement（上下文环境， 标签，vnode数据， 子节点）方法
-
+   调用render.call（）函数返回虚拟节点，这里主要使用h（上下文环境， 标签，vnode数据， 子节点）方法
+   render执行时机：  vue初始化会被执行
+                    template中观察的对象更新值的时候， 会触发render函数
 5.vm.update函数作用是把render生成的虚拟节点渲染成真正的dom
- update在两种情况下调用， 一是newVue初始化， 还有一种情况就是data数据发生改变。
- update最终会调用patch方法，这也是整个 virtual-dom 当中最为核心的方法，主要完成了prevVnode 和 vnode 的 diff 过程并根据需要操作的 vdom 节点打 patch，
- 最后生成新的真实 dom 节点并完成视图的更新工作，在 patch 方法中，我们看到会分为两种情况，一种是当 oldVnode 不存在时，会创建新的节点；
- 另一种则是已经存在 oldVnode ，那么会对 oldVnode 和 vnode 进行 diff 及 patch 的过程。
-
- 5.1 判断旧节点是否存在，如果不存在就调用 createElm() 创建一个新的 dom 节点，否则进入第二步判断。
-
-5.2通过 sameVnode() 判断新旧节点是否是同一节点，如果是同一个节点则调用 patchVnode() 直接修改现有的节点，否则进入第三步判断
-5.3如果新旧节点不是同一节点，则调用 createElm()创建新的dom，并更新父节点的占位符，同时移除旧节点。
-在createElm()函数中，主要完成的功能是将构建dom子节点插入到父节点中，并且一直循环到该节点没有子节点为止。这个过程createElm()函数和createChildren函数一起完成。
-createChildren函数
+    diff算法
 
 
         

@@ -18,8 +18,21 @@ function myNew() {
 	//将构造函数的this指向返回对象，这样obj就可以访问到构造函数中的属性
 	var res = fun.apply(obj, arguments);
 	return res instanceof Object ? res : obj
-}
 
+}
+function myNew(fn, ...args) {
+	if (!fu) {
+		throw 'function'
+	}
+	if (typeof fu != 'function') {
+		throw 'function'
+	}
+    let instance = Object.create(fn.prototype);
+    let res = fn.apply(instance, args); // 改变this指向
+
+    // 确保返回的是一个对象(万一fn不是构造函数)
+    return typeof res === 'object' ? res: instance;
+}
 
 /*
   new 创建一个用户定义的对象类型的实例或具有构造函数的内置对象的实例

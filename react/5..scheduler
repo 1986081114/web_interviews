@@ -1,0 +1,38 @@
+scheduler主要作用：
+ 从宏观和微观上对任务进行管理， 也就是对于多个任务， 根据优先级安排执行顺序， 对于单个任务，需要有节制的执行。所以引入
+   时间切片和优先级调度：
+    
+   
+    时间切片：
+        一帧时间内浏览器执行的任务：
+            一个宏任务---》 队列中全部的微任务---》 requestAnimationFrame--》 浏览器重排重绘----》 requestIdleCallback
+            requestIdleCallback发生在浏览器重排重绘之后， 如果还有空闲事件，可以在requestIdleCallback执行消耗性能的任务。
+            但是由于requestIdleCallback兼容性问题，schedule中采用了messageChannel来实现requestIdleCallback，如果messagechannel
+            还不支持，就采用setTimeout，
+
+            在一帧时间内，通过shouldYield方法判断是否需要中断遍历，将控制权交还给浏览器
+                在shouldYield中如果  当前事件  >  任务开始时间 + yieldInterval 就中断
+
+    优先级调度：
+          
+         首先scheduler是独立于react的包的。所以他的优先级也是独立于react的优先级的。
+          有两个优先级函数runWithPriority，
+          scheduleCallback：以一个优先级注册callback，在适当的时机执行，因为涉及过期时间的计算，所以scheduleCallback比runWithPriority的粒度更细。
+         和scheduleCallback，该方法用于以某个优先级注册回调函数
+
+           在这个方法里
+           开始时间默认是当前时间， 如果在进入调度传了延迟时间， 开始时间starttime就是 当前时间和延迟时间的和
+           timeout是根据传进来的优先级对应一个时间数，如Immerdiate就是-1，
+           expirationTime = startTime + timeout
+          根据starttime和current对比分成未就绪任务存在timeQueue，已就绪任务存在taskQueue
+          并且根据startqueue排序timeQueue中的任务。如果startTime》currenttime就放入taskQueue。
+          取出taskQueue中最早过期任务并执行他。
+          为了能在O(1)的时间复杂度内查找到， 最早的任务， 使用小栈堆实现优先级队列。
+        这就schedule的实现。
+
+        那么任务被中断了如何继续呢？
+           再取出taskQueue中最早过期的任务并执行它会有非常关键的一步：
+           注册的回调函数执行后的返回值continuationCallback为function，会将continuationCallback作为当前任务的回调函数。
+             if (typeof continuationCallback === "function") {
+                   currentTask.callback = continuationCallback;
+              把赋值给currenttask的回调，1 zheyang下次回复任务就可以接上了

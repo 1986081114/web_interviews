@@ -17,7 +17,7 @@
 //直接插入排序： 将数组中所有元素依次跟前面已经排序好的元素相比较， 如果小，交换 
 let array = [9,1,2,5,7,4,8,6,3,5]
    function insertSort(array) {
-      let j, temp 
+      let j
     for(let i = 1; i< array.length; i++) {
         j = i-1;
         current = array[i]
@@ -70,22 +70,39 @@ let array = [9,1,2,5,7,4,8,6,3,5]
 console.log(selectSort(array))
 
 //冒泡排序：比较相邻的元素，如果前一个比后一个大，交换， 第一轮最后一个元素最大，
-function bubbleSort(array) {
-    for(let i = array.length-1; i>0; i--) {
-        for(let j =0; j<i; j++) {
-            if(array[j] > array[j+1]) {
-                [array[j], array[j+1]] = [array[j+1], array[j]]
-            }
+function bubbleSort(arr){
+    for(let i = 0; i< arr.length-1; i++ ){
+      for(let j = 0 ; j <arr.length-i-1; j++){
+        if(arr[j+1] < arr[j]){
+          [arr[j+1],arr[j]] = [arr[j],arr[j+1]]
         }
+      }
     }
-    return array
-}  
+    return arr
+  } 
 console.log(bubbleSort(array))
 
 //快速排序： 冒泡排序的一种改进， 第一趟将数组分为两半， 左边部分比当前值都小，右边比当前值大， 递归调用
   //递归快速排序：
-function quickSort(array) {
-
+  function quickSort(arr){
+    if(arr.length<2) return arr
+    const cur = arr[arr.length-1]
+    const left = arr.filter((v,i) =>v <=cur && i !== arr.length-1)
+    const right = arr.filter((v) => v>cur)
+    return [...quickSort(left), cur, ...quickSort(right)]
+  }
+  var sortArray = function(nums, s= 0, e = nums.length - 1) { 
+    if(s>e) return;
+    let p=nums[s],l = s, r = e;
+    while(l<r) {
+        while(l<r && nums[r]>=p) r--;
+        while(l<r && nums[l]<=p) l++;
+        [nums[l],nums[r]] = [nums[r], nums[l]]
+    }
+    [nums[s], nums[r]] = [nums[r], nums[s]];
+    sortArray(nums, s, r-1);
+    sortArray(nums, r+1,e);
+    return nums;
 }
 //归并排序：
 function mergeSort(nums) {
@@ -111,3 +128,53 @@ function mergeSort(nums) {
   }
   console.log('----------')
   console.log(mergeSort( [7,5,6,4]))
+
+
+//二分查找
+var searchInsert = function(nums, target) {
+    const n = nums.length;
+    let left = 0, right = n - 1, ans = n;
+    while (left <= right) {
+        let mid = ((right - left) >> 1) + left;
+        if (target <= nums[mid]) {
+            ans = mid;
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    return ans;
+};
+
+//根据bil得到比target第一个大的数和第一个等于target的数
+function bianrySort(nums, target, bol){
+    let left = 0, right = nums.length-1,res = nums.length;
+    while(left <=right){
+        let mid = (left + right)>>1
+        if(nums[mid] >target ||(bol && nums[mid]>=target)){
+            right = mid-1
+            res = mid
+        }else {
+            left = mid+1
+        }  
+    }
+    return res
+}
+
+// 找比根号x小的数
+var mySqrt = function(x) {
+    let left = 0
+    let right = (x>>1) + 1
+    let res= -1
+    console.log(res)
+    while( left <= right){
+       let mid = (left + right) >>1
+       if(mid*mid <=x){  
+           res = mid
+           left = mid+1
+       }else {
+           right = mid-1
+       }
+    } 
+    return res
+};

@@ -1,0 +1,26 @@
+nextTick：nextTick 是在下次 DOM 更新循环结束之后执行延迟回调，在修改数据之后使用nextTick，则可以在回调中获取更新后的 DOM
+
+vue在更新dom时是异步的， 只要监听到数据变化， vue将会开启一个队列， 并缓冲在同一事件循环中， 如果同一个watcher被多次触发， 
+只会被推入到队列一次，在缓存中去除重复数据对于不必要的计算和都没操作都非常重要。在下一次事件循环时， vue清空队列， 进行dom更新。
+
+nextTick实现原理：
+  在下次dom更新循环结束之后执行延迟回调， 在修改数据之后立即执行nextTick获取更新后的dom
+  nextTick主要使用宏任务和微任务。
+  根据执行环境分别尝试采用Promise.then、MutationObserver、setImmediate，如果以上都不行则采用setTimeout定义了一个异步方法，
+   多次调用nextTick会将方法存入队列中，通过这个异步方法清空当前队列。
+
+   什么时候用到nextTick
+     在数据变化后要执某个操作， 而这个操作依赖因数据改变而改变的dom， 这个操作就用该放在vue.nextTick回调中。
+     <div v-if="loader" ref = 'test'/>
+
+     async fun(){
+       this.loader = true;
+       this.$refs.test //获取不到
+       await Vue.nextTick()
+       this.$refs.test //可以获取到
+
+     }
+
+     this.$nextTick(() => {
+       dom更改，diff算法进行更新、添加、删除等操作生成真实的DOM节点
+     })

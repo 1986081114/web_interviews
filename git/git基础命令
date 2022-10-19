@@ -1,0 +1,49 @@
+
+创建文件夹 mkdir name
+显示文件夹的路径 pwd
+
+git add 可以将一个或多个文件提交到暂存区
+git commit -m “描述” 将暂存区内容添加到本地仓库
+git stash 能够将所有未提交的修改（工作区和暂存区）保存至堆栈中，用于后续恢复当前工作目录。
+
+
+git checkout . 放弃所有还没有加入到缓存区（git add命令）的修改（内容修改和文件删除）， 但是此命令不会删除刚建立的文件，
+                 因为新建立的文件没有加入到git的管理系统，对于git未知，需要手动删除
+git checkout -f 撤销本地修改，本地修改全部丢弃
+git reset 命令用于回退版本，可以指定退回某一次提交的版本
+
+git tag  给提交添加标签
+git status 显示当前状态
+git log 显示提交记录
+
+
+分支
+  分支是一个可移动指针，用来记录当前所有节点的所有修改记录，每个分支不受其他分支影响。默认master为分支名。
+
+        分支管理策略：
+        master：git默认主分支（这里不作操作）。
+
+        stable：稳定分支，替代master，主要用来版本发布。
+
+        develop：日常开发分支，该分支正常保存了开发的最新代码。
+
+        feature：具体的功能开发分支，只与 develop 分支交互。
+
+        release：release 分支可以认为是 stable分支的未测试版。比如说某一期的功能全部开发完成，那么就将 develop 分支合并到 release分支，测试没有问题并且到了发布日期就合并到 stable分支，进行发布。
+
+        bugfix：线上 bug 修复分支。
+
+  git branch name 创建分支
+  git branch -a -v 可以看到具体的提交信息
+  git checkout name 切换分支
+  git merge 分支合并
+  git remote 管理远程仓库 
+    git合并过程中，不同的文件或者不同的位置会自动合并，对于相同的文件不同内容会提示合并冲突，需要人工解决
+
+ git fetch 命令用于从远程获取代码库。该命令执行完后需要执行 git merge 远程分支到你所在的分支。
+
+ git add .
+ 
+ git commit -m ""
+
+ git push <远程主机名> <本地分支名>:<远程分支名>

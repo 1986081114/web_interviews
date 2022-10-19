@@ -24,13 +24,12 @@
    第三方模块按需导入
    图片懒加载
    长列表滚动可视化动态加载
-   在更多替换条件下 v-if替换v-for
 5.在 Vue 实例中编写生命周期 hook 或其他 option/properties 时，为什么不使用箭头函数 ？
 
-   箭头函数自已没有定义 this 上下文中。当你在 Vue 程序中使用箭头函数 ( => ) 时，this 关键字病不会绑定到 Vue 实例，
+   箭头函数自已没有定义 this 上下文中。当你在 Vue 程序中使用箭头函数 ( => ) 时，this 关键字不会绑定到 Vue 实例，
    因此会引发错误。所以强烈建议改用标准函数声明。
 
-6.sr：
+6.ssr：
       服务端渲染（ssr）：就是将组件或者页面在服务端完成了标签渲染成html片段。，服务端形成的html片段直接返回给客户端这个过程就叫做服务端渲染。
       优点： 
          更好的seo：因为spa页面的内容同股票ajax获取，而搜索引擎工具并不会等待ajax异步完成在抓取页面内容， 所以在spa中抓取不到ajax获取的内容
@@ -45,9 +44,10 @@
 
 
 7.子组件为什么不能修改父组件传递的prop，怎么理解vue单向数据流:
-  这是为了防止意外改变父组件状态， 使得应用的数据流变得难以理解， 
-   组件是可复用的，假设该子组件被复用了n次，当某一个组件意外地更改了其接受到的props数据 ----> 
-    意味着，同时更改了父组件中相对应的属性值 ----> 意外地更改其它(n-1)个子组件中的 props数据，引起混乱
+   所有的prop使得父子prop形成一个单向向下绑定， 父级prop的更新会向下流动到子组件， 但是反过来不行。
+   这是为了防止意外改变父组件状态， 使得应用的数据流变得难以理解， 
+      组件是可复用的，假设该子组件被复用了n次，当某一个组件意外地更改了其接受到的props数据 ----> 
+      意味着，同时更改了父组件中相对应的属性值 ----> 意外地更改其它(n-1)个子组件中的 props数据，引起混乱
 
 8.vue不能检测数组的那些变动， vue怎没用vm,$set()解决对象新增属性不能响应问题？
 
@@ -63,30 +63,29 @@
   vue不能检测直接利用索引设置数据项，修改数组的长度。
 9.vue2.x中如何监测数组变化？
 
-  但是也请注意并非所有的数组方法都重新写了一遍，只有push，pop，shift，unshift，splice, sort，reverse这七个。至于为什么不用Object.defineProperty去监听数组中已存在的元素变化。
-   作者尤雨溪的考虑是因为性能原因，给每一个数组元素绑定上监听，实际消耗很大，而受益不大
-使用了函数劫持的方式，重写了数组的方法，Vue将data中的数组进行了原型链重写，指向了自己定义的数组原型方法，
-当调用数组api时，可以通知依赖更新。如果数组中包含着引用类型，会对数组中的引用类型再次递归遍历进行监控。这样就实现了监测数组变化。
+   但是也请注意并非所有的数组方法都重新写了一遍，只有push，pop，shift，unshift，splice, sort，reverse这七个。至于为什么不用Object.defineProperty去监听数组中已存在的元素变化。
+      作者尤雨溪的考虑是因为性能原因，给每一个数组元素绑定上监听，实际消耗很大，而受益不大
+   使用了函数劫持的方式，重写了数组的方法，Vue将data中的数组进行了原型链重写，指向了自己定义的数组原型方法，
+   当调用数组api时，可以通知依赖更新。如果数组中包含着引用类型，会对数组中的引用类型再次递归遍历进行监控。这样就实现了监测数组变化。
 
 10.对于即将到来的 vue3.0 特性你有什么了解的吗？
 
-监测机制的改变
+   监测机制的改变
 
-3.0 对于即将到来的 vue3.0 特性你有什么了解的吗？
 
-  将带来基于代理 Proxy的 observer 实现，提供全语言覆盖的反应性跟踪。消除了 Vue 2 当中基于 Object.defineProperty 的实现所存在的很多限制：
-   只能监测属性，不能监测对象
+   将带来基于代理 Proxy的 observer 实现，提供全语言覆盖的反应性跟踪。消除了 Vue 2 当中基于 Object.defineProperty 的实现所存在的很多限制：
+      只能监测属性，不能监测对象
 
-   检测属性的添加和删除；检测数组索引和长度的变更；支持 Map、Set、WeakMap 和 WeakSet。
-   模板
+      检测属性的添加和删除；检测数组索引和长度的变更；支持 Map、Set、WeakMap 和 WeakSet。
+      模板
 
-   模板方面没有大的变更，只改了作用域插槽，2.x 的机制导致作用域插槽变了，父组件会重新渲染，而 3.0 把作用域插槽改成了函数的方式，这样只会影响子组件的重新渲染，提升了渲染的性能。同时，对于 render 函数的方面，vue3.0 也会进行一系列更改来方便习惯直接使用 api 来生成 vdom 。
-   对象式的组件声明方式
+      模板方面没有大的变更，只改了作用域插槽，2.x 的机制导致作用域插槽变了，父组件会重新渲染，而 3.0 把作用域插槽改成了函数的方式，这样只会影响子组件的重新渲染，提升了渲染的性能。同时，对于 render 函数的方面，vue3.0 也会进行一系列更改来方便习惯直接使用 api 来生成 vdom 。
+      对象式的组件声明方式
 
-   vue2.x 中的组件是通过声明的方式传入一系列 option，和 TypeScript 的结合需要通过一些装饰器的方式来做，虽然能实现功能，但是比较麻烦。3.0 修改了组件的声明方式，改成了类式的写法，这样使得和 TypeScript 的结合变得很容易
-   其它方面的更改
+      vue2.x 中的组件是通过声明的方式传入一系列 option，和 TypeScript 的结合需要通过一些装饰器的方式来做，虽然能实现功能，但是比较麻烦。3.0 修改了组件的声明方式，改成了类式的写法，这样使得和 TypeScript 的结合变得很容易
+      其它方面的更改
 
-   支持自定义渲染器，从而使得 weex 可以通过自定义渲染器的方式来扩展，而不是直接 fork 源码来改的方式。支持 Fragment（多个根节点）和 Protal（在 dom 其他部分渲染组建内容）组件，针对一些特殊的场景做了处理。基于 tree shaking 优化，提供了更多的内置功能。
+      支持自定义渲染器，从而使得 weex 可以通过自定义渲染器的方式来扩展，而不是直接 fork 源码来改的方式。支持 Fragment（多个根节点）和 Protal（在 dom 其他部分渲染组建内容）组件，针对一些特殊的场景做了处理。基于 tree shaking 优化，提供了更多的内置功能。
 
 
 11.数据冻结：
@@ -96,5 +95,241 @@
       user = Object.freeze(data)
    }
 
+ 12.assets和static区别：
+         相同点： 都是存放静态资源文件的， 项目中所需要的资源文件图片，字体图标等都存放在这两个文件下
+         不同点： 在项目打包时， 也就是npm run build  ，会将assets中放置的静态资源文件进行打包上传， 而打包后的静态资源文件最终会
+         放置在static文件中跟着index。html一上传服务器。 static中放置的静态资源文件就不会走打包流程， 直接进入打包好的目录，上传到服务器，
+      所以在打包过程中，由于static不需要打包，打包速度会更快， 但是由于没有打包， 体积会更大
+      将项目中 template需要的样式文件js文件等都可以放置在 assets 中，走打包这一流程。减少体积。
+      而项目中引入的第三方的资源文.件如iconfoont.css 等文件可以放置在 static 中，因为这些引入的第三方文件已经经过处理，我们不再需要处理，直接上传。
+
+13.vue事件修饰符：
+   .stop：等同于js中的event.stopPropagation，防止事件冒泡
+       <a v-on:click.stop="doThis"></a> 
+   .prevent: 等同于js中的event.preventDefault， 不执行默认行为什么
+   .capture: 与事件冒泡相反， 事件捕获由外到内
+    <!-- 添加事件监听器时使用事件捕获模式 -->
+         <!-- 即内部元素触发的事件先在此处理，然后才交由内部元素进行处理 -->
+   <div v-on:click.capture="doThis">...</div>
+
+   .self: 指挥只会触发自己范围内的事件， 不包含子元素
+   .once: 只会触发一次
+
+14. vue的两个核心点：
+    数据驱动：保证数据和试图一致性
+    组件系统： 
+15. vue和jquery区别：
+     jquery是使用选择器$选取dom对象的， 对其进行赋值， 取值，事件绑定等， 可以更方便的选取和操作对象， 数据和界面是在一起的， 比如获取table标签内容， 
+     $('label').val().他还是依赖dom元素值， vue则是通过，vue对象将数据和视图完全分离。 对数据操作不需要引用响应的dom。 引用vue对象的vm互相绑定， mvvm模式。
+
+16.delete和vue.delete删除数组区别：
+   delete只是被删除元素， 变成了empty/undefined，键值顺序不变
+   vue之间删除了数组， 改变了数组的键值
+   splice直接删除了数组 改变了数组的键值。
+   如a = [1,2,3,4]
+   delete a[1] ---> 0:1, 2:3, 3:4
+   vue.$delete(a, 1) -->  0:1, 1:3， 2：4
+
+17. vue-router和location.href区别：
+   vue-router使用pushState进行路由跳转， 静态跳转， 页面不会重新加载，使用router.push(/url)跳转； location.href会触发浏览器， 页面重新加载一次。
+   vue-router使用diff算法， 实现按需加载， 减少都没操作 
+   vue-router是路由跳转或同一个页面跳转， location.href是不同页面间跳转。
+   vue-router是异步加载， location.href是同步加载
+
+18. router-link上事件无效的解决方法：
+       .native--侦听组件根元素上的原生事件
+        做用： 给组件绑定原生事件
+        如果使用router-link标签，加上@click事件，绑定的事件会无效因为：router-link的作用是单纯的路由跳转，会阻止click事件，
+        你可以试试只用click不用native,事件是不会触发的。此时加上.native，才会触发事件。
+
+      vue维护了自己的事件机制，在自定义的组件上，最终是不会渲染到页面上的， 所以vue给自定义组件
+      绑定事件的做法是，把原生事件绑定到根结点上， ，所以需要告诉vue，当前是要给原生节点绑定dom事件， 而不是自定义事件
+      如果不加会认为监听的是来自Item组件自定义的事件，会覆盖事件
+     
+      <router-link  @click.native="change"><span>{{item.text}}</span></router-link>
+      
+
+19.active-class是哪个组件的属性
+  active-class是vue-router模块的router-link组件中的属性，用来做选中样式的切换
+
+20. vuex页面刷新数据丢失： 
+
+      vuex的 store 中的数据是保存在运行内存中的，当页面刷新时，页面会重新加载 vue 实例，vuex 里面的数据就会被重新赋值，
+      这样就会出现页面刷新vuex中的数据丢失的问题。 如何解决浏览器刷新数据丢失问题呢？
+      方法一：全局监听，页面刷新的时候将 store 里 state 的值存到 sessionStorage 中，然后从sessionStorage 中获取，再赋值给 store ，并移除 sessionStorage 中的数据。在 app.vue 中添加以下代码：
+       created() {
+         window.addEventListener('beforeunload',()=>{
+             sessionStorage.setItem('list', JSON.stringify(this.$store.state))
+          })
+         
+          try{
+            sessionStorage.getItem('list') && this.$store.replaceState(Object.assign({},this.$store.state,JSON.parse(sessionStorage.getItem('list'))))
+          }catch(err) {
+            console.log(err);
+          }
+        
+         sessionStorage.removeItem("list");
+        }
+      注意!!! storage 只能存储字符串的数据，对于 JS 中常用的数组或对象不能直接存储。但我们可以通过JSON 对象提供的 parse 和 stringify 方法将其他数据类型转化成字符串，再存储到storage中就可以了。
+          
+       方法二：安装 vuex-persistedstate 插件
+
+       import persistedState from 'vuex-persistedstate'
+         const store = new Vuex.Store({
+         state:{},
+         getters:{},
+         ...
+         plugins: [persistedState()] //添加插件
+         })
+   注意!!! vuex-persistedstate 默认使用 localStorage 来存储数据，若要实现无痕浏览该如何实现呢？
+     plugins: [
+    persistedState({ storage: window.sessionStorage })
+]
+
+21. vue为什么不推荐直接操作dom：
+     vue是可以操作dom的只是不推荐
+     1.破坏代码模块化结构： 组件内部可以控制dom操作会对外暴露，如果直接操作dom跳过这个阶段，造成不可预料的后果。
+     2.过多的直接操作dom行为会增加代码的耦合度
+         当包含直接操作dom行为的组件在别处使用时， 直接操作dom的代码可能不可用
+     3.操作不属于自己的dom，dom状态无法预知
+       如想操作dom，但是那个dom没有生成（v-if），但是有个同名的dom，会操作错误的dom
+
+22.你怎么理解vue是一个渐进式的框架？？
+
+     vue是一套构建用户界面的渐进式mvvm框架。
+     什么是渐进式？ 强制主张最少，vue虽然包含了声明式渲染， 组件化系统，客户端路由，大规模状态管理，构建工具等，
+     但是vue的核心库只关心视图层，最核心的就是声明式渲染， 组件系统，就可以开发了， 如果不满足核心库，也可以与现代化
+     工具链结合， 也能够构建复杂的单页面， 这就是所谓的渐进式， 仅仅核心库就可以工作， 当需求逐渐复杂， 渐进式
+     的引用相关类库即可以满足需求。
+
+     特点：
+         易用性： vue是数据驱动的框架 所以只需要关注核心的业务逻辑即可， 而不用考虑视图的更新渲染
+         灵活性：vue本身是渐进式的， 渐进式最大的特点就是灵活性， 如果应用小，引入核心库就可以， 随着规模增大
+               再继续引入路由， 状态管理工具等
+         高效性：主要体现在虚拟dom和diff算法，
+              diff蒜贩让数据改变的时候，尽量少更新dom
+              而每个组件一个watcher的管理也让试图更新的粒度最小化。
+
+23.vue-loader：
+   vue-loader会解析文件， 提取每个语言快， 交给对应的loader去处理，最后将他们封装成一个commonjs模块， module.export
+   出一个vue.js组件对象
+
+24.mixins extends区别：
+   混合mixins和继承extends，其实两个都可以理解为继承，mixins接收对象数组（可理解为多继承），extends接收的是对象或函数（可理解为单继承）。
+当我们需要全局去注入一些methods,filter或者hooks时我们就可以使用mixin来做。
+
+extends：
+    允许声明扩展另一个组件 (可以是一个简单的选项对象或构造函数)，而无需使用 Vue.extend。这主要是为了便于扩展单文件组件。
+    var CompA = { ... }
+
+   // 在没有调用 `Vue.extend` 时候继承 CompA
+   var CompB = {
+   extends: CompA,
+   ...
+   }
+     
+    mixins：
+      mixins 选项接收一个混入对象的数组。这些混入对象可以像正常的实例对象一样包含实例选项，这些选项将会被合并到最终的选项中，
+      使用的是和 Vue.extend() 一样的选项合并逻辑。也就是说，如果你的混入包含一个 created 钩子，而创建组件本身也有一个，那么两个函数都会被调用。
+     Mixin 钩子按照传入顺序依次调用，并在调用组件自身的钩子之前被调用。
+  var mixin = {
+   created: function () { console.log(1) }
+   }
+   var vm = new Vue({
+   created: function () { console.log(2) },
+   mixins: [mixin]
+   })
+   // => 1
+   // => 2
+   参考：混入
+
+    vue.mixin: 全局注入混入
+
+   vue.extend:
+            用基础 Vue 构造器，创建一个“子类”。参数是一个包含组件选项的对象。
+
+      data 选项是特例，需要注意 - 在 Vue.extend() 中它必须是函数
+
+      <div id="mount-point"></div>
+      // 创建构造器
+      var Profile = Vue.extend({
+      template: '<p>{{firstName}} {{lastName}} aka {{alias}}</p>',
+      data: function () {
+         return {
+            firstName: 'Walter',
+            lastName: 'White',
+            alias: 'Heisenberg'
+         }
+      }
+      })
+      // 创建 Profile 实例，并挂载到一个元素上。
+      new Profile().$mount('#mount-point')
+      结果如下：
+
+      <p>Walter White aka Heisenberg</p>
+
+25.问题:vue-router 组件复用导致路由参数失效怎么办？
+
+解决方法：
+1.通过 watch 监听路由参数再发请求
+watch: { //通过watch来监听路由变化
+
+   "$route": function(){
+   this.getData(this.$route.params.xxx);
+   }
+   }
+   复制代码
+   2.用 :key 来阻止“复用”
+   <router-view :key="$route.fullPath" />
+
+26.Vuex 为什么要分模块并且加命名空间
+模块:由于使用单一状态树，应用的所有状态会集中到一个比较大的对象。当应用变得非常复杂时，store 对象就有可能变得相当臃肿。
+为了解决以上问题，Vuex 允许我们将 store 分割成模块（module）。每个模块拥有自己的 state、mutation、action、getter、甚至是嵌套子模块。
+命名空间：默认情况下，模块内部的 action、mutation 和 getter 是注册在全局命名空间的——这样使得多个模块能够对同一 mutation 或 action 作出响应。
+如果希望你的模块具有更高的封装度和复用性，你可以通过添加 namespaced: true 的方式使其成为带命名空间的模块。当模块被注册后，
+它的所有 getter、action 及 mutation 都会自动根据模块注册的路径调整命名。
 
 
+27.vue设计模式：
+   工厂模式--传入参数就可创建实例
+   单例模式-整个程序只有一个实例
+   发布订阅模式：vue的事件机制
+   观察者模式--响应式数据原理
+   策略模式--某个对象有某个行为， 但是在不同的场景中， 该行为有不同的实现方案， 
+
+28.vue.set原理：
+ vue.set(target, kkey, value)
+    vue在以下两种情况不会触发试图更新
+       直接更改数组下标修改数组的值
+       在实例创建之后添加新的属性修改数组的值
+      vue.set原理是
+        如果target值是数组,就通过splice方法  target.ssplice(key, 1, value)
+        如果target是对象： 
+          key是对象本身的属性， 直接添加  
+            将属性设为响应式的 通知视图更新
+
+   29.vue.extend:
+        vue.extend使用基础vue构造器，创建一个子类， 参数是一个包含组件选项的对象
+        其实就是一个子类构造器vue组件核心的api，实现思路就是使用原型继承的方法返回vue的子类
+        并且利用mergeOption把传入组建的options和父类的options进行合并
+           
+
+      
+   30. 插槽：
+      父级模板里的所有内容都是在父级作用域中编译的；子模板里的所有内容都是在子作用域中编译的。
+      普通插槽，
+      具名插槽
+         <slot name="header"></slot>
+         在父组件使用v-slot来命名：
+         <template v-slot:header>
+       v-slot缩写#
+
+      作用域插槽： 访问子组件的值
+          <slot v-bind:user="user">
+               {{ user.lastName }}
+            </slot>
+         父组件：
+             <template v-slot:default="slotProps">
+               {{ slotProps.user.firstName }}
+            </template>
+       注意默认插槽的缩写语法不能和具名插槽混用，因为它会导致作用域不明确：

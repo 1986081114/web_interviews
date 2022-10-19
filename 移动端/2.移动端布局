@@ -1,0 +1,16 @@
+物理像素： 屏幕分辨率， px但未就是该像素。
+移动终端（就是手机）快速更新的时代，每个品牌的手机都有着不同的物理分辨率，这样就会导致，每台设备的逻辑分辨率也不尽相同
+
+vw + rem：
+   其中rem可以使用postcss-pxtorem
+    require('postcss-pxtorem')({
+    rootValue: 75,
+    unitPrecision: 5,
+    propList: ['*'],
+    selectorBlackList: [],
+    replace: true,
+    mediaQuery: false,
+    minPixelValue: 0
+})
+
+viewport-units-polyfill处理vw的兼容问题

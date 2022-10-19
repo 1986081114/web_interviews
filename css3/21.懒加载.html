@@ -13,14 +13,10 @@
     3.监听滚动区域，当图片出现在窗口内，就将data内的地址放在src内
 */ -->
 <!-- 
-预加载：
-   preload
-   rel=preload
-   将搜需要的资源提前加载到本地，这样后面用到直接使用
-   使用原因：
-      更好的体验。
-      将加载和执行分离开，可不阻塞渲染和 document 的 onload 事件
-      提前加载指定资源，不再出现依赖的font字体隔了一段时间才刷出
+图片懒加载，在页面上的未可视区域可以添加一个滚动事件，判断图片位置与浏览器顶端的距离与页面的距离，如果前者小于后者，优先加载。
+如果为幻灯片、相册等，可以使用图片预加载技术，将当前展示图片的前一张和后一张优先下载。
+如果图片为css图片，可以使用CSSsprite，SVGsprite，Iconfont、Base64等技术。
+如果图片过大，可以使用特殊编码的图片，加载时会先加载一张压缩的特别厉害的缩略图，以提高用户体验。
 
  -->
 <!DOCTYPE html>
@@ -58,7 +54,7 @@
 
 
 
-   <script>
+    <script>
       const io = new IntersectionObserver((LazyImages) => {
          //节流标志
          //获取所有class包括lazy的标签
@@ -72,16 +68,34 @@
                      io.unobserve(lazyImage.target)
                   }
                })
-            }, 5000)
+            }, 1000)
          }
 
       })
 
       let lazyImgs = document.querySelectorAll(".image-item")
-      lazyImgs.forEach(item => {
-         io.observe(item)
-      })
-   </script>
+      Array.from(lazyImgs).forEach(item => io.observe(item));
+     
+   </script> 
+   <!-- <script>
+      let img = document.getElementsByTagName("img");
+     const observer = new IntersectionObserver(changes => {
+  //changes 是被观察的元素集合
+  for(let i = 0, len = changes.length; i < len; i++) {
+    let change = changes[i];
+    // 通过这个属性判断是否在视口中
+    if(change.isIntersecting) {
+      const imgElement = change.target;
+      imgElement.src = imgElement.getAttribute("data");
+      observer.unobserve(imgElement);
+    }
+  }
+})
+Array.from(img).forEach(item => observer.observe(item));
+
+
+
+   </script> -->
 </body>
 
 </html>

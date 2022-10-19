@@ -61,34 +61,25 @@ flower.bloom();  // 一秒钟后, 调用 'declare' 方法 */
 
 //实现bind 返回的是一个函数
 
-Function.prototype.myBind = function () {
-  if (typeof this != 'function') {
-    throw new TypeError('erroe')
+Function.prototype.bind = function (context, ...args) {
+  if (typeof this !== "function") {
+    throw new Error("Function.prototype.bind - what is trying to be bound is not callable");
   }
-  let self = this;
-  let context = arguments[0]
-  //var args = [...arguments].slice(1);
-  var args = Array.prototype.slice.call(arguments, 1);
+
+  var self = this;
 
   var fbound = function () {
-    //let args2 = [...arguments] //Array.prototype.slice.call(arguments)
-    // instanceof用来检测某个实例对象的原型链上是否存在这个构造函数的prototype属性，this instanceof fbound === true时,
+    // instanceof用来检测某个实例对象的原型链上是否存在这个构造函数的prototype属性，this instanceof self === true时,
     //说明返回的fBound被当做new的构造函数调用，此时this=fBound(){}，否则this=window, 如果是的话使用新创建的this代替硬绑定的this
-    return self.apply(this instanceof fbound ? this : context, args.concat([].slice.call(arguments)))
+      self.apply(this instanceof self ? 
+          this : 
+          context, args.concat(Array.prototype.slice.call(arguments)));
   }
 
-  //维护原型关系链， 目的是 fbound.prototype = self.prototype, 但如果直接绑定修改，fbound中的prototype就会改变绑定函数的，
-  //所以需要中转站
-  var func = function () { };
-  if (self.prototype) {
-    func.prototype = self.prototype
-  }
-  //实例就可以继承绑定函数的原型中的值
-  fbound.prototype = new func();
+  fbound.prototype = Object.create(self.prototype);
+
   return fbound;
-
 }
-
 
 
 

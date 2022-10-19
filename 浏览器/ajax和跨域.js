@@ -12,7 +12,7 @@ XMLHttpRequest（XHR）对象用于与服务器交互， 通过xhr可以在不�
        脚本请求，js发起ajax， domjs对象跨域
 
 解决跨域： 
-      jsonp跨域，只能实现get一种请求方式，
+      1.jsonp跨域，只能实现get一种请求方式，
       Jsonp 就是利用 <script> 标签跨域特性进行跨域数据访问。
              通常为了减轻web服务器的负载，我们把js、css，img等静态资源分离到另一台独立域名的服务器上，
              在html页面中再通过相应的标签从不同域名下加载静态资源，而被浏览器允许，基于此原理，
@@ -22,20 +22,30 @@ XMLHttpRequest（XHR）对象用于与服务器交互， 通过xhr可以在不�
             JSONP 是利用了 src 引用静态资源时不受跨域限制的机制，前端会先定义一个回调函数用来处理请求成功后的逻辑，
             并在请求服务端时告知服务端这个回调函数的名字，而服务端只需要把需要返回的数据按照 Javascript 的语法，
             放进回调函数中即可。
-                 function callback(data) {
-                        // 处理 data
-                        console.log(data)
+                            <script>
+                    function jsonpCallback(data) {
+                        console.log(data);
                     }
-                    </script>
-                    <script src="http://api.yoursite.com/article/all/?callbackFunc=callback"></script>
-   
-          2.document.domain + iframe跨域：
-           此方案仅限主域相同， 子域不同的应用场景， 实现原理：两个页面都通过js强制设置documen.domain为基础主域，就实现了同域
-        3.location.hash + iframe: a想和b相互通信， 通过中间页c实现， 不同域之间利用iframe的location.hash传值， 相同域之间直接js访问通信
-         4.window.name+ iframe
-               name值在不同页，甚至不同域名加载后依旧存在， 
-         5.postMessage
-         6.跨域资源共享CORS：主流的跨域解决方案
+                </script>
+                
+                <!-- 负责解析字符串为 JavaScript 代码 -->
+                <script src="http://localhost:3000"></script>
+      
+                  服务端
+            const server = http.createServer((request, response) => {
+
+                if (request.url === '/') {
+                    response.writeHead(200, { 
+                        'Content-Type': 'application/json;charset=utf-8' 
+                    });
+                    
+                    // 返回一段 JavaScript 代码
+                    response.end( "jsonpCallback(" + JSON.stringify(data) + ")" );
+                }
+
+            });
+                   
+         2.跨域资源共享CORS：主流的跨域解决方案
            普通跨域请求：只服务端设置Access-Control-Allow-Origin即可，前端无须设置，若要带cookie请求：
            前后端都需要设置。需注意的是：由于同源策略的限制，所读取的cookie为跨域请求接口所在域的cookie，
            而非当前页。如果想实现当前页cookie的写入
@@ -61,13 +71,65 @@ XMLHttpRequest（XHR）对象用于与服务器交互， 通过xhr可以在不�
                 access-control-max-age： 用来指本次预检查请求的有限期 
 
 
-         7.nginx代理跨域：
+         3.nginx代理跨域：
              跨域原理： 同源策略是浏览器的安全策略， 不是http协议的一部分， 服务端调用http接口只是使用http协议们不会执行js脚本， 不需要同源策略，也就不存在跨域
              实现思路：通过nginx配置一个代理服务器（域名和domain1相同， 端口不通）做跳板机， 反向代理访问domian2，并且顺利修改cookie中的domian信息，方便将当前域的cookie写入，实现跨域登录
-        8.node.js中间件代理跨域：
-         node中间件实现跨域代理，域nginx相同， 都是通过启用一个代理服务器，实现数据的转发，也可以通过设置cookieDomainRewrite修改响应头中的cookie域名
-         9.webSocket协议跨域：
-          WebSocket protocol是HTML5一种新的协议。它实现了浏览器与服务器全双工通信，同时允许跨域通讯，是server push技术的一种很好的实现
+         4.webSocket协议跨域：
+           WebSocket protocol是HTML5一种新的协议。它实现了浏览器与服务器全双工通信，websocket和http都是引用层协议， 基于tcp， 但是websocket是一种双向通信协议。
+           在建立连接后，websocket的server和client都能主动向对方发送或者接收数据。，并且在建立连接时需要http协议。
+
+           发送方：
+           let socket = new WebSocket('http://ocalhost:80')
+           //// 建立 web socket 连接成功触发事件
+           socket.onopen = function(){
+               socket.send(';msg')//发送数据
+           }
+           socket.onmessage = function(e){
+               console.log(e.data)//接收服务器返回的数据
+           }
+           // 断开 web socket 连接成功触发事件
+            socket.onclose = function () {
+            alert("连接已关闭...");
+            };
+
+           接收方：
+
+           let WebSocket = require("ws");
+                let wss = new WebSocket.Server({port:3000});
+                wss.on("connection",function(ws){//先连接
+                ws.on("message",function(data){//用message来监听客户端发来的消息
+                console.log(data);//俞华
+                ws.send("你好,"+data+"！");
+                })
+                })
+      5.window.name:
+          window.name这个属性不是一个简单的全局属性 --- 只要在一个window下，无论url怎么变化，只要设置好了window.name，
+          那么后续就一直都不会改变，同理，在iframe中，即使url在变化，iframe中的window.name也是一个固定的值，
+          利用这个，我们就可以实现跨域了。
+        a页面想传递给b页面信息
+         a页面设置 window.name = data
+
+        b页面
+         <iframe src="http://localhost:8088/a.html" frameborder="1"></iframe>
+           inf.onload=function(){ 在onload监听
+                    inf.src='http://www.test.com/b.html'       //iframe加载完成，加载www.test.com域下边的空白页b.html
+                    //a页面已经被加载了，但是由于不同源不能获取到，所以利用window.name修改urlwindow.name不变，把ifranme修改成同源 ，获取值
+                    console.log(inf.contentWindow.name)        //输出window.name中的数据
+                    body.removeChild(inf)                      //清除iframe
+                }
+
+        6.postmessage
+
+        7.hash：
+
+                
+ajax和jsonp区别：
+    
+  ajax是官方推出， 通过xhr去实现， jsonp利用scrip标签实现
+  ajax是一个异步请求， jsonp是一个同步请求
+  ajax存在同源检查， jsonp是一个同步检查
+  ajax支持各种检查， jsonp只支持get请求
+  
 
 同源策略： 
         origin： web内容的源由用于访问它的url的协议  主机域名 端口定义。 只有当方案 主机 端口都匹配时两个对象具有相同的起源
@@ -86,7 +148,8 @@ XMLHttpRequest（XHR）对象用于与服务器交互， 通过xhr可以在不�
 
     
     如果没有同源策略限制的接口请求：
-       加入你在某网站a买东西， 加入购物车， 这是突然有个人发了一个链接b，你点了进去。如果没有同源策略，这个网站b向着a发起了请求， 服务端验证通过后会在响应头加入set-session字段， 
+       加入你在某网站a买东西， 加入购物车， 这是突然有个人发了一个链接b，你点了进去。如果没有同源策略，这个网站b向着a发起了请求，
+        服务端验证通过后会在响应头加入set-session字段， 
          然后下次在发送请求的时候，浏览器会自动将cookie附加在http请求的头字段， cookie中， 这样就相当于b登陆了你的账号，进行操作了
           如果这是银行账号呢？
           浏览器可以设置httponly，是的前端无法操作cookie，有了这样的操作， 像xss攻击就无法获取到了， 设置secure，保证 https的加密通信在传输中无法被截获
@@ -111,6 +174,10 @@ ajax('POST', 'www.test3.com', "name=kevin") */
    ajax js执行异步网络请求，而不像需要重新加载刷新整个页面， ajax使用XMLHttpRequest对象获取数据， 然后通过dom将新数据插入到页面中，
        ajax通信与数据格式无关， 这种技术就是无须刷新页面即可从服务器获取数据， 但不一定是xml。
        对于ie7+和其余浏览器可以直接使用xmlhttprequest对象， 对于ie6及以前的浏览器， 使用ActiveXObject对象 */
+/*  Fetch 请求默认是不带 cookie 的，需要设置 fetch(url, {credentials: 'include'})
+  服务器返回 400，500 错误码时并不会 reject，只有网络错误这些导致请求不能完成时，fetch 才会被 reject。
+  所有版本的 IE 均不支持原生 Fetch
+*/
 
 /*    缺点：
    、针对MVC的编程，不符合前端MVVM的浪潮
@@ -257,6 +324,15 @@ axios.interceptors.request.eject(myInterceptor);
 jqoery的contenttype默认是application / x - www - form - urlencode
 axios的contenttype默认是application / json
 
+/*
+axios可以使用CancelToken函数取消请求
+axios.cancelToken(function(c) {
+    //c就是取消请求的函数
+    cancel = c
+})
+//只要在别的环境执行cancel()就可以取消请求了
+*/
+
 
 /* ----------------------- */
 //fetch  
@@ -264,12 +340,22 @@ axios的contenttype默认是application / json
 /*
 优点： 语法简洁
       基于promise实现， 支持async/await
-      符合关注分离
+      符合关注分离(关注分离是一种程序设计时的思考方式，也是一种设计原则。它告诉我们，在遇到问题时，不要一味堆叠，杂乱无章，
+                 而应该是从问题的不同侧面，不同角度，对问题进行合理的拆解，从而达到清明明确的处理问题的目标。这就是关注分离。)
 
       缺点：
         fetch不支持同步请求
         fetch只对网络请求报错，对400,500都当做成功的请求，需要封装去处理
        fetch默认不会带cookie,需要添加配置项
+
+    try{
+        const  response = await fetch('url')
+        const data = awaitresponse.json()
+        console.log(data)
+
+    }.catch(error){
+        console.log(error)
+    }
 */
 
 

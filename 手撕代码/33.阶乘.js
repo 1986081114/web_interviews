@@ -1,0 +1,1 @@
+console.log('value is' + (5 != '0') ? 'define': 'undefine')

@@ -1,101 +1,126 @@
 浏览器可以同时打开多个tab页面，每个页面可以粗略理解为一个独立的运行环境。即使是全局对象也不会再多个tab间共享
 然而，怎么在这些独立的tab页面之间同步页面数据呢？
 
-同源：
-1.localStorage
-    通过loaclstorage监听共享域获取值，其他页面监听storage事件获取值 loaclStorage.get(key)取值
-    页面loaclstorage值未改变，不会触发onstorage事件（可以加个时间戳）
-    safari隐身模式无法设置loaclstorage
-    浏览器支持性能好， 设置直观
+1.同源：
+      1.1.localStorage
+          通过loaclstorage监听共享域获取值，其他页面监听storage事件获取值 loaclStorage.get(key)取值
+          页面loaclstorage值未改变，不会触发onstorage事件（可以加个时间戳）
+          safari隐身模式无法设置loaclstorage
+          浏览器支持性能好， 设置直观
 
-2.url：
-   页面携带query参数， 在页面b初始化获取参数
-   仅限于a页面下打开的b页面
-   数据多会造成url臃肿
-   浏览器支持性能好
+      1.2.url：
+        页面携带query参数， 在页面b初始化获取参数
+        仅限于a页面下打开的b页面
+        数据多会造成url臃肿
+        浏览器支持性能好
 
-3.broadCast channel：
-  为了解决postMessage只能点对点通信问题，广播形式在同源页面下进行一对多通信
-    // a页面
-      var bc = new BroadcastChannel('qwer')
-      bc.postMessage('发送数据')
+      1.3.broadCast channel：
+        为了解决postMessage只能点对点通信问题，广播形式在同源页面下进行一对多通信
+          // a页面
+            var bc = new BroadcastChannel('qwer')
+            bc.postMessage('发送数据')
 
-      // b页面
-      var bc = new BroadcastChannel('qwer')
-      bc.onmessage = function(e) {
-      console.log(e)
-      }
-      /** 消息发送后，所有连接到该频道的 BrocastChannel对象上都会触发 meaasge事件，
-      该事件没有默认行为，可以使用`onmessage`事件处理程序来定义一个函数处理消息
-**/
- 4.share Work:
-   Shared Worker 是 Worker 家族的另一个成员。普通的 Worker 之间是独立运行、
-   数据互不相通；而多个 Tab 注册的 Shared Worker 则可以实现数据共享。
-   Shared Worker 在实现跨页面通信时的问题在于，它无法主动通知所有页面，因此，我们会使用轮询settimeout的方式，
-     来拉取最新的数据。思路如下：
-    通过port.postMeaasge发送数据， 监听message事件， 
-    // 1.html
-         var sharedworker = new SharedWorker('worker.js')
-         sharedworker.port.start()
+            // b页面
+            var bc = new BroadcastChannel('qwer')
+            bc.onmessage = function(e) {
+            console.log(e)
+            }
+            对于错误也可以绑定监听：
+          bc.onmessageerror = function(e) {
+                console.warn('error:', e);
+            };
+            /** 消息发送后，所有连接到该频道的 BrocastChannel对象上都会触发 meaasge事件，
+            该事件没有默认行为，可以使用`onmessage`事件处理程序来定义一个函数处理消息
+            兼容性不是很好
+      **/
 
-         workerBtn.onclick = function(){
-            // 发送消息
-            sharedworker.port.postMessage('hello')
-         }
-         // 2.html
-         var sharedworker = new SharedWorker('worker.js')
-         sharedworker.port.start()
-         // 接收消息
-         sharedworker.port.onmessage = evt => {
-            // evt.data
-            console.log(evt)
-         }
+ 跨源：
+   2.如果a，b页面有关系，由于 iframe 与父页面间可以通过指定origin来忽略同源限制，非同源页面之间的通信通过iframe实现。
+    可以把b页面用iframe嵌套在a页面内：
+      2. 1. 利用hash变化传递信息， a在src后面加上改变的hash， b 页面监听onhashchange事件，获取window.location.hash
+      a中 有一个iframe
+       let b = document...
+       b.src = b.src + '#' + 'data
 
-   5.service work：
-       是一个可以长期运行在后台的work，可以实现页面的双向通信，多页面共享可以共享service worker
-       将service work作为消息处理中心，实现一个主页面发送消息，worker搜到信息向所有的页面派发消息(当前页面除外)
-   6.indexedDB:
-      C除了可以利用 sharework共享数据，  Shared Worker 方案类似，消息发送方将消息存至 IndexedDB 中；
-      接收方（例如所有页面）则通过轮询去获取最新的信息。
-跨源：
- 1.postMessage：
-   a通过window.open获取b的语柄， 通过otherwindow.postMessage：传递数据，
-   b同各国window.onmessage = (()=>{})获取数据
-    该方案允许跨源通信，可以设置name限制接收方
-    点对点通信， 跨域可以使用
-    使用面小， 高度依赖window.open,比如a标签打开b页面无法使用
+       在b中设置onhashchange事件
 
- 2.iframe：
-    由于 iframe 与父页面间可以通过指定origin来忽略同源限制，非同源页面之间的通信通过iframe实现。
-    各个需要通信的页面加载应该相同的iframe，这些iframe之间使用的是同一个url，属于同源，
-    可以相互通信，接收到消息后postMessage到主页面即可。
-    // iframe中的代码
-const bc = new BroadcastChannel('cpc')
-window.addEventListener('message', function(e) {
-  console.log(e)
-  if(e.origin === 'https://magazine.heytapimage.com' || e.origin === 'https://magazine-static-cpc.heytapimage.com') {
-    bc.postMessage(e.data)
-    console.log('bc postMessage')
-  }
-})
-bc.onmessage = function(e) {
-  window.parent.postMessage(e.data, 'https://magazine.heytapimage.com') //  支持传入指定域名或*
-  console.log('bc receiveMessage')
-}
+         
 
-    <iframe src="https://dhfs-test-cpc.wanyol.com/iframe.html"></iframe>
-<script>
-  window.addEventListener('message', function (e) {
-    console.log('b页面接收到数据')
-    if(e.data.atob) {
-      console.log(e.data)
-    }
-  });
-</script>
+      2.2.如果是在同一个父级域名下通信，可以使用document.domain，都设置为当前域。
+            document.domain = "my.com";
+            <iframe src="http://abc.my.com:8080/b.html" frameborder="0" id="frame"></iframe>
+            <button onclick="getOtherWindowValue()">test</button>
+
+            function getOtherWindowValue() {
+                let a = document.getElementById("frame").contentWindow.a;
+                alert(a);
+              }
+
+              b页面：
+              document.domain = "my.com";
+                var a = "hello";
+    
+        2.3.postMessage：除IE浏览器的支持度比较低外,,其他浏览器的支持度良好.
+        a通过window.open获取b的语柄， 通过otherwindow.postMessage：传递数据，
+        b同各国window.onmessage = (()=>{})获取数据
+          该方案允许跨源通信，可以设置name限制接收方
+          点对点通信， 跨域可以使用
+          使用面小， 高度依赖window.open,比如a标签打开b页面无法使用
+
+          <iframe id="test" name="myIframe" src="http://localhost:1000/2.html"></iframe>
+
+          //js
+          var frame = document.querySelector('iframe')
+          frame.onload = function(argument) {
+            window.frames[0].postMessage('data from html1', '*');
+          }
+
+        //iframe页面
+          window.onmessage = function (e) {
+            console.log(e.data)
+            }
+
+     3.如果是两个毫无关系tab。可以使用 iframe做桥梁：  在另两个页面，可以向桥梁页面发送消息，由桥梁页面在转发给他的父页面。
+         在桥梁页面 iframe 
+         window.addEventListener("storage", function(ev){
+              if (ev.key == 'info') {
+                  window.parent.postMessage(ev.newValue,'*');
+              }
+          });
 
 
-   
-广播模式：Broadcast Channe / Service Worker / LocalStorage + StorageEvent
-共享存储模式：Shared Worker / IndexedDB / cookie
-口口相传模式：window.open + window.opener
-基于服务端：Websocket / Comet / SSE 等
+          window.addEventListener('message',function(e){
+              // 接受到父文档的消息后，广播给其他的同源页面
+              localStorage.setItem('info',e.data);
+          });
+
+
+          在另两个页面，可以向桥梁页面发送消息
+          <body>
+              <input id="ipt" type="text" name="">
+              <button onclick="sub()">sub</button>
+              <p id="cont"></p>
+              <iframe src="http://localhost:1000/" style="display: none"></iframe>
+          </body>
+          <script type="text/javascript">
+              var ipt = document.querySelector('#ipt')
+              function sub(){
+                document.querySelector('iframe').contentWindow.postMessage(ipt.value,'*');
+                cont.innerHTML +='我：'+ ipt.value + '<br>'
+                ipt.value = ''
+              }
+              window.addEventListener('message',function(e){
+                if(e.data) cont.innerHTML +='对方：'+ e.data + '<br>'
+                
+              });
+          </script>
+
+          
+                              
+
+
+      
+
+
+
+  

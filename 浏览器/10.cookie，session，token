@@ -1,6 +1,6 @@
 由于http是无状态的，为了使某个域名下的所有网页能够共享某些数据，session，cookie出现了。
 
-cookie储存在用户本地终端上的数据，服务器生成，发送给浏览器，下次请求统一网站给服务器。
+cookie(小甜饼)：储存在用户本地终端上的数据，服务器生成，发送给浏览器，下次请求统一网站给服务器。
 session会话，代表服务器与浏览器的一次会话过程，这个过程是连续的，也可以时断时续。
 token令牌，是用户身份的验证方式。
 
@@ -20,15 +20,18 @@ cookie  不可跨域
       登录网站，今天输入用户名和密码登录之后，第二天再打开很多情况下就直接登录了，这个时候用到的一个机制就是cookie。
     cookie的构成：
      name，唯一的名称， 不区分大小写
-    domain: cookie对于哪个域是有效的， 
+    domain: cookie对于哪个域是有效的，二级域名 
     path： 表示这个cookie影响的路径
     expires：失效的事件，GMT时间格式， 如果不设置，浏览器关闭页面立即删除所有cookie，如果为负值，立即删除
     max-age：与expires作用相同，告诉浏览器多就过期，单位是秒， 而不是一个固定的时间， 优先级更高
-    httponly：不能通过document.cookie修改这个值， 也不可见
+    httponly：true， 不能通过document.cookie修改这个值， 也不可见
     secure：安全只有在使用https才能使用这个cookie， http不可以。
 
     删除cookie，只需要创建一个同名的cookie，如果要删除某个Cookie，只需要新建一个同名的Cookie，并将maxAge设置为0，并添加到response中覆盖原来的Cookie。注意是0而不是负数。负数代表其他的意义。
-
+    cookie缺点：
+        容量缺陷： cookie体积只有，4kb， 只能用来存储少量信息。 
+        性能缺陷： cookie紧跟域名， 不管域名下面某一个地址需不需要cookie，请求都会携带完整的cookie，性能浪费。
+        安全缺陷： 由于cookie以纯文本的方式在浏览器和服务器传递， 容易被非法捕获。 被篡改， 
 
 session cookie区别：
   
@@ -38,7 +41,7 @@ session cookie区别：
                     处于对服务器的性能考虑， session内不要存放太多的东西， 并且session有删除机制
     3.存储方式不同：cookie只保存ascll字符串， 并通过编码方式存储为unicode字符串或者二进制， session可以存储任何类型
     4.安全策略不同：cookie对客户端是可见的， 有心人可以分析存放在本地cookie并进行cookie欺诈吗不安全， session存放在服务器，对客户端
-                   透明，安全
+                   透明，安全，而且sessionid可以加密，
     5.有效期不同： 开发可以设置cookie属性，设置cookie有效期可以达到长期有效
                   Session 一般失效时间较短，客户端关闭或者 Session 超时都会失效
                 session依赖于依赖于cookie，session id存储在cookie， 也就是说cookie失效， session就失效， 
@@ -49,65 +52,52 @@ session cookie区别：
 token
   令牌，token是服务器在用户登录后返还给用户的 token是无状态的, 用以在一段时间内免于重复登录, 过了时间就失效
   一般存储在localStorage，cookie， sessionStorage ，服务器一般存储在数据库
-   用户登录，成功后服务器返回Token给客户端。
-   客户端收到数据后保存在客户端
-   客户端再次访问服务器，将token放入headers中
-   服务器端采用filter过滤器校验。校验成功则返回请求数据，校验失败则返回错误码
+  token组成：用户唯一身份标识uid，当前时间戳， sign签名等
 
-   验证：
-        生成:
-        加密函数A(数据A + 密钥A) => 签名A
-        token = 数据A + 签名A
-        验证:
-        token => 数据A, 签名A
-        加密函数A(数据A + 密钥B) => 签名B
-        签名B == 签名A ? 验证成功 : 验证失败
+  Token的定义：Token是服务端生成的一串字符串，以作客户端进行请求的一个令牌，当第一次登录后，服务器生成一个Token便将此Token返回给客户端，
+  以后客户端只需带上这个Token前来请求数据即可，无需再次带上用户名和密码。
+  这个令牌可以作为后续用户访问一些接口，的凭证
+  因为传统的cookie保存的session id，服务器会根据这个session id，确保服务器与客户端对话；这是的cookie是有状态的
+  ，意味着验证记录或者会话需要一直在服务端和客户端保持。
+  而token是无状态的，服务器不记录哪些用户登录了或者哪些 JWT 被发布了，只判断token是否有效，
+  token 是放在 jwt 里面下发给客户端的 而且不一定存储在哪里.
 
-        token无状态，可扩展 使用tokens时，可以提供可选的权限给第三方应用程序。当用户想让另一个应用程序访问它们的数据
-        支持移动设备
-        跨域，
-        安全 CSRF(跨站请求伪造)
+一般客户端发送用户名，密码，给服务端，服务端将登陆凭证做成数字签名 加密之后得到的字符串作为token
 
-token不是为了防止xss的二十放置csrf，csrf攻击的原因是浏览器会带上cookie，而不会带上token
-因为传统的cookie保存的session id，服务器会根据这个session id，确保服务器与客户端对话；这是的cookie是有状态的
-，意味着验证记录或者会话需要一直在服务端和客户端保持。
-而token是无状态的，服务器不记录哪些用户登录了或者哪些 JWT 被发布了，只判断token是否有效，
-token 是放在 jwt 里面下发给客户端的 而且不一定存储在哪里.
+session和cookie区别：
+   session是一种记录客户端和服务器会话状态的机制， 使服务器有状态， 可以记录会话信息
+   token是令牌，访问资源接口所需要的凭证，token使得服务器无状态话，不会储存会话信息
+
+为什么现在很少使用session，而使用token了？
+    1.cookie会被附加在每个http请求中， 无形中添加了流量
+    2.cookie明文传输， 所以存在安全问题
+    3.cookie大小限制4kb，对于复杂请求来说是不够的
+    4.对于浏览器以外的其他客户端（ios，android）必须手动设置cookie和sessession
+    5.对于分布式系统和服务器集群中如何可以保证其它系统也可以正确解析session呢？
+    
+
 
 token加密：
-  jwt举例：
-   服务器生成一个随机数，和加密算法对账号密码机密，生成token。返回客户端
-   前端每次 request 在 header 中带上 token  后端用同样的算法解密
+  jwt实现token机制主要包含三部分：
+     1.header：
+        alg：采用的加密算法， 默认是HS256，采用的对称加密
+        typ：类型， 固定值，通常是jwt
+        通常会通过base65url算法进行编码
+     2.payload
+        携带的数据，比如可以将用户的id name放入到payload
+        默认携带iat， 令牌签发时间
+        可以设置过期时间
+        会通过base64url算法进行编码
+      3.signature
+         设置一个secretkey，通常将前两个的结果合并后进行hs256算法
+          但如果secretkey暴露非常危险，因为之后可以模拟颁发token，也可以解密token
+
+      hs256加密算法的key被暴露是十分危险，比如在分布式系统， 每一个子系统都获取到key才能验证token，
+      但是子系统既可以另外发布token，也可以验证token，有风险， 某些子系统只需要验证token就可以了
+
+      这个时候就需要非对称加密RS256
+
+ 
    
 
-前端开发中在网页刷新的时候所有的数据都会被清空， 这时候就要用到本地存储技术主要有cookie，localStorage，sessionStorage
 
-document.cookie = '名字=值';
-document.cookie = 'username=cfangxu;domain=baike.baidu.com'    //并且设置了生效域
-得到数据var x = document.cookie;
-
-localStorage和sessionStorage使用相同的api，尽在客户端浏览器存储
-   localStorage.setItem("key","value");	//以“key”为名称存储一个值“value”
-
-localStorage.getItem("key");	//获取名称为“key”的值
-
-localStorage.removeItem("key");	//删除名称为“key”的信息。
-
-localStorage.clear();	//清空localStorage中所有信息
-只有相同域名的页面才能互相读取 localStorage，sessionStorage，同源策略与 cookie 一致
-唯一的不同就是： localStorage理论上永久有效，除非用户清理
-        
-        
-              sessionStorage仅在当前会话有效， 如果页面会话session结束（关闭窗口），就会消失
-三者异同：
-   1.生命周期
-      cookie，可以设置失效时间，没有设置浏览器关闭就失效
-      localStorage理论上永久有效，除非用户清理
-      sessionStorage仅在当前会话有效， 如果页面会话session结束（关闭窗口），就会消失
-   2.存储数据大小：
-     cookie 4kb左右
-     localStorage和sessionStorage可以保存5mb
-  3.http请求：
-     cookie每次都会被携带在http中， 如果使用cookie保存数据过多，会带来性能问题
-     localStorage和sessionStorage进保存在客户端， 不参与服务器通信
-   4.用途， cookie，服务器生成一般用来生成身份，其余两个存储数据的

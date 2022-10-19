@@ -1,0 +1,106 @@
+1.错误边界：
+    错误边界用来捕获后代组件错误，渲染出备用页面
+  特点： 只能捕获 后代组件 生命周期产生的错误。不能捕获自己组建产生的错误和其他事件的合成事件， 定时器错误。
+    state = {hasError: ''}
+  static getDerivedStateFromError(error){
+    console.log(error)
+        return {     // 返回的值会自动 调用setState，将值和state合并
+            hasError:true
+        }
+  }
+   render(){
+        if(this.state.hasError){
+            return null
+        }
+        return this.props.children
+    }
+
+    componentDidCatch(error,info){ //这个函数记录错误信息
+        console.log(error)
+        consoel.log(info)
+        this.setState({
+            hasError:true
+        })
+    }
+
+2.合成事件和原生事件：
+    原生事件就是js原生事件，如通过addEventListener来设置的监听事件。
+    由于原生事件需要绑定在真实dom上， 一般在componentdidmount阶段绑定，为了避免内存泄漏，在组件销毁阶段解绑。
+  eact有自己的一套事件机制，重新封装了绝大部分的原生事件。onClick
+  大概原理： react并不是将click事件绑定在该div的真实dom上， 而是在document处监听所有支持的事件，并将事件冒泡到document处，
+      react将事件内容封装并交给真正的处理函数运行。
+      v17以前， 不同版本的react无法混用，很重要的原因是之前版本的事件委托挂载在ducoment，v17开始，事件开始跨再到
+      渲染react树的根dom容器内， 这使得react版本并存成为可能。
+  合成事件特点：
+       react上注册的事件最终会绑定在document上，而不是react组件对应的dom（减少内存开销）
+       react通过队列的形式，从触发的组件向父组件回溯， 调用jsx种定义的callback。
+       react通过对象池的形式管理合成事件的创建和销毁， 减少垃圾的生成和新对象内存的分配。
+   在同一个节点上，原生事件总是比合成事件先触发，这是因为，合成事件最终绑定到document，通过事件冒泡触发
+  由于合成事件在document所以执行e.stopPropagation,不会影响原生事件，但在原生事件使用，就不会执行合成事件
+
+3.redux
+  三大原则：
+    单一数据源
+    state是可读的
+       
+    reducer是纯函数
+  
+  为什么action返回对象就是同步任务，返回函数就是异步任务，因为函数内可以开启异步任务
+  action主要是封装下 （type ，num），要不store.dispatch({type, num})和store.dispatch（action）一样
+
+  reducer为什么是纯函数？
+  state为什么是可读的
+  单一数据流？
+
+ 4.react怎么减少无意的渲染：
+    不要再render里使用bind绑定this， render里的bind每次都会返回一个新的函数， 造成childrenComponent每次重新渲染
+    <ChildComponent onClick = {this.handle.bind(this)}/>
+    <ChildComponent onClick = {() => this.handleClick()}/> 也会造成这个问题
+
+
+  5.react 18
+
+    react18升级策略是渐进升级，就是新能力是可选的， 不会立刻对组件行为带来任何明显的破坏性变化。
+    并发渲染的优势在于提高react app性能， 当你使用了一些react18新特性，就用上了并发渲染。
+
+      5.1新的root api：
+        react.render()成为过去式，新增了新的rootapi ReactDom.create Root()
+        
+          ReactDOM.render(<App />, document.getElementById('root'));
+
+          新的
+          const root = ReactDOM.createRoot(document.getElementById('root'));
+          root.render(<App />);
+          最明显的优势就是为一个react app创建多个节点， 甚至将来可以用不同版本的react来创建， 
+
+      5.2自动batching
+
+          batching就是将多次状态更新合并成一次渲染中
+          在浏览器事件如点击， 会把期间发生的状态变更合并掉，但是当在会点函数中（如promise， settimeout）中
+          去改变state就不会触发批处理。  而react18就解决了上述问题。
+          当特殊情况不希望批处理， 比如在状态变更后，立即读取dom上的数据， 可以使用 reactdom.flushSync()退出批处理
+
+    5.3新的suspense ssr架构：
+      以前的ssr问题在于一切都是串行的， 在前一任务没有完成， 之前后面的只能等待，
+      react18 允许您将应用分解为较小的独立单元，这些单元将独立于对方完成这些步骤，并且不会阻止应用的其余部分。
+      因此，应用的用户将更快地看到内容，并能够更快地开始与内容交互。应用中最慢的部分不会拖慢速度。这些改进是自动的
+
+    5.4新特性startTransition
+
+      它可以在应用需要大量计算能力来渲染UI时，仍然保持响应状态。
+
+6.react如何实现快速响应：
+    react是用于构建快速响应的应用程序的js库
+    快速响应限制：  
+          cpu限制，当遇到大计算量的操作或者设备性能不足使得页面掉帧， 导致卡顿
+          IO的瓶颈， 发送网络后，需要等待数据返回才能进一步操作。
+
+      时间切片解决cpu限制，
+
+7.当前React共有三种模式：
+
+  legacy，这是当前React使用的方式。当前没有计划删除本模式，但是这个模式可能不支持一些新功能。
+
+  blocking，开启部分concurrent模式特性的中间模式。目前正在实验中。作为迁移到concurrent模式的第一个步骤。
+
+  concurrent，面向未来的开发模式。我们之前讲的任务中断/任务优先级都是针对concurrent模式。

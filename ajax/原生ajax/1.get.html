@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .text1 {
+            width: 200px;
+            height: 200px;
+            border: 2px solid red;
+
+         }
+    </style>
+</head>
+<body>
+    <button>按钮</button>
+    <div class="text1" id="result"></div>
+
+    <script>
+        /* AJAX请求头会多一个x-requested-with参数，值为XMLHttpRequest */
+        let btn = document.getElementsByTagName('button')[0]
+        let result = document.getElementById('result')
+         let url = 'http://localhost:8000/server?a=100'
+        btn.addEventListener('click', function() {
+            let xhr = new XMLHttpRequest;
+            //async：true（异步）或 false（同步）
+            xhr.open('post', url);
+          
+           
+            //设置超时时间,不能和异步请求一起用
+           /*  xhr.timeout = 2000;
+            xhr.ontimeout = function() {
+                console.log('超时')
+            } */
+            //设置请求头
+            xhr.setRequestHeader('Content-Type', "application/x-www-form-urlencoded")
+            //xhr.setRequestHeader('Cache-Control', "no-store")
+            //xhr.setRequestHeader('Content-Type', "text/img")
+            //send只有当post请求使用
+            xhr.send('aa:5686')
+            xhr.onreadystatechange = function() {
+                //readystate有五种状态 0 1 2 3 4 
+                // 1代表执行了open(), 2---send(),3表示返回部分数据，4数据全部返回
+                if(xhr.readyState == 4) {
+                    //判断状态码
+                    if(xhr.status >=200 & xhr.status <300) {
+                        console.log(xhr.status) //状态码
+                        console.log(xhr.statusText) //状态描述
+                        console.log(xhr.getAllResponseHeaders)//所有响应头
+                        console.log(xhr.response)//响应体
+                        console.log(xhr)
+                        result.innerHTML = xhr.response
+                    }
+                }
+            }
+            
+        }) 
+        /* 
+        xhr.abort() 取消请求， 需要别的操作触发
+        
+        */
+    </script>
+    <script src="./test.js"></script>
+    
+</body>
+</html>

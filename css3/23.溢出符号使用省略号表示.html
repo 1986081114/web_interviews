@@ -10,27 +10,36 @@
     <meta name="Description" content="网易是中国领先的互联网技术公司，为用户提供免费邮箱、游戏、搜索引擎服务，开设新闻、娱乐、体育等30多个内容频道，及博客、视频、论坛等互动交流，网聚人的力量。" />
     <title>3d</title>
     <style>
+        body{
+            /*  */
+            filter: grayscale(100%) ;
+        }
         .line {
             height: 80px;
             width: 150px;
             background-color: pink;
             margin: 200px auto;
 
-            white-space: nowrap;
+            white-space:nowrap;
+
             overflow: hidden;
             text-overflow: ellipsis;
+
         }
 
         .muliLine {
-            height: 80px;
+          /*   height: 80px;  */
+        /* 多行隐藏的特点是不能设置高度 */
             width: 150px;
             background-color: pink;
             margin: 200px auto;
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 3;
+
+         
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient:vertical;
+    
             overflow: hidden;
-            text-overflow: ellipsis;
 
         }
 
@@ -90,7 +99,7 @@
 
 <body>
     <div class="line">
-        一处文字使用省略号表示，表示
+        一处文字使用省略号表示，表示sddssdddss
     </div>
     <div class="muliLine">
         多行溢出有较大的兼容性问题，比较适合webkt浏览器或者移动端浏览器

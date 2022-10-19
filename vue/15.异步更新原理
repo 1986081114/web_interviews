@@ -1,0 +1,14 @@
+
+更改数据会触发相应的watcher进行更新，如果是渲染watcher，那就意味着数据变动一次， 就会重新渲染一次，浪费性能， 
+所以需要让数据变动完毕再去统一更新视图。
+
+改写watcher，每次watcjer进行更新的时候，就让他们先缓存之后再一起调用--异步队列机制
+只有执行watcher的run才真正的执行更新操作， 
+
+实现异步队列机制， 
+  ，把watcher放到队列里面去， 对watcher去重用，nextTick进行异步调用，调用一个清空一个
+
+nextTick依次执行回调
+   采用优雅降级定义异步方法
+      promise-mutationobserve--setImmediate ---settimeout
+    如果多次执行nextTIck，只会执行一次异步，等异步队列清空之后在把标志变为fasle

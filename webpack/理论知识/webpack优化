@@ -1,0 +1,172 @@
+1.修改 publicPath， 默认不配置 打包后是/js/chunk-vendors.8f8a24ab.js 配置成publicl ./
+   ./ 当前目录
+    ../ 父级目录
+    / 根目录
+
+开发环境：npx vue-cli-service inspect --mode development >> webpack.config.development.js
+生产环境：npx vue-cli-service inspect --mode production >> webpack.config.production.js
+
+构建打包速度
+  1. babel 缓存 （vue cli没有配置）
+       cacheDirectory: true开启缓存
+       会发现在我们的node_modules目录下会自动帮助我们生成一个.cache目录
+           loader:['babel-loader?cacheDirectory'],
+           exclude: /node_modules/,
+       exclude， include确定范围，例如node-modules有些不需要转移 读取这里的文件太浪费时间
+       但是如果node-modules里面有es6的可以单独在include里面配置
+  2.用IngorePlugin忽略无用文件 （没有配置）
+            webpack内置插件，这个插件的作用是：忽略第三方包指定目录，让这些指定目录不要被打包进去。
+             IgnorePlugin用于忽略第三方包指定目录，让指定目录不被打包进去
+            假如说导入一个语言翻译插件，他里边内置了很多语言，可我们只需要使用中文，其他翻译文件也打包的话文件会很大，影响性能，
+            通过这个插件就可以只打包用得到的目录文件优化产品性能
+            new webpack.IgnorePlugin(/\.\/locale/, /moment/),
+            这样所有都不能用了，但是可以自己导入文件
+
+  3.happyPack： 开启多进程打包
+   ，HappyPack的基本原理是将这部分任务分解到多个子进程中去并行处理，子进程处理完成后把结果发送到主进程中，从而减少总的构建时间。
+         //happypack
+            loader: 'happypack/loader?id=babel',
+          在happyPac插件内：
+                new HappyPack({
+              // 用唯一的标识符 id 来代表当前的 HappyPack 是用来处理一类特定的文件
+              id: 'babel',
+              // 如何处理 .js 文件，用法和 Loader 配置中一样
+              loaders: ['babel-loader?cacheDirectory']，data对应的值就是组件的名字在conponenet里面定义好的
+              thread：默认为3
+          }),
+     webpack-parallel-uglify-plugin多进程压缩
+
+     多进程打包适合大项目，不适合小项目，因为开启多进程会降低打包速度
+     webpacks高版本s以后mode = production会默认压缩代码
+
+  4.热更新：（开发环境）
+     新代码生效， 网页不刷新，状态不丢失
+     普通刷新网页状态会丢失
+     一个模块发生变化，只会重新打包构建这一个模块（而不是打包所有模块） ，极大提升构建速度
+      默认情况下，修改css，js一个模块，其余的所有的未修改的模块也会重新加载，浪费资源。
+  HMR：作用：一个模块改变只会打包这个改变的模块
+  开启： devServe: {
+      hot: true
+  }
+ 样式文件： 可以使用HMR功能，因为styl-loader内部实现了
+ js文件： 默认不能使用HMR功能，且就算开启HMR，也只能处理非入门的js的文件当主index.js变化，依旧会打包其余文件
+ 开启：/* 
+   //js的HMR配置
+     if (module.hot) {
+    //一旦module.hot为true，说明开启HMR功能，--》让HMR功能生效
+    module.hot.accept('./print.js', function () {
+        //方法监听print.js文件变化，一旦变化，不会打包其他模块，//会执行后面的回调函数
+        print();
+    })
+}
+
+html文件 ： 默认不能使用HMR功能， 但是开启hmr会导致html不能热更新，（即一般前端包内只有一个html文件所以不用HMR），
+解决热更新问题： 修改entry入口： 将html引入
+
+5. dll （把echart， vue-baidumap， elementui， vuerouter）更适合开发环境
+   2.1.创建dll文件
+     使用插件
+      new webpack.DllPlugin({
+       name: '[name]_[hash]', // 映射库的暴露的内容名称
+      path: resolve(__dirname, 'dll/manifest.json') // 输出文件路径
+    })
+  2.2.在package.json配置脚本
+  2.3.在vue.config.js内的
+   configureWebpack:配置
+    // 告诉webpack哪些库不参与打包，同时使用时的名称也得变
+            new webpack.DllReferencePlugin({
+              manifest: resolve(__dirname, './dll/manifest.json')
+            }),
+            // 将某个文件打包输出到build目录下，并在html中自动引入该资源
+            new AddAssetHtmlWebpackPlugin({
+              filepath: resolve(__dirname, './dll/Element.js')
+            }),
+            new AddAssetHtmlWebpackPlugin({
+              filepath: resolve(__dirname, './dll/baidu.js')
+            }),
+            new AddAssetHtmlWebpackPlugin({
+              filepath: resolve(__dirname, './dll/vueRouter.js')
+            })
+6.oneOf：匹配到 loader 后就不再向后进行匹配，优化生产环境的打包构建速度
+
+
+优化代码构建：
+    提及更小，
+    合理分包，不重复加载
+    速度更快，内存体积更小
+
+1.小图片base64处理
+  url-loader limit: 4096,（vue默认配置的）
+2.contenthash；
+  代码内容变了之后才会改变hash， 避免性能浪费（vue默认配置）
+
+3.使用懒加载
+
+4.代码分割
+  ebpack会将所有依赖的文件打包到一个文件中，即bundle.js文件，当一个项目慢慢变得复杂的时候会导致这个bundle.js文件越来越大，浏览器加载的速度也会越来越慢，
+   可以使用代码分割来将不同代码单独打包成不同文件。
+   方式一：通过多入口实现代码分割
+   式二：通过optimization将公共代码单独打包
+     该方式可以将node_modules中代码单独打包一个chunk最终输出
+   会自动分析多入口chunk中，有没有公共的文件，如果有会将公共文件打包成一个单独的chunk
+     // 分割代码块
+        splitChunks: {
+            chunks: 'all',
+            /**
+             * initial 入口chunk，对于异步导入的文件不处理
+                async 异步chunk，只对异步导入的文件处理
+                all 全部chunk
+             */
+
+            // 缓存分组
+            cacheGroups: {
+                // 第三方模块
+                vendor: {
+                    name: 'vendor', // chunk 名称
+                    priority: 1, // 权限更高，优先抽离，重要！！！
+                    test: /node_modules/,
+                    minSize: 0,  // 大小限制
+                    minChunks: 1  // 最少复用过几次
+                },
+
+                // 公共的模块
+                common: {
+                    name: 'common', // chunk 名称
+                    priority: 0, // 优先级
+                    minSize: 0,  // 公共模块的大小限制
+                    minChunks: 2  // 公共模块最少复用过几次
+                }
+            }
+        }
+
+
+5. 抽离css 
+   MiniCssExtractPlugin（vue默认配置了）
+   OptimizeCssAssetsWebpackPlugin 压缩
+  这样可以让css脱离js， 让js更快加载
+        {
+                test: /\.css$/,
+                loader: [
+                    MiniCssExtractPlugin.loader,  // 注意，这里不再用 style-loader
+                    'css-loader',
+                    'postcss-loader'
+                ]
+            },
+
+6. 树摇： 
+  tree shaking：去除无用代码
+  使用： 必须使用es6模块， 开启production环境（自动配置）
+  默认开启
+  es6 module是静态引用，编译时引用，只有这样才能分析那个代码有用，那个没用
+
+  在 package.json 中配置：
+  "sideEffects": false 表示所有代码都没有副作用（都可以进行 tree shaking）
+    这样会导致的问题：可能会把 css / @babel/polyfill 文件干掉（副作用）
+   所以可以配置："sideEffects": ["*.css", "*.less"] 不会对css/less文件tree shaking处理
+
+  7.scope hosting
+    代码体积更小，
+    创建函数作用域更少
+    可读性好
+    不过侧重的是对产出代码的优化。
+
