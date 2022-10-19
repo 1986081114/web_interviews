@@ -1,0 +1,170 @@
+JSX是js的语法扩展， 但他具有js的全部功能
+
+react认为i模板不是最佳实现，因为模板会分离技术栈， 分散了组件内的关注点， 其次， 模板还会引入更多概念
+类似于模板语法，模板指令等。但是jsx并没有引入更多新的概念， 仍然是js，就连条件表达式都是js方式，贴近html。
+
+jsx仅仅就是react.createElement函数的语法糖， 最终会被编译成react.createElement函数的语法糖函数调用，并返回react元素。
+
+ JSX与Fiber节点
+        从上面的内容我们可以发现，JSX是一种描述当前组件内容的数据结构，他不包含组件schedule、reconcile、render所需的相关信息。
+
+        比如如下信息就不包括在JSX中：
+
+        组件在更新中的优先级
+        组件的state
+        组件被打上的用于Renderer的标记
+        这些内容都包含在Fiber节点中。
+
+        所以，在组件mount时，Reconciler根据JSX描述的组件内容生成组件对应的Fiber节点。
+
+        在update时，Reconciler将JSX与Fiber节点保存的数据对比，生成组件对应的Fiber节点，并根据对比结果为Fiber节点打上标记。
+
+1.React.createElement做了什么？
+   主要处理了 key，ref， self， source四个属性值并返回reactElement方法：
+reactElement把传进去的内容组成成一个element对象并返回， 这个返回的对象就是react Element--虚拟dom。
+而从虚拟dom到真实dom就是rnder函数做的了
+ react component 就是react.createElement函数的第一个参数 type。
+
+2.render阶段：（怎么创建 workInProgress fiber 和  current fiber）
+     render阶段开始于performSyncWorkOnRoot或performConcurrentWorkOnRoot方法的调用。这取决于本次更新是同步更新还是异步更新。
+      在mounted时不存在curent fiber树，在update时存在current fiber树
+     render通过遍历实现可中断的递归：递阶段 beginwork， 归 completework
+
+      最开始的时候执行beginWork，curren中有tag = 3，表示这是FiberRootNode，整个页面的根节点，
+      如果在继续执行 current就是null，因为根节点已经创建，  此时workInProgress表示当前创建的fiber节点，
+      如果遇到元素的结束标签就执行completeWork函数，
+    
+    beginwork（current， workInProgress， renderLanes）
+       current: 当前组件对应的fiber节点在上一次更新时的fiber节点
+       workInProgress： 当前组件对应的fiber节点
+       renderl: 优先级相关
+       除了rootFibet，以外， 组件mounted时 ，由于是首次渲染， 不存在当前组件对用的fiber节点， 即mounte时候， 
+       current == null，在updte时候，存在过组件， current ！== 0；所以可以根据current 判断是mouted还是update。
+
+       1.基于此begin工作可以分为两部分：
+          mounted 时候， 除了fiberRootNode以外， current == null， 会根据fibet的tag不同进行switch判断，创建不同类型的子fiber节点
+          在创建节点过程中最终会进入到reconcileChildren。创建新的子fiber节点。
+
+          update时候：
+             会根据 oldProps === newProps && workInprogress.type == current.type. 判断是否可以复用子fiber。
+          
+
+       2.终会进入到reconcileChildren。创建新的子fiber节点。
+         也会根据current是否为null判断时mounte还是update
+
+          为mounte会进入mounteChildrens， 创建新的子fiber节点
+
+          对于update，进入reconcliChildFibers（） 它会将当前组件与该组件上一次更新时对应的fiber节点对比（也就是differ算法）
+
+          无论是那个阶段最后都是生成新的子fiber节点，并赋值给workInprogress.child，作为beginWork返回值
+          值得注意的时无论是mountedChildren还是ReconcileChildFibers逻辑都相同， 最大的区别是 后者或给fiber节点多一个
+          属性effectTag， 
+          假设mountChildFibers也会赋值effectTag，那么可以预见mount时整棵Fiber树所有节点都会有Placement effectTag。
+          那么commit阶段在执行DOM操作时每个节点都会执行一次插入操作，这样大量的DOM操作是极低效的。为了解决这个问题，
+          在mount时只有rootFiber会赋值Placement effectTag，在commit阶段只会执行一次插入操作。
+          子fiber节点创建完成
+
+      completeWork(current, workInProgress, renderLanes）)
+        类似于beginWork， 但是completeWork会针对不同的fiber.tag调用不同的逻辑。
+        与begin一样根据current判断时mounte还是update
+        mounted时候：
+           为fiber节点生成对应的dom节点
+         将子孙dom节点插入到刚生成的dom节点内，
+         与update逻辑中的updateHostComponent类似的处理props的过程：mount时只会在rootFiber存在Placement effectTag。
+         那么commit阶段是如何通过一次插入DOM操作（对应一个Placement effectTag）将整棵DOM树插入页面的呢？
+         原因就在于completeWork中的appendAllChildren方法。由于completeWork属于“归”阶段调用的函数，
+         每次调用appendAllChildren时都会将已生成的子孙DOM节点插入当前生成的DOM节点下。
+         那么当“归”到rootFiber时，我们已经有一个构建好的离屏DOM树。
+
+         
+
+
+
+    执行首先会根据元素的tag最switch case判断， 执行不同的逻辑， 假设是div就是updataHostComponent
+     在updateHostComponent，首先会赋值一些变量。如type， 并且会判断一下当前元素子节点是否为唯一的一个元素节点，如果是，react做优化
+     就不会为他的文本子节点创建独立的子fiber节点
+       
+    2.1递阶段moute流程：
+    2.2归阶段moute流程：
+    2.3递阶段update流程：
+    2.4归阶段update流程：
+
+
+
+  render阶段：
+      作为DOM操作的依据，commit阶段需要找到所有有effectTag的Fiber节点并依次执行effectTag对应操作。
+      难道需要在commit阶段再遍历一次Fiber树寻找effectTag !== null的Fiber节点么？这显然是很低效的。
+      为了解决这个问题，在completeWork的上层函数completeUnitOfWork中，每个执行完completeWork且存在effectTag的Fiber节点会被保存在一条
+      被称为effectList的单向链表中。effectList中第一个Fiber节点保存在fiber.firstEffect，最后一个元素保存在fiber.lastEffect。
+      类似appendAllChildren，在“归”阶段，所有有effectTag的Fiber节点都会被追加在effectList中，
+      最终形成一条以rootFiber.firstEffect为起点的单向链表。
+      rootFiber.firstEffect -----------> fiber -----------> fiber
+
+      commit阶段开始于commitRoot方法的调用。其中rootFiber会作为传参。
+      render阶段就是遍历effectList链表， 做出对应的操作--mutation
+      mutation分为
+        before mutation：
+              整个过程也是遍历effectList并调用commitBeforeMutationEffects()
+               commitBeforeMutationEffects()主要分为三部分：
+                  1.处理com节点的渲染/删除后的 blur，autoFocus逻辑
+                  2.调用getSnapshotBeforeUpdate生命周期钩子。
+                  3.调度useEffect
+
+               在reactv16， 开始，componentwillXXX被打上了UNSAFE_前缀。
+               原因就是， stact reconciler重构了fiber reconfiber后， render阶段任务可能会被中断/重新开始。对应的组件在render阶段的生命周期
+               可能被多次触发， 这种行为与v15，不一样， 所以标为UNSAFE_.
+               为此react提供了getSnapeshotBeforeUpdate是在commit阶段内的 before mutation调用的。 由于commit阶段是同步的， 所以不会出现多次调用问题。
+               class会根据effectTag是否包含snapshot，就会通过 stateNode（ Fiber对应的真实DOM节点）获取实例， 运行getSnapeshotBeforeUpdate钩子
+
+               会根据effectList中对应的fiber是否有useEffect对应的effectTag判断是否调用scheduleCallback函数。
+
+                 根据scheduler模块的scheduleCallback方法，他会根据某个优先级异步调用一个回调函数-- useEffect 的flushPassiveEffect。
+                 而整个commit阶段是同步的，所以useEffect是在commit阶段完成以后执行的
+                 异步的原因是防止同步执行阻止浏览器的渲染。
+
+
+
+        mutation：
+           类似于before mutation阶段， mutation阶段也是遍历effectList，执行函数commitMutationEffects
+              会先根据effectTag& contentReset判断是否更新文本节点，
+              更新ref
+             之后会根据effecttag对节点做三个操作placement， update， delection
+
+             placement EffectTag，意味着fiber对应的dom节点需要插入到页面中，调用commitPlacement
+
+               首先获取到parentFiber，之后获取他的兄弟节点
+               如果他的兄弟节点存在就会执行insertBefore方法
+               如果没有执行appendChild 
+               并且会判断当前节点是否有child，做递归操作。把节点添加到com中
+               当做完commitPlacement，就删除effectTag，
+
+            update effectTag意味着节点需要更新。执行函数commitWork。
+              会判断fier节点的tag做不同的处理，
+                 如果是functionComonent， 执行uselayoutEffect 的销毁函数
+                 如果是hostComponent也就是对应的dom节点 ， 会调用commitUpdate，主要会将fiber节点赋值的up那么commit阶段是如何通过一次插入DOM操作（对应一个Placementqueue
+                 对象的内容渲染到页面上，并处理一些style props问题。
+
+            deletion effectTag： 意味着fiber节点对应的都没节点需要从页面删除， 调用commitDeletion。
+              要删除这个节点先找到这个节点的父级节点currentparent
+              递归删除fiber节点及其子孙节
+              如果是clssComponent， 会执行生命周期componentWillUnmount， 溢出dom节点
+              如果是hostComponent解绑ref， 
+              如果是functionComponent，调度useEffect的销毁函数
+                
+        layout mutation
+            在mutation和layout mutation阶段之间， 有一句非常重要的话
+            root.current = finnishWork.就是把fiberRootNod的current指向workInprocessFiber， 切换指向，变成current fiber树。
+            这句话在mutation后 layout之间执行是因为， componentWillUnmount会在mutation阶段执行， 此时current还指向之前的
+            fiber树， 那么生命周期狗子内部获取的dom还在更新之前。
+            componentDidMount和componentDidUpdate会在layout阶段执行。此时current Fiber树已经指向更新后的Fiber树，
+            在生命周期钩子内获取的DOM就是更新后的。
+
+            与前两个章节类似， layout阶段还是遍历effectList，执行函数。commitLayoutEffects
+             主要做了 commitLaypoutEffectOnFiber（生命周期钩子和hooki相关）
+                    赋值ref。
+                    
+           layout阶段会遍历effectList，依次执行commitLayoutEffects。该方法的主要工作为“根据effectTag调用不同的处理函数处理Fiber并更新ref。
+
+             
+
+

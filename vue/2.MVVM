@@ -1,20 +1,29 @@
-view层： 视图层，通常是dom展示用户的各种信息
-model： 数据层，
-viewModel：
-   视图模型层，时view和model沟通的桥梁，
-   一方面实现了data Binding， 数据绑定，将model的改变试试反映到view中，
-   另一方面实现了DOM Listerner， dom监听， 当dom发生一些事件，可以监听并改变对应的data
 
-MVC模型的意思是卖软件而可以分为三部分 试图view， 控制器controller， 模型model。
+MVC模型的意思是软件而可以分为三部分 试图view， 控制器controller， 模型model。
             view传指令到controller， 
             controller完成业务逻辑之后， 要求model改变状态，
             model将新的数据发送到view，用户得到反馈
-        所有都是单向的
+         所有都是单向的
+         这主要是基于分层的目的,让彼此的职责分开.View一般用过Controller来和Model进行联系。Controller是Model和View的协调者,
+         View和Model不直接联系。基本都是单向联系。MVC是单向通信。也就是View跟Model，必须通过Controller来承上启下。
+ 
+三,mvc与mvvm的区别:
+MVC和MVVM的区别并不是VM完全取代了C，ViewModel存在目的在于抽离Controller中展示的业务逻辑，而不是替代Controller，
+    其它视图操作业务等还是应该放在Controller中实现。也就是说MVVM实现的是业务逻辑组件的重用。
+- MVC中Controller演变成MVVM中的ViewModel
+-MVVM通过数据来显示视图层而不是节点操作
+-MVVM主要解决了MVC中大量的dom操作使页面渲染性能降低,加载速度变慢,影响用户体验
+　
+      
     优点： 
-       低耦合性，重用性高， 可维护性高， 
+       低耦合性： 视图层和业务层分类，在这样就允许更改视图层代码， 而不用重写编译模型个控制器代码
+       重用性高，
+        可维护性高： 分离式图层和业务逻辑层使得web应用更利于维护。
+        部署快使用MVC模式使开发时间得到相当大的缩减，它使程序员(Java开发人员)集中精力于业务逻辑，
+            界面程序员(HTML和JSP开发人员)集中精力于表现形式上
+   
     缺点：
-      没有明确的定义，完全理解mvc并不容易， 使用mvc需要精心的计划， 模型和试图完全分离。
-      不适合小型，中等规模的应用程序， 
+    不适合小型，中等规模的应用程序，花费大量时间将MVC应用到规模并不是很大的应用程序通常会得不偿失。
      视图与控制器间过于紧密连接，视图与控制器是相互分离，但却是联系紧密的部件，视图没有控制器的存在，其应用是很有限的，反之亦然，这样就妨碍了他们的独立重用。
      试图对模型数据的低效率访问，依据模型操作接口的不同，视图可能需要多次调用才能获得足够的显示数据。对未变化数据的不必要的频繁访问，也将损害操作性能。
 MVP：
@@ -29,13 +38,32 @@ MVP：
     缺点： 试图和presenter监护会过于频繁， 只有试图变化，presenter就会变化。
     适用于 android。
 
-MVVM：
+MVVM： 数据驱动视图
    model-view-viewModel；
+   view层： 视图层，通常是dom展示用户的各种信息
+   model： 数据层，
+   viewModel：
+      视图模型层，时view和model沟通的桥梁，
+      一方面实现了data Binding， 数据绑定，将model的改变试试反映到view中，
+      另一方面实现了DOM Listerner， dom监听， 当dom发生一些事件，可以监听并改变对应的data
+
 
      viewModel和view双向绑定， view变化自动反映到viewModel，
+     它借鉴了mvc思想，在前端页面把model用纯js对象表示， view负责显示，两者做到了最大限度的分离
+      mvvm设计思想就是，感触model的变化， 让mvvm自动更新dom状态， 从而把开发者从操作dom繁琐步骤脱离出来。
      视图模型
 
   视图模型是暴露公共属性和命令的视图的抽象。MVVM没有MVC模式的控制器，也没有MVP模式的presenter，有的是一个绑定器。
    在视图模型中，绑定器在视图和数据绑定器之间进行通信。 
 
+    mvvm主要解决了mvc中大量的DOM操作使页面渲染性能降低，加载速度变慢，影响用户体验。
    优点：  低耦合， 可重用， 独立开发，可测试。界面素来是比较难于测试的，而现在测试可以针对ViewModel来写
+
+
+   mvvm和juery区别：
+       vue通过对数据的绑定就可以完成对页面视图的渲染， 
+       jquery：操作dom，对其进行赋值，取值，事件绑定。
+
+   适合场景：
+       vue适合复杂数据操作的页面，
+       jquery适合一些html5的动画页面，一些需要js操作页面央视的页面， 

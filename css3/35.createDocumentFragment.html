@@ -1,0 +1,76 @@
+<!-- 
+createDocumentFrament 和createElement区别： 
+
+ vreateDocumentFrament是dom节点但是不是主dom树的一部分。通常是创建文档片段，将元素添加到文档片段，然后将文档片段附加到dom树上。
+   在dom树上，文档片段被其所有的子元素所替代。因为文档片段存在于内存中，并不在dom树中， 所以将子元素插入到文档碎片
+   并不会引起页面回流， 所以可以带来更好的性能
+
+    nodeType：
+      createElement创建的是元素节点，节点类型为1
+      createDocumentFrament创建的是文档碎片， 节点类型为11
+
+    innerHtml：
+      createElement创建的元素可以直接使用innerHTML
+      createdocumentframent创建的文档碎片不能直接使用innerhtml添加子元素， 只会变成一个普通的属性。
+    
+    appendChildren：
+      createelement使用appendchildren追加子元素，如果被插入的节点已经存在于文档，那么会把他从原来的位置移动到新位置。
+      如果把它追加进页面中，则插入的是它本身和它的所有子孙节点；即便它已经添加进了页面，我们依旧能继续重复操作。
+
+      reateDocumentFragment 使用 appendChild 追加子元素时，会把页面中的原来存在的元素删除；如果把它追加进页面中，
+      则插入的不是 DocumentFragment 自身，而是它的所有子孙节点；如果它已经添加进了页面，我们就不能继续操作，它属于一次性操作。
+
+    createDocumentelement使用场景：
+    如给ul添加10个li
+       如果使用createelement会引起重绘回流
+       var ul = document.getElementById('ul');
+var f = document.createDocumentFragment();
+for(var i = 0;i<10;i++) {
+    var li = document.createElement('li');
+    f.appendChild(li);
+}
+ul.appendChild(f);
+        这样避免了反复操作dom的问题。而且在页面也不显示createdocumentframe元素
+
+       
+
+ -->
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Document</title>
+ </head>
+ <body>
+     <h2>test</h2>
+    <h1 id="h1">橙某人</h1>
+     
+    <script>
+        /* var el = document.createElement('div')
+        el.innerHTML = '<h1>createelement</h1>'
+        document.body.appendChild(el)
+        document.body.appendChild(el)//插入相同的节点指挥移动位置，而不是移除在添加，也不是添加两个
+
+        var el2 = document.createDocumentFragment()
+        el2.innerHTML = '<h1>createDocumentelement</h1>'
+        document.appendChild(el2) */
+
+        var e1 = document.createElement('div');
+        var h1 = document.getElementById('h1');
+        e1.appendChild(h1); // 页面<h1/>显示会消失
+        document.body.appendChild(e1); // 整个追加进页面中显示
+        e1.appendChild(document.createElement('h2')); // 继续重复操作  z这h2可以继续添加进去
+
+    /*     var e2 = document.createDocumentFragment();
+        var h1 = document.getElementById('h1');
+        e2.appendChild(h1); // 页面<h1/>显示会消失
+        document.body.appendChild(e2); // 子孙节点会在页面中显示
+        e2.appendChild(document.createElement('h2')); // 无效 */
+
+
+
+    </script>
+ </body>
+ </html>

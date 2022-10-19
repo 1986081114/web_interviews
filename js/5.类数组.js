@@ -8,6 +8,10 @@
     不能使用数组原型方法，如slice，pop
     instanceof不属于 Array而是Object
 
+    常见的类数组还有：
+     用getElementsByTagName/ClassName()获得的HTMLCollection
+     用querySelector获得的nodeList
+
 
     转换为真数组，
      var arrayLike = {0: 'name', 1: 'age', 2: 'sex', length: 3 }
@@ -19,7 +23,10 @@
     Array.from(arrayLike); // ["name", "age", "sex"]
     // 4. apply
     Array.prototype.concat.apply([], arrayLike)
-     创建新数组，遍历将元素放入
+    5. 解构
+    [...arrayList]
+  
+     
 
 
      new Array（）接受的参数

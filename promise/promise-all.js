@@ -75,11 +75,18 @@ function PromiseAll(promiseArray) {
 /* 终端promise */
 //根据all实现
 Promise.allSettled = function (promises) {
-    return Promise.all(promises.map(p => Promise.resolve(p).then(res => {
-      return { status: 'fulfilled', value: res }
-    }, error => {
-      return { status: 'rejected', reason: error }
-    })));
+    return Promise.all(promises.map(p => Promise.resolve(p).then
+     (
+        res => {
+        return { status: 'fulfilled', value: res }
+      }, 
+
+      error => {
+        return { status: 'rejected', reason: error }
+      }
+    
+     )
+    ));
   };
 
 
@@ -102,8 +109,7 @@ Promise.allSettled = function (promises) {
     });
   }
 
-
-
+  
 
   let p1 = new Promise(function (resolve, reject) {
     setTimeout(function () {

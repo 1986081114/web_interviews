@@ -1,0 +1,21 @@
+1.绑定class样式--字符串写法，适用于样式类名不确定，需要动态绑定
+:class = 'mood'
+data:{
+    mood: '样式名'
+    可以在函数内通过this.mood = '新的样式名字  
+}
+
+2.数组写法，适用于要绑定的样式个数不确定，名字也不确定
+:class = 'classArr'
+data:{
+    classArr:['style1','style2']这两个样式就可以全部展示出来
+}
+
+对象写法：要绑定的样式确定，名字也确定，但是要动态决定用不用
+:class = 'classObj'
+data:{
+    classObj:{
+        style: false,
+        style1:false
+    }
+}

@@ -1,0 +1,19 @@
+object.defineproperty
+ 缺点：
+  面对对象 ，需要一次性深度监听，一次性计算量大
+  无法监听新增删除属性 需要使用vue.delete， vue.set
+  无法监听原生数组，需要特殊处理
+
+  监听数组：
+    1. 重新定义数组原型， 
+        const oldArrayProperty - Arrat.prototype
+        创建新对象，原型指向数组原型
+        const arrProto = Object.create(oldArrayProperty)
+        arrProto.push()..  //再行对象上重写push等方法
+       
+       具体的重写方法是依赖切片思想，先将 push， unshift，splice新增的对象响应式处理，
+       数组对象的依赖收集和派发都是基于observe
+    
+    2.对数组内部对象劫持
+      递归对对象内的值进行get和set劫持
+

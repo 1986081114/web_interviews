@@ -1,0 +1,139 @@
+<!-- 
+   1.float
+     兼容性好， 如果按照正常顺序，中间形成定位，把右边顶下去
+     产生浮动
+    2.定位
+      简单，快捷
+      元素脱离文档， 导致后续也会脱离文档
+    3.flex
+       为了解决脱离文档流的，
+       pc端 ie8不支持
+    4.table:
+       兼容性很好 
+    5.grid"
+    兼容性不太好。
+
+    如果中间的高度被撑开或者不设置， 只有flex和table1可以被撑开，随着中间改变而改变
+ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      *{
+        margin: 0;
+        padding: 0;
+        height: 100px;
+      }
+      .left1{
+        float: left;
+        width: 100px;
+        background-color: red;
+
+      }
+      .right1{
+        float: right;
+        width: 100px;
+        background-color: red;
+      }
+      .content1{
+        background-color: green;
+      }
+      /* ----定位--- */
+      .box2{
+        position: relative;
+      }
+      .box2>div{
+        position: absolute;
+      }
+      .left2{
+        left: 0px;
+        width: 100px;
+        background-color: red;
+      }
+      .content2{
+        left: 100px;
+        right: 100px;
+        background-color: green;
+      }
+      .right2{
+        right: 0px;
+        width: 100px;
+        background-color: red;
+      }
+/* --------flex------ */
+      .box3{
+        display: flex;
+      }
+      .left3, .right3{
+        width: 100px;
+        background-color: red;
+      }
+      .content3{
+        flex: 1;
+        background-color: green;
+      }
+      /* ---table------ */
+      .box4{
+        display: table;
+        width: 100%;
+      }
+      .box4>div{
+        display: table-cell;
+      }
+      .left4, .right4{
+        width: 100px;
+        background-color: red;
+      }
+      .content4{
+        background-color: green;
+      }
+      /* --grid */
+
+      .box5{
+        display: grid;
+       grid-template-columns: 100px auto 100px;
+      }
+      .left5, .right5{
+        background-color: red;
+      }
+      .content5{
+        background-color: green;
+      }
+    </style>
+</head>
+<body>
+  <div class="box1">
+    <div class="left1">1</div>
+    <div class="right1">3</div>    
+    <div class="content1">2</div>
+  </div>
+
+  <div class="box2">
+    <div class="left2">1</div>
+    <div class="content2">2</div>
+    <div class="right2">3</div>    
+  </div>
+  <div class="box3">
+    <div class="left3">1</div>
+    <div class="content3">2</div>
+    <div class="right3">3</div>    
+  </div>
+  <div class="box4">
+    <div class="left4">1</div>
+    <div class="content4">2</div>
+    <div class="right4">3</div>    
+  </div>
+  <div class="box5">
+    <div class="left5">1</div>
+    <div class="content5">2</div>
+    <div class="right5">3</div>    
+  </div>
+
+
+    
+</body>
+</html>

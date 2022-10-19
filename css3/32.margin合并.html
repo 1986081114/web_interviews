@@ -1,0 +1,64 @@
+<!-- margin塌陷
+
+    父子嵌套的元素在垂直方向的margin取最大值
+    解决： bfc
+
+  margin合并 :
+    块级元素的上外边距（margin-top)和下外边距（margin-bottom）有时会发生“重叠”，这样的现象叫做margin合并。
+     margin合并一般有三种场景
+
+（1）相邻兄弟元素margin合并。
+
+（2）父级和第一个/最后一个子元素。（作者的这个表达可能有一些问题，需要配合第三点来看）
+
+（3）空块级元素的margin合并。
+
+“正正取大值”
+“正负值相加”
+“负负最负值”
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .father {
+      width: 300px;
+      height: 300px;
+      margin: 100px;
+      background-color: green;
+      overflow: hidden;
+    }
+
+    .child {
+      width: 100px;
+      height: 100px;
+      margin: 100px;
+      background-color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="father">
+    <div class="child">赋值</div>
+  </div>
+  <script>
+    //页面禁止复制粘贴
+    const html = document.querySelector('html')
+    html.oncopy = () => {
+      console.log('copy')
+      return false
+    }
+    html.onpaste = () => false;
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,106 @@
+主流浏览器有五个：IE(Trident内核)、Firefox(火狐：Gecko内核)、Safari(苹果：webkit内核)、Google Chrome(谷歌：Blink内核)、
+Opera(欧朋：Blink内核)
+
+常见的浏览器兼容分为：
+  1.html兼容
+     html兼容主要涉及到不同的浏览器识别的标签不同，
+
+
+  2.css兼容
+    一些浏览器默认样式可以通过Normalize.css抹平差异。 
+    360双核浏览器：优先使用webkit内核，只有少量使用ie内核， 以保证页面的兼容性， 但是默认总是会有差错。
+      ，增加标签：<meta name="renderer" content="webkit">。
+
+     2.1 ie7以下认识 *， ie6以下认识_,   height:300px;*height:200px;_height:100px; 
+     2.2 ie7以下不认识 ！important   
+                color: green !important;
+                color: red;// ie6以下认识
+     2.3 ie6 以下不识别 min-width， min-height，ie6默认height是最小高度，width是最小宽度
+        min-height:200px;  //其他
+        height:auto !important;  //其他
+        height:200px;    //ie6
+    2.4 IE浮动产生的双倍距离
+            float: left; 
+        width: 100px; 
+        margin: 0 0 0 100px; // 这种情况之下IE会产生200px的距离
+        display: inline; // 使浮动忽略 或者block
+
+  2.5 ie6以下无法定义1px左右高度,但是可以1px 宽度
+
+    height: 1px;
+    background-color: green;
+    overflow: hidden; //设置overflow hidden
+    zoom:0.08 //或者设置zoom
+    zoom设置检索对象的缩放比例之外
+
+
+    兼容代码：兼容最推荐的模式。
+        /* FF */
+        .submitbutton {
+            float: left;
+            width: 40px;
+            height: 57px;
+            margin-top: 24px;
+            margin-right: 12px;
+        }
+        /* IE6 */
+        *html .submitbutton {
+            margin-top: 21px;
+        }
+        /* IE7 */
+        *+html .submitbutton {
+            margin-top: 21px;
+        }
+
+
+
+
+
+  3.javascript兼容：
+
+    3.1 ie 浏览器11以下版本，不能使用 let const 会报错，缺少;
+
+    3.2 ie8以下不支持addEventListener
+            if(btn.addEventListener) {
+            btn.addEventListener('click', function() {
+                console.log(56)
+            })
+            }else if(btn.attachEvent){
+            btn.attachEvent('onclick', function() {
+            console.log(89)
+            })
+            }
+
+    3.3 ie8不支持e.target
+        只能使用e.srcElement
+        谷歌浏览器既可以使用e.srcElement也可以使用e.target
+
+    3.4阻止事件默认行为：
+        function stopDefault(e) {
+            //如果提供了事件对象，则这是一个非IE浏览器 
+            if(e && e.preventDefault) {
+            　　//阻止默认浏览器动作(W3C)
+            　　e.preventDefault();
+            } else {
+            　　//IE中阻止函数器默认动作的方式 
+            　　window.event.returnValue = false; 
+            }
+            return false;
+	}
+
+        停止事件冒泡
+
+        function stopBubble(e) {
+            //如果提供了事件对象，则这是一个非IE浏览器
+            if(e && e.stopPropagation) {
+        　　//因此它支持W3C的stopPropagation()方法
+        　　e.stopPropagation(); 
+            } else {
+        　　//否则，我们需要使用IE的方式来取消事件冒泡 
+        　　window.event.cancelBubble = true;
+            }
+            return false; 
+        }
+
+   
+

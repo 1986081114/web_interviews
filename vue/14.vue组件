@@ -1,0 +1,53 @@
+组件： 组件就是对一个功能和样式进行独立的封装， 让html元素得到扩展， 从而使得代码复用，使得开发灵活，更加高效
+     一个组件一般包含html css js等，例如一个导航， 一个侧边栏等，更加关注的是ui的部分
+模块： 侧重于功能的开发，主要针对js代码的隔离，重用，封装成一个个具有特定功能的模块
+
+编程式插入组件：
+     通过 Vue.extend() 创建构造器
+     通过 Vue.$mount() 挂载到目标元素上或者/ document.body.appendChild(toastDom.$el)
+     全局注册use，之后就可以使用了
+
+Vue.extend 和 Vue.component component 的区别
+
+Vue.component component两者都是需要先进行组件注册后，然后在 template 中使用注册的标签名来实现组件的使用。Vue.extend 则是编程式的写法
+关于组件的显示与否，需要在父组件中传入一个状态来控制 或者 在组件外部用 v-if/v-show 来实现控制，而 Vue.extend 的显示与否是手动的去做组件的挂载和销毁。
+Vue.component component 在组件中需要使用 slot 等自定义UI时更加灵活，而 Vue.extend 由于没有 template的使用，
+ 没有slot 都是通过 props 来控制UI，更加局限一些。
+
+import vue from 'vue'
+
+// 这里就是我们刚刚创建的那个静态组件
+import toastComponent from './toast.vue'
+
+// 返回一个 扩展实例构造器
+const ToastConstructor = vue.extend(toastComponent)
+
+// 定义弹出组件的函数 接收2个参数, 要显示的文本 和 显示时间
+function showToast(text, duration = 2000) {
+
+  // 实例化一个 toast.vue
+  const toastDom = new ToastConstructor({
+    el: document.createElement('div'),
+    data() {
+      return {
+        text:text,
+        show:true
+      }
+    }
+  })
+
+  // 把 实例化的 toast.vue 添加到 body 里
+  document.body.appendChild(toastDom.$el)
+
+  // 过了 duration 时间后隐藏
+  setTimeout(() => {toastDom.show = false} ,duration)
+}
+
+// 注册为全局组件的函数
+function registryToast() {
+  // 将组件注册到 vue 的 原型链里去,
+  // 这样就可以在所有 vue 的实例里面使用 this.$toast()
+  vue.prototype.$toast = showToast
+}
+
+export default registryToast

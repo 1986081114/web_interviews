@@ -11,11 +11,14 @@ Object 类型, 对应给定 JSON 文本的对象/值。
 */
 /* 
 JSON.stringfy() 方法将一个js对象或值转换成json字符串，，如果指定了replace函数， 则可以选择性的替换值
+JSON.stringify的第二个参数是 替代者(replacer). 替代者(replacer)可以是个函数或数组，用以控制哪些值如何被转换为字符串。
+如果替代者(replacer)是个 数组 ，那么就只有包含在数组中的属性将会被转化为字符串
+而如果替代者(replacer)是个 函数，这个函数将被对象的每个属性都调用一遍。 函数返回的值会成为这个属性的值，最终体现在转化后的JSON字符串中
 
 */
 
 // 数据类型判断
-
+//Function都有着动态编译js代码的作用
 const json = '{"result":true, "count":42}';
 function ParseJsonTwo(opt) {
     return new Function("return " + opt)();

@@ -1,0 +1,68 @@
+模板 -》 ast -> render函数- > 虚拟dom -> 真实dom
+
+
+1. runtime-compiler
+template → ast → render函数 → virtual DOM → 真实DOM
+（template → ast → render函数）由vue-template-compiler实现。
+2. runtime-only （性能更高，打包后的代码量更少）
+render函数 → virtual DOM → 真实DOM
+
+
+
+编译原理：
+首先解析模版，生成AST语法树(一种用JavaScript对象的形式来描述整个模板)。 使用大量的正则表达式对模板进行解析，
+遇到标签、文本的时候都会执行对应的钩子进行相关处理。
+Vue的数据是响应式的，但其实模板中并不是所有的数据都是响应式的。有一些数据首次渲染后就不会再变化，对应的DOM也不会变化。
+那么优化过程就是深度遍历AST树，按照相关条件对树节点进行标记。这些被标记的节点(静态节点)我们就可以跳过对它们的比对，
+对运行时的模板起到很大的优化作用。编译的最后一步是将优化后的AST树转换为可执行的代码。
+
+
+1.new vue，
+首先执行 vue的构造函数，  在调用vue的构造函数就会执行this._init(options)，options 包括el和data，methods等
+在init函数中执行一系列， 初始化， 初始化生命周期， 初始化事件， 初始化数据等。这里还有一个比较重要的就是执行initState时
+如果options.data存在会执行initData（vm），对data处理，就是proxy函数，proxy原理就是使用Object.defineProperty()函数在实例对象vm上定义与data里同名的属性
+当我们访问vm[key] 就会通过get方法去访问vm[sourceKey][key] 即vm._data[key]。也就是说vm.message 就会去访问vm._data.message也就是vm.data.message。
+所以 this.message就是this._data.message，
+
+2.$mount 对el处理
+  如果传入了el就执行挂在函数$mount,如果el是字符串就通过documment.query Selector(el)查找dom元素， 没有找到就document.createElement('div‘)创建一个div
+  最终都是用dom元素挂载实例， 值得注意是实例不能挂载在body。html根节点上， 原因是vue在挂载是会将对应的dom对象替换成新的div，但body和html是不适合替换的。
+   如果el是body或者html就会抛出警告，这也就是为什么平时我们通常会用“#app“或者“div“挂载实例的原因。
+   在mount最终会执行mountComponent方法完成数据的渲染， 二mounteComponent完成挂载点必要条件就是提供渲染函数，在这个函数里面有两个重要的过程
+    第一个就是运行updataComponent函数，updatecomponent里面运行vm.render函数
+    第二个就是把updatacomponent函数传给Watcher创建watcher实例， 那么updatacomponent函数读取的数据都被watcher监听
+
+watcher会触发重新render函数
+//模板编译：就是将template转换成render函数的过程
+3.render函数生成 
+    vue内部定义的render方法来源有两种， 一种是用户手写的render方法， 那么vue会调用用户自己手写的render方法， 另一种是没有手写， 
+     vue会把template编译成render方法
+      之前在上面也说了mounteComponent运行的条件是提供渲染函数，手写就直接运行，没有就生成render函数
+    生成过程：
+      
+      模板编译成render，使用compileToFunction函数将模板编译成render函数
+        compilerToFunction分为三个过程： 
+          2.1） 解析模板字符串生成AST：
+               parse（）函数会用正则加循环等方式解析temlate模板的指令， class，style等形成ast树。
+         2.2）优化ast树，
+           optimize（）， vue是数据响应的，但是template并不是所有数据都是响应的， 有很多数据渲染后不会改变， 这样可以做个标记， 为了后面diff算法跳过静态节点，优化性能
+      
+      2.3 generator（ast）创建一种类似于vnode的拼接字符串 code
+      2.4 使用with改变作用域，实现模板引擎功能
+      2.5 return  new Function（with（this） code）生成render
+
+4.render到vnode生成：
+   调用render.call（）函数返回虚拟节点，这里主要使用h（上下文环境， 标签，vnode数据， 子节点）方法
+   render执行时机：  vue初始化会被执行
+                    template中观察的对象更新值的时候， 会触发render函数
+5.vm.update函数作用是把render生成的虚拟节点渲染成真正的dom
+    diff算法
+
+
+        
+  
+
+   
+
+
+

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <!-- <meta name="viewport" content="width=device-width, initial-scale=0.5, minimum-scale=0.5, maximum-scale=0.5"/> -->
+    <title>Document</title>
+    <style>
+        .line{
+            width: 30px;
+            height: 1px;
+            /* transform: scaley(0.5); */
+           /*  background: linear-gradient(0deg, #fff, #000); */
+           box-shadow: 0 0.5px 0 #000;
+        }
+
+       div {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            margin-top: 20px;
+            }
+        .box1 { /* 圆 */
+            /* border-radius: 50%; */
+            border-radius: 50px;
+            }
+        .box2 { /* 半圆 */
+            height: 50px;
+            border-radius: 50px 50px 0 0;
+            }
+         .box3 { /* 椭圆 */
+            height: 50px;
+            border-radius: 50px/25px; /* x轴/y轴 */
+            }
+           /* 扇形 */
+        .sector1{
+            border-radius: 100px 0 0 0;
+        }
+        /* 梯形 */
+        .sector3{
+            width: 50px;
+            height: 0px;
+           background-color: green;
+            border: 50px solid red;
+            border-color: red transparent transparent transparent;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="line">
+    </div>
+
+        <div class="box1"></div>
+        <div class="box2"></div>
+        <div class="box3"></div>
+        <div class="sector1"></div>
+        <div class="sector3"></div>
+
+ 
+    
+</body>
+</html>
+
+<!-- 
+0.5px的线
+
+  1.transform scaley(0.5)
+  2.<meta name="viewport" content="width=device-width, initial-scale=0.5, minimum-scale=0.5, maximum-scale=0.5"/>
+    只能在移动端看到效果
+
+ 3.background: linear-gradient(0deg, #fff, #000); 
+   渐近线
+ 4. box-shadow: 0 0.5px 0 #000;
+   水平偏移量    垂直偏移量     模糊半径          颜色
+
+ -->

@@ -5,18 +5,23 @@
     <meta charset="utf-8">
     <title>3d</title>
     <style>
-        /*产生空白缝隙的原因是图片（行内块元素）默认与文字基线对齐 
+        /*产生空白缝隙的原因是图片默认与文字基线对齐 
         解决：1 使用vertical-align
              2.将行内块元素转成block
          */
         div {
             border: 2px solid red;
+          /*   font-size: 0; */
+        /*  word-spacing: -5px; */
+       
 
         }
 
         img {
-            /*  vertical-align: bottom; */
-            display: block;
+             vertical-align: bottom;
+           /*  display: block; */
+
+        /*    float: left; */
         }
     </style>
 
@@ -24,9 +29,27 @@
 
 <body>
     <div class="back">
+        <img src="../dog.jpg" alt="" /><img src="../dog.jpg" alt="" />
         <img src="../dog.jpg" alt="" />
     </div>
 
 </body>
 
 </html>
+
+<!-- 
+行内块元素产生间隙？
+  两个行内块元素中间产生空隙：
+    
+原因：
+    元素被当成行内元素，元素之间的空白符（空格，换行）会被浏览器处理，按照white-space规则转换成一个空白符，占据一定宽度。
+    这个宽度会随着字体的大小而转变， 当行内元素font-size:16px时，间距为8px。
+
+解决：
+   1.  将前一个标签结束符和后一个标签开始符写在同一行 
+   2.为父元素中设置font-size: 0，在子元素上重置正确的font-size
+   3.为inline-block元素添加样式float:left
+   4.根据fontsize设置margin为负值
+   5.最优解在这，设置父元素，word-spacing
+
+ -->

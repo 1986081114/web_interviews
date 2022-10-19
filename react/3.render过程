@@ -1,0 +1,34 @@
+创建fiberRootNode、rootFiber、updateQueue（`legacyCreateRootFromDOMContainer`）
+
+    |
+    |
+    v
+
+创建Update对象（`updateContainer`） 将生成的update加入updateQueue
+
+    |
+    |
+    v
+
+从fiber到root（`markUpdateLaneFromFiberToRoot`） 现在触发状态更新的fiber上已经包含Update对象。
+
+                             我们知道，render阶段是从rootFiber开始向下遍历。那么如何从触发状态更新的fiber得到fiberroot
+                            从触发状态更新的fiber一直向上遍历到rootFiber，并返回rootFiber
+
+    |
+    |
+    v
+
+调度更新（`ensureRootIsScheduled`）
+
+    |
+    |
+    v
+
+render阶段（`performSyncWorkOnRoot` 或 `performConcurrentWorkOnRoot`）
+
+    |
+    |
+    v
+
+commit阶段（`commitRoot`）

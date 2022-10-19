@@ -17,8 +17,10 @@ js里面的代码不是一行一行执行，而是一段一段执行。
  重要属性： 
      变量对象（AO）
      作用域链（全局是作用域的头）
+        作用域时变量和函数的可访问范围，
         当查找变量的时候，会从当前上下文对象中查找， 如果没有找到就到父级（词法层面的的）执行上下文去寻找， 
           一直找到全局上下文的变量对象， 也就是全局对象，这样由多个执行上下文的变量对象构成的链表就是作用域链
+          作用域链保证了有权访问的变量和函数是有序的
      this
     阶段：
       进入执行上下文
@@ -83,8 +85,7 @@ FunctionExectionContext = { // 函数执行上下文
 */
 /* 
 遇到同名函数声明，将变量环境中函数引用指向新的函数代码
-
-遇到同名变量声明，跳过该声明。
+ 当有函数已经命名，遇到同名变量声明，跳过该声明。
 greet()
 console.log(myName)
 function greet() {
@@ -95,9 +96,9 @@ function greet() {
 }
 var myName = 'vian'
 var greet = '你好'
-consolle.log(myName)
+console.log(myName)
 
-//undefined, hi,  vian
+//hi,undefined,   vian
 
 */
 
@@ -108,34 +109,7 @@ consolle.log(myName)
 
 */
 /* 
-闭包： 
- 一个函数何其周围状态的引用捆绑在一起就是闭包，闭包让你可以在一个内层函数中访问到其外层函数的作用域
- 在 JavaScript 中，每当创建一个函数，闭包就会在函数创建的同时被创建出来。
-理论上来讲，所有函数都是闭包
- 实践角度：以下函数才算是闭包：
-即使创建它的上下文已经销毁，它仍然存在（比如，内部函数从父函数中返回）
-在代码中引用了自由变量
-*/
 
-var greetText = 'hello'
-function getGreet() {
-    const name = 'vian'
-    var innerFunc = function () {
-        console.log(name)
-    }
-    return innerFunc
-}
-let greet = getGreet()
-console.log(greetText) // hello
-greet() // vian
-
-/* 
-当代码执行完return innerFunc后，当前函数执行上下文就出栈了，
-由于getGreet函数返回值中，包含了引用getGreet函数词法作用域变量的函数
-（返回的innerFunc函数体内包含了该函数体外，getGreet函数体内的变量name，形成了作用域链）。
- 因此在getGreet执行上下文出栈的时候，该变量name会保存在内存中，getGreetVO被保存在内存中，根据作用域链被访问到，
-   不会随着执行上下文的销毁而销毁，形成闭包。
-*/
 
 /* 
 静态作用域与动态作用域：

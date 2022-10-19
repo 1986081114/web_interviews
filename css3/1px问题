@@ -1,7 +1,43 @@
-window.devicePixelRatio
-Window 接口的devicePixelRatio返回当前显示设备的物理像素分辨率与CSS像素分辨率之比。 此值也可以解释为像素大小的比率：
-一个CSS像素的大小与一个物理像素的大小。 简单来说，它告诉浏览器应使用多少屏幕实际像素来绘制单个CSS像素。
+在pc端浏览器设置1px边框， 在移动端上看上去会更粗
+原因：
+   设备像素比 = 物理像素/css像素，有些手机设置设备像素比可能是2或3，当设置css像素为1px时，物理像素
+   就是2px，3px所以会粗
 
- .border1{
-        border-width: ${1/window.devicePixelRatio}px !important; 
+解决：
+    1.使用 0.5px
+    缺点：兼容性
+    border: 0.5px solid red; 
+    我们可以直接使用 0.5px ,但是并不是所有浏览器都能识别0.5px，只在 Firefox 和 Safari 8+ 支持，安卓不支持。有的系统里0.5px会被当作0px来处理。
+   
+   2.
+     设置一个透明到边框色的线性渐变
+     background: linear-gradient(0deg, #fff, #000); 
+
+    3.box-shadow 模拟边框
+    .box-shadow-1px{
+        box-shadow: 0 0.5px 0 #000;
     }
+4.利用 css 的 伪元素::after + transfrom 进行缩放transform缩放
+  为什么用伪元素？ 因为伪元素::after或::before是独立于当前元素，可以单独对其缩放而不影响元素本身的缩放
+
+5.设置viewport的scale值
+   window.devicePixelRatio 获得像素比，根据像素比设置缩放
+
+
+  点击穿透问题： 
+      蒙层点击穿透问题，点击蒙层（mask）上的关闭按钮，蒙层消失后发现触发了按钮元素的click事件。但如果按钮没有click事件，就会触发后面的click事件
+      手机上没有鼠标，所以用触摸事件touch取实现一些类似于鼠标事件的事件， touchstart -> touchmove -> touchend。
+
+      虽然说手机端没有手机但是也可以响应mouse事件， 在300ms之后触发。，也就是手机端的click会延迟300ms，
+      由于300ms之后遮拦层消失了， 所以就会触发下面层的dom元素的click事件。
+      这个驶检收到理想视口的影响，设置了理想视口，在某些机型下只有50ms时间延迟
+
+      解决：
+          1.遮挡：
+             由于click事件的滞后性，在这段时间内原来电机的元素消失了， 于是便穿透， 所以可以给元素的消失
+             设置一个动画，让300秒后在消失
+
+          2.阻止事件默认行为：  
+              e.preventDefault
+
+          3.让背后元素不具有click事件

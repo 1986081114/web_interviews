@@ -1,0 +1,67 @@
+触发状态更新（根据场景调用不同方法）
+
+    |
+    |
+    v
+
+创建Update对象（接下来三节详解）
+
+    |
+    |
+    v
+
+从fiber到root（`markUpdateLaneFromFiberToRoot`）
+
+    |
+    |
+    v
+
+调度更新（`ensureRootIsScheduled`）
+
+    |
+    |
+    v
+
+render阶段（`performSyncWorkOnRoot` 或 `performConcurrentWorkOnRoot`）
+
+    |
+    |
+    v
+
+commit阶段（`commitRoot`）
+
+update: 
+   三类组件可以更新 hostRoot/classComponent/functionComponent，前两者共用一套update结构，functioncomponent单独使用一种update结构
+
+   前一种update结构包括（
+         lane， 优先级相关， 
+         tag，更新的类型，
+         payload，挂载的数据，对于classcomponent数据就是this.setState的第一个传参， 对于hostroot就是render的第一个参数
+         next，与其他update连接形成链表。update形成的俩表被包含在fiber.updateQueue中。
+
+      updateQueue结构如下：
+           baseState： 本次更新前该fiber节点的state
+           firstBaseUpdate与lastBaseUpdate， 本次更新前fiber节点已保存的update是以链表形式存储的
+            表头是firstBaseUpdate， 尾部是lastBaseUpdate， 之所以会产生存在的update，是因为有优先级任务更高的任务先执行。
+
+            shared.pending: 触发更新时，产生的update会保存在shared.pending中形成单向环状链表， 当由update计算state
+            时环3被剪开， 连接在lastBaseUpdate后面。
+       ，以fiber.updateQueue.baseState为初始state，依次与遍历到的每个Update计算并产生新的state（该操作类比Array.prototype.reduce）。
+        当遍历完成后获得的state，就是该Fiber节点在本次更新的state
+        state的变化在render阶段产生与上次更新不同的JSX对象，通过Diff算法产生effectTag，在commit阶段渲染在页面上。
+
+   render阶段可能被中断。如何保证updateQueue中保存的Update不丢失？
+
+      shared.pending的环被剪开并连接在updateQueue.lastBaseUpdate后面。实际上shared.pending会被同时连接在workInProgress updateQueue.lastBaseUpdate
+      与current updateQueue.lastBaseUpdate后面。
+      render阶段被中断后重新开始时，会基于current updateQueue克隆出workInProgress updateQueue。由于current updateQueue.lastBaseUpdate已经保存了
+      上一次的Update，所以不会丢失。
+     当commit阶段完成渲染，由于workInProgress updateQueue.lastBaseUpdate中保存了上一次的Update，所以 workInProgress Fiber树变成current Fiber树后也不
+     会造成Update丢失。
+  如何保证状态依赖的连续性：
+
+     当某个Update由于优先级低而被跳过时，保存在baseUpdate中的不仅是该Update，还包括链表中该Update之后的所有Update。
+
+
+
+  

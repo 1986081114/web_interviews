@@ -1,8 +1,8 @@
-beforeCreate----创建前
-created--创建完成
-beforeMount---挂载前
-mounted--挂载完成
-beforeUpdate--更新前
+beforeCreate----创建前 组件实例被创建之初，组件的属性生效之前
+created--创建完成 组件实例已经完全创建，属性也绑定，但真实 dom 还没有生成，$el 还不可用
+beforeMount---挂载前 在挂载开始之前被调用：相关的 render 函数首次被调用
+mounted--挂载完成 el 被新创建的 vm.$el 替换，并挂载到实例上去之后调用该钩子
+beforeUpdate--更新前 组件数据更新之前调用，发生在虚拟 DOM 打补丁之前
 updated---更新完成
 beforeDestroy--销毁前
 destoryed--销毁完成
@@ -19,6 +19,8 @@ new vue（）
     可以调用methods方法， 访问修改data数据出发响应式渲染dom
     一般在created进行数据请求
  created-》 beforeMounte：
+     在内存中编译模板
+     el： vue实例挂载的元素节点
       判断是否存在el选项， 若不存在停止编译， 直到调用vm$mounte(el)继续编译
       存在el，判断是否存在template，存在，将template编译成render函数，不存在，直接编译el所对应的外部html
       若存在render，首先进行编译
@@ -38,11 +40,14 @@ new vue（）
     数据更新时调用，发生在dom操作之前，该钩子在服务器渲染期间不被调用， 因为只有在出粗渲染会在服务器运行
     当执行这个钩子时，页面中的显示的数据还是旧的，data中的数据是更新后的， 页面还没有和最新的数据保持同步
  update：
-    数据更改导致xunidom更改，diff算法进行更新、添加、删除等操作生成真实的DOM节点 在这之后调用这个函数，意味着dom已经更新更新结束了，updata也不会承诺所有的子组件都被重新渲染，
+    数据更改导致xuni dom更改，diff算法进行更新、添加、删除等操作生成真实的DOM节点 在这之后调用这个函数，意味着dom已经更新更新结束了，updata也不会承诺所有的子组件都被重新渲染，
     如果希望等到整个视图都重绘完， vm$nextTick替换updated
     页面显示的数据和data中的数据已经保持同步了，都是最新的
  beforeDestory：
     实例销毁之前调用， 该钩子在服务器渲染期间不被调用
+    解绑 emit on事件
+     清除定时器等
+     解绑自定义事件
  destoryed：
     vue实例销毁后调用， 调用后vue实例指示的搜索东西被解绑， 所有的事件监听被移除， 子实例被销毁，
      该狗子在服务器渲染期间不被调用。

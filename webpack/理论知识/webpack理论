@@ -1,0 +1,329 @@
+1.webpack作用：
+  代码转换： ts编译成js scss 编译成css
+  文件优化： 压缩js， css ，html，图片等
+  代码分割： 提取首屏不需要执行的代码让其异步加载 
+  模块合并：把需要构建一个功能的模块分类合并成一个文件
+  自动刷新： 监听本地源代码变化，自动重新构建， 刷新浏览器
+
+2.核心概念：
+  入口entry
+       1.string----》 './src/index.js'  单入口，形成一个chunk， 输出一个bundle文件 默认名叫main
+       2.array-----》 ['./src/index.js' , './src/add.js'] 多入口， 所有入口文件最终形成一个chunk，只输出一个bundle，一般在hmr使用
+       3.object ---- 多入口，多出口
+
+            有几个输入就有几个输出，输出的名字是key：
+             {
+                  add：'./src/add.js',
+                  //单入口多入口混合
+                  index: [........]
+             }
+  出口output：
+       filename: 'js/[name].js' //文件名称， （指定目录+ 名称 如 js/就是添加一个js文件包裹）
+       path： resolve(__dirname, 'build‘)  // 输出文件目录， （所有文件输出的公共目录）
+       publicPath： './' //所有资源引入公共路径的前缀， --（imgs/a.jpg ---> ./imgs/a.jpg)
+       chunkFilename: 'js/[name]_chunk.js', //非入口chunk名称
+       library：'[name]' //整个库向外暴露的变量名
+       libraryTarget： ‘window' //变量名添加到browser，   
+       libraryTarget： ‘global' //变量名添加到node，    
+       libraryTarget： ‘commonjs' //变量名添加到node，    
+  loader：
+       module:{
+          ruler:[
+             {
+                test: 
+                use:[]或者loader：单个loader
+                exclude: //排除某些文件
+                include： //只检查某些文件
+                enforce：pre 优先执行 post：延后执行
+                options:{}
+             }
+
+          ]
+       }
+  插件plugin :
+      
+  模式mode
+
+  resolve:解析模块规则
+    webpack 再启动后会从配置的入口文件出发寻找所有的依赖， resolve配置webpack如何寻找模块对应的文件。默认会采用模块化的标准约定好的规则去寻找，
+      但是可以通过resolve修改默认规则。
+      { 
+          //创建别名, 优点是简写路径，缺点是没有提示
+         alias：{
+            //非精确匹配
+            css: resolve(__dirname, 'src/css')  这样就可以 import css from "css/html.css'
+            //在对象的键值末尾添加$表示精确匹配
+            xyz$: path.resolve(__dirname, 'path/to/file.js'),
+              import Test1 from 'xyz'; // 精确匹配，所以 path/to/file.js 被解析和导入
+             import Test2 from 'xyz/file.js'; // 非精确匹配，触发普通解析
+         },
+         //省略文件路径后缀名,按照顺序解析这些后缀名， 如果文件名字相同， 但后缀不同， webpack会解析在前面的
+         extensions: {'.js','.json','.css'}，
+         //告诉webpack解析时去搜索哪个目录
+          modules: [path.resolve(__dirname, 'src'), 'node_modules'],
+      }
+      
+   devServe:{
+      //运行带码的目录
+      contentBase: resolve(__dirname, 'build’)
+      //监视contnetBase目录下的所有文件， 一旦文件变化， 就会reload
+      watchContentBase：true；
+      //启动gzip压缩
+      compress： true，
+      //端口号
+      port：5000,
+      //域名
+      host: 'localhost',
+      //自动打开浏览器
+      open: true,
+      //开启hmr功能
+      hot: true;
+      //除了基本启动信息，其他内容不再提示
+      quiet: true, 
+      //代理服务器 跨域
+      proxy:{
+         //
+          
+      }
+   },
+   //防止将某些 import 的包(package)打包到 bundle 中，而是在运行时(runtime)再去从外部获取这些扩展依赖(external dependencies)。
+   externals: {
+    jquery: 'jQuery',
+  },
+   optimization： {
+
+   }
+
+3.webpack打包流程：
+    1.读取webpack配置参数
+    2.启动webpack， 开始编译，利用第一步的参数创建compiler对象开始解析项目。
+    3.从入口文件entry，开始解析， 并且找到其导入的依赖模块，递归遍历分析， 形成依赖关系树，
+    4.对不同的文件类型依赖模块使用对应的loader进行编译， 最终转化为js文件。
+    5.整个过程webpack会通过发布订阅模式， 向外抛出一些hooks， 而webpack插件通过监听这些关键事件，执行插件任务，扩展功能。
+    6.输出资源：根据入口和模块之间的依赖关系，组装成一个个包含多个模块的 Chunk，再把每个 Chunk 转换成一个单独的文件加入到输出列表，
+    7.输出完成：在确定好输出内容后，根据配置确定输出的路径和文件名，把文件内容写入到文件系统。
+
+ 4.plugin和loader区别：
+     loader：直译加载器，webpack原生只能解析js文件， loader的作用就是让webpack拥有加载和解析非js文件的能力。
+          loader在module.rules中配置，也就是说他作为模块的解析规则而存在，类型为数组
+        
+     plugin：直译插件，扩展webpack的功能，让webppack更具有灵活性，在webpack运行生命周期中会广播很多事， Plugin 可以监听这些事件，在合适的时机通过 Webpack 提供的 API 改变输出结果。 
+      从打包优化和压缩，到重新定义环境变量
+             plugin在plugins单独配置，类型为数组，每一项是一个plugin的实例，需要导入require和new
+      区别：
+
+      对loader，它是一个转换器，将A文件进行编译形成B文件，这里操作的是文件，比如将A.scss转换为A.css，单纯的文件转换过程 
+          在module.relus中配置，模块解析规则，类型是数组， 每一项都是一个object， 
+      plugin是一个扩展器，它丰富了webpack本身，针对是loader结束后，webpack打包的整个过程，它并不直接操作文件，而是基于事件机制工作，
+       会监听webpack打包过程中的某些节点，执行广泛的任务
+        在plugin单独配置，类型是数组，每一项都是一个plugin实例， 参数通过构造函数传入
+
+5.常见的loader：
+   json-loader:加载json文件
+   babel-loader：将es6转成es5；
+   ts-loader：将ts转成js
+   sass-loader： scss/sass转成css；
+   css-loader：加载css， 支持模块化
+   style-loader： 把css代码注入到js通过dom操作区加载css；
+   eslint-loader： 通过eslint检查代码
+   cache-loader: 可以将一些花销比较大的loader之前添加，目的将结果缓存, 例如在vue-loader之前使用cache-loader。可以缓存
+   file-loader： 把文件输入到一个文件夹，在代码中通过对应的url去指引输出的文件
+   url-loader： 与file-loader类似，区别是可以设置阈值，可以以base64的方式把文件内容注入到代码
+   image-loader：加载并压缩图片
+   vue-loader
+
+6.常见的plugin：
+   uglifyjs-webpack-plugin：通过uglifyes压缩es6代码
+   html-webpack-plugin： 简化html文件创建
+   ignore-plugin： 忽略部分文件
+   web-webpack-plugin：方便地为单页面输出html
+   mini-css-extract-plugin： 分离样式文件， css提取为独立文件，支持按需加载，如果使用这个在loader里要把style-loader换成mini-css-extract-plugin.loader，
+7.webpack模块热更新
+   hot module replacement（HMR）；
+     这个机制可以做到不用刷新浏览器而将新变换的模块替换掉旧的模块。
+     wds和浏览器之间维护了一个websocket，当本地资源发生变化， wds会向浏览器推送更新， 并带上构建时的hash， 让客户端与上一次进行对比，
+     客户端对比出差异后会向 WDS（webpack-dev-server） 发起 Ajax 请求来获取更改内容(文件列表、hash)，这样客户端就可以再借助这些信息继续向 WDS 发起 jsonp 请求获取该chunk的增量更新 
+  后续的部分(拿到增量更新之后如何处理？哪些状态该保留？哪些又需要更新？)由 HotModulePlugin 来完成，提供了相关 API 以供开发者针对自身场景进行处理，
+   像react-hot-loader 和 vue-loader 都是借助这些 API 实现 HMR。
+
+
+8.source map是什么？
+source map 是将编译打包压缩后的代码映射到源代码的过程。打包后的代码不具有良好的可读性， 想要调试需要source map。
+
+9.如何优化 Webpack 的构建速度？：
+
+   代码压缩： 
+       多进程并行压缩： uglifyjsPlugin 可以传参数 parallel， cache
+       通过mini-css-extract-plugin提取chunk中css代码到单独文件
+    图片压缩： 
+         image-wepack-loader
+
+    缩小打包作用域：
+        exclude/include：确定loader规则范围
+        resolve.modules指明第三方模块的绝对路径
+    提取页面公共资源：
+        使用html-webpack-externals-plugin：将基础包通过cdn引入，不打入bundle里面。
+         该插件将为你生成一个 HTML5 文件， 在 body 中使用 script 标签引入你所有 webpack 生成的 bundle。 只需添加该插件到你的 webpack 配置中，如下所示：
+    充分利用缓存提升第二次构建速度：
+         babel-loader：开启缓存
+                              {
+         // 1、如果项目源码中只有js文件，就不要写成/\.jsx?$/，以提升正则表达式的性能
+         test: /\.js$/,
+         // 2、babel-loader支持缓存转换出的结果，通过cacheDirectory选项开启
+         loader: 'babel-loader?cacheDirectory',
+         // 3、只对项目根目录下的src 目录中的文件采用 babel-loader
+         include: [resolve('src')]
+         }
+            }
+      dllPlugin：
+
+         区分第三方代码和业务代码，因为第三方代码，一般不会修改，所以在打包过程中，尽量少的去打包第三方代码
+    tree-shaking：
+         前面提到了tree-shaking更关注于无用模块的消除，消除那些引用了但并没有被使用的模块。
+         ES6模块依赖关系是确定的，和运行时的状态无关，可以进行可靠的静态分析，这就是tree-shaking的基础。
+         commonjs的动态特性模块意味着tree-shaking不适用，因为它是不可能确定哪些模块实际运行之前是需要或者是不需要的。
+         打包过程中检测工程中没有引入使用过的模块并进行标记， 在资源压缩时将他们从最终的bundle中去掉。
+
+    scope hoisting：
+      构建后的代码存在大量的闭包， 造成体积增大，运行代码时创建的函数作用域变多，scope hoisting将所有模块的代码按照顺序放在一个函数作用域里，
+      然后适当重命名防止命名冲突。
+
+    动态polyfill：
+    SplitChunkPlugin:提取公共第三方库，或者公共模块
+
+
+10.url-loader和 html-loader：
+         url-loader默认使用es6模块化解析，html-loader使用commonjs
+                      出现问题[object Module]
+                      关闭url-loader的es6的模块化解析使用comminjs
+11.开发模式和生产模式区别：
+
+12.webpack和grunt，gulp不通过：
+    三者都是前端构建工具，  
+     grunt/gulp的核心是task（任务流）置一系列task，并且定义task要处理的事务，
+     之后让grunt/gulp依次执行task，让整个流程自动化，所以grunt/gulp也称为前端自动化任务管理工具
+     如果前端模块非常简单， 或者没有用到模块化概念， 只需要进行简单的合并，压缩， 就是用grunt/gulp可以， 
+     但如果整个项目使用模块化管理， 依赖性非常强， 就要使用更强大的webpack
+     grunp/gulp更加强调的是前端任务流程的自动化，模块化不是核心，找到一个文件，对其进行一系列操作， 多个任务就构成了构建流程。
+     webpack更加强调模块化开发， 而文件压缩， 预处理， 等是附加功能。
+     webapck会自动递归接卸入口所需的所有资源文件， 用不同的loader处理不同的文件，plugin扩展功能
+13.loader从右向左原理：
+       
+    函数式编程中有一种模式就是组合多个函数的功能实现一个函数， 包括 compose和pipe，只是webpack选择了compoese从右向左
+
+14.文件指纹是什么？
+    文件指纹就是文件打包后输出的文件后缀， 
+       hash： 和整个项目的构建有关， 只要项目文件有修改， 整个项目构建的hash就会修改。
+       chunkhash： 和webpack打包的chunk有关， 不同的entry产生的不同的chunkhash
+       contenthash： 根据文件内容定义hash， 文件内容不变， 则contnethash不变。
+
+15.webpack中的module是什么？ 
+   是模块，支持esmodule， commonJs。 AMD，assests.(image, font, video)
+
+16.webpack module如何表达依赖关系：
+  ESM import语句
+  CommonJS require
+  AMD define require
+  css/sass/less @import
+
+17. module， chunk bundle区别：
+    module是源码的模块（除了html），可以被引用的
+    chunk是webpack打包过程中module的集合， 是打包过程中的概念
+    webpack的打包是从一个入口模块开始，入口模块引入其余模块， 其他模块引入其他模块..递归
+    webpack通过引入关系逐个打包模块，这些module形成一个chunk，
+
+    如果是多入口，形成多个chunk
+
+    bundle是最终输出的一个或者多个打包好的文件
+
+    chunk和bundle关系：  chunk是过程， bundle是结果
+      大多数情况下一个chunk生成一个bundle
+      但是： 如果加了devtool: "source-map",一个chunk对应两个bundle
+      chunk是过程中代码块， bundle是打包结果输出的代码块， chunk在构建完成就呈现为bundle
+
+18.compiler：
+       对象，包含了webpack环境的所有配置信息，包括，options，loader，plugins。
+       webpack启动的时候实例化， 他在全局是唯一的， 可以把它理解为webpack的实例
+
+19.compliation：
+     包含了当前的模块资源， 编译生成资源， 
+     webpack在开发模式下运行， 每当检测到一个文件变化，每次创建一次新的compliation。
+
+20.weboack的打包过程：
+      6.1 初始化参数：shell， webpack.config.js 
+      6.2 开始编译： 初始化complier，加载所有配置， 开始执行编译
+      6.3 确定入口： 根据entry配置， 找到所有的入口
+      6.4 编译模块：从入口文件开始，调用后所有的loader，再去递归找依赖
+      6.5 完成模块编译： 得到每个模块被翻译后的最终内容以及他们之间的依赖关系
+      6.6 输出资源： 根据得到的依赖关系，组装成一个个包含多个modele的chunk；
+      6.8 输出完成： 根据配置，确定输出名称以及文件路径。
+
+21.如何加快webpack 的hrm：
+
+
+22.  semver版本规范X.Y.Z 主版本.次版本.补丁版本
+    x主版本号，当作了不兼容的api修改，可能不兼容之前的版本
+    y次版本号， 做了向下兼容的功能增加（新功能增加，兼容）
+    z 修订号， 做了向下兼容的问题修正（没有新功能， 修复之前的版本bug）
+
+      ^x.y.z: x保持不变 ，y z 永远安装最新的版本
+      ~x.y.z： 表示x， y，保持不变， z可以变
+      *，表示接受所有的更新，
+      >, 接收高于指定版本的任何版本
+      >+. 接受高于或者等于指定版本的任何版本
+      无符号，特定版本
+      laster；； 使用最新的版本
+
+23.npm install 原理：
+   根据package.json安装， 
+     1.检查是否有package-local.json文件 
+      2.如果没有 建立依赖关系，
+      3.之后去registry仓库下载压缩包， 并把压缩包添加到缓存文件内
+      4.压缩包解压到node_modules里面，并生成package.loacl.json文件. 
+      5.安装完成.
+
+      如果有package-local.json
+         检查和package。json依赖的一致性。不一致走第2步，建立依赖关系。
+         如果一致，会查找缓存， 缓存没有就第3步， 取registry仓库下载，获取压缩包 并添加到缓存文件内。
+         如果有添加到压缩包内，在解压到node_modules里面。重新生成package.local.json. 
+         安装完成
+
+24. package-local.json和package.json
+   package.json文件位于项目的根目录下， 该文件包含了该项目相关的各种数据， 通常用于npm识别项目信息， 依赖关系
+   项目版本等， package.json使用语义化定义所需要依赖的版本当我们安装一个包， 版本是^4.17.2,表示主版本不变就可以，但是有些包，安装新的版本，
+   可能会产生兼容问题，或者一个项目不想让多人使用不同的版本。这就需要package-loacl-.json解决了。
+
+     npm v5 引入了package-local.json,为了捕获确切的依赖关系。有任何修改 package.json或者node module都活自动生成
+     新的local.json，描述具体的依赖树，
+      package-local.json用处
+         提供一个单独表达的准确的依赖树， 确保队友可以安装完全相同的依赖。
+         为用户提供便利， 可以使其时间旅行到node_moduls之前的状态，而不用提交node moduls本身
+         允许npm跳过已经安装的软件包，有缓存功能。
+
+25.前端为什么要打包构建：
+     1.体积更小， （树摇， 压缩，合并等），会加载更快
+     2.编译高级语言或语法（ts， se6， scss）
+     3.兼容性和错误检查（pollfill， postcss， esling）
+         
+   4.统一高效的开发环境
+   5.统一构建流程和产出标准
+   6.集成公司构建规范
+
+
+     
+
+
+
+    
+
+
+
+       
+    
+            
+  
+    
+
+  
+
+  

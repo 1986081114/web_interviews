@@ -1,14 +1,49 @@
 原始值： 指的是原始类类型的值， 也叫做基本类型 例如 number， string等，存储在栈中
 引用值： 指的是引用类型的值， object， array， data， 存储在堆中
 
+js中类型转换只有三种：
+   转换成数字
+   转换成布尔值
+   转换成字符串
+
+所谓装箱转换，正是把基本类型转换为对应的对象，它是类型转换中一种相当重要的种类。
+装箱机制会频繁产生临时对象，在一些对性能要求较高的场景下，我们应该尽量避免对基本类型做装箱转换。
+
+它是对象类型到基本类型的转换（即，拆箱转换）。
+对象到 String 和 Number 的转换都遵循“先拆箱再转换”的规则。通过拆箱转换，把对象变成基本类型，再从基本类型转换为对应的 String 或者 Number。
+拆箱转换会尝试调用 valueOf 和 toString 来获得拆箱后的基本类型。如果 valueOf 和 toString 都不存在，或者没有返回基本类型，
+  则会产生类型错误 TypeError。
+
+
+boolean隐士转换原则：
+   逻辑非！ 无论后面值是什么类型，都要先转换成一个布尔值，
+     false，''， 0, NaN, null, undefined五种情况被转换成false， 其余都是true 
+
+== 转换规则：
+  1.两边良性是否相同，相同比大小
+  2.判断是否是null或者undefied  console.log(null == undefied) //true
+  3.判断是否为string/number，是的话转成number
+  4.判断是否有boolean，是的话转成number在对比
+  5.如果有object，将object先转成字符串在对比
+
+   ==先把两侧的值转化为基本数据类型， 如果两个基本类型还是不通， 将基本类型转化为数字进行对比。
+   将一个对象转成基本类型过程， 先调用valueOf方法，转成基本数据类型， 如果依旧是复合对象， 就调用toString方法，期待返回
+   基本数据类型， 如果依旧没有返回基本数据类型， 就判为不相等。
+
+   [] == ![] --> [] == !true --> [] == false（如果一个是boolea另一个不是就将其转成数字）--> [] == 0
+    --> [].valueOf == 0 --> [].toString() ==0--> '' == 0  --> 0== 0
+
+
+
 涉及隐式转换最多的两个运算符 + == 
 +运算符可以数字相加也可以字符串相加， 所以转换起来很麻烦， ==不同于===，故也存在也是转换
 - * / 这些运算符只会针对number类型， 故转换结果只是转换成number
 
-隐式转换主要涉及三种转换：
-  1.将值转为原始值， toPrimitive()
-  2.将值转为数字， ToNumber()
-  3.将值转为字符串， toString()
+隐式转换主要涉及三种转换流程是：
+  如果Symbol.toPrimitive()方法，优先调用再返回
+   调用valueOf()，如果转换为原始类型，则返回
+   调用toString()，如果转换为原始类型，则返回
+  如果都没有返回原始类型，会报错
 
 
 toString方法对于值类型数据而言， 效果相当于数据转换， 将原类型转换成字符串
@@ -23,7 +58,6 @@ valueof重写规则：
    boolean  布尔值
    data      返回毫秒格式时间戳
    function  函数本身
-   number    数字值
    string    字符串值
    object    对象本身
 
@@ -49,6 +83,19 @@ console.log(c[b]);
 {
   '[object Object]':2
 }
+
+ 
+
+ ------------
+var a  ={
+    value: 0,
+    toString: function() {
+        this.value++
+        return this.value
+    }
+}
+console.log(a ==1 && a==2)
+
 
 
 

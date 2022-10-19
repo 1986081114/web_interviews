@@ -10,6 +10,12 @@ box-sizing:content-box(标准)/border-box（ie）
   标准盒模型所占据的位置（不是大小） = margin + border + padding + content
   ie盒模型宽度 = css设置的width = content  + margingg + border
 
+  js如何获取盒模型的宽高？
+     dom.style.width/height  只能获取行内元素设置的宽高
+     dom.currentStyle.width/height  可以获取行内， style设置， 外联设置的宽高,但是只有ie支持
+     dom.getComputedStyle(dom).width/height；和上面类似，但是所有浏览器都支持
+     dom.getBoundingClientRect.width/height/yop/left  这个方法返回一个矩形对象，包含四个属性：left、top、right和buttom。
+           分别表示元素各边与页面各边的距离
  -->
 
 <!DOCTYPE html>

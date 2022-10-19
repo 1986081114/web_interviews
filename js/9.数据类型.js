@@ -16,6 +16,11 @@
         typeof(999999n) 返回 bignit
           typeof NaN = number
 
+  判断 null：
+     null === null
+     Object.prototype.__proto__ == null
+
+
     Object.prorotype.toString.call可以检测所有类型，
     . 通过interface来判断一个对象是否是某个构造函数的实例
     console.log(Object.prototype.toString.call("jerry"));//[object String]
@@ -70,6 +75,32 @@ console.log(Object.prototype.toString.call(new Date));//[object Date]
 
             a是经过构造的对象，返回ture没问题。
 
+      Object.is与===q  区别：
+          Object在严格等于的条件下修复了一些特殊问题：
+                  console.log(Object.is(+0,-0)) //false
+                  console.log(+0 === -0) //true
+
+                  console.log(Object.is(+NaN, -NaN))//true
+                  console.log(+NaN === -NaN)//false
+
+                  
+                  console.log(Object.is(NaN, NaN))//true
+                  console.log(NaN == NaN)//false
+                  NAN表示9007199254740990（2^53-2 ）个特殊字符的合集，即这么多个特殊值被占用表示NAN，
+                  所以Nan并不是一个值而是一群值，所以并不相同
+
+                  function is(x, y) {
+                     if (x === y) {
+                        //运行到1/x === 1/y的时候x和y都为0，但是1/+0 = +Infinity， 1/-0 = -Infinity, 是不一样的
+                        return x !== 0 || y !== 0 || 1 / x === 1 / y;
+                     } else {
+                        //NaN===NaN是false,这是不对的，我们在这里做一个拦截，x !== x，那么一定是 NaN, y 同理
+                        //两个都是NaN的时候返回true
+                        return x !== x && y !== y;
+                     }
+                     
+                  }
+
 
 */
 /*
@@ -97,4 +128,39 @@ Bigint和Number区别：
        引用类型需要得到这个对象在堆内存的地址，然后按照这个地址获取值，也就是按引用访问。
     5.基础类型的值是不会改变的，基础类型一般也不会添加属性和方法。类型比较也是值得比较
        引用类型值可以变化，可以添加属性和方法， 比较是指针地址的比较
+
+       闭包变量是存在堆内存中的。
 */
+/* 
+为什么有的编程要求void 0 代替undefined：  void 运算符计算给定的表达式并返回undefined
+   console.log(void 任意 === undefined) // true 
+   console.log(void (console.log('test console')));
+   // test console
+   // undefined
+   写成void 0 没有副作用
+
+   Undefined类型表示未定义，它的类型只有一个值就是undefined，任何变量在赋值前都是Undefined类型，值为undefined，
+   但是js代码中的undefined是一个变量而非一个关键字（这也是js公认错误之一）所以为了避免无意中的篡改，建议使用void0 获取undefied。
+   因为undefined有可能会被赋值，undefined是一个变量，并不是一个关键字，不存在赋值报错的情况，全局的undefined被赋值总是会失败，
+   但是如果我们在对象的属性上创建了一个名为undefined的属性，那么情况就不同了
+
+            var testUndefined = function(){
+         var obj = {}
+         var undefined = 'underscore'
+         var window = {
+            'undefined': 'bb'
+         }
+         console.log(window) //{'undefined': 'bb'}
+         console.log(undefined) //underscore
+         console.log(window.undefined) //bb
+         console.log(obj.name === undefined) // false
+         console.log(obj.name === window.undefined) // false
+         console.log(obj.name === (void 0)) // true
+         }
+
+ 
+*/
+
+
+
+

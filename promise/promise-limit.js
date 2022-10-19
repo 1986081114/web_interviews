@@ -2,6 +2,15 @@
 如果有巨量的图⽚需要展示在⻚⾯, 除了懒加载这种⽅式, 还有什么好的⽅法限制其同⼀时间加
 载的数量? */
 
+/**
+ * 关键点
+ * 1. new promise 一经创建，立即执行
+ * 2. 使用 Promise.resolve().then 可以把任务加到微任务队列，防止立即执行迭代方法
+ * 3. 微任务处理过程中，产生的新的微任务，会在同一事件循环内，追加到微任务队列里
+ * 4. 使用 race 在某个任务完成时，继续添加任务，保持任务按照最大并发数进行执行
+ * 5. 任务完成后，需要从 doingTasks 中移出
+ */
+
 function limitLoader(urls, handler, limit) {
     const sequence = [].concat(urls);
     let promises = [];

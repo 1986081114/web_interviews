@@ -1,0 +1,30 @@
+1.实现12px以下的字体效果
+   transfrom:scale() 属性只能缩放可以自定义宽高的元素， 而行内元素没有宽高， 所以可以加上
+    display：inline-block
+    transform： scale(0.7)
+  
+2.页面变灰：
+  filter: grayscale(100%) ;
+
+
+3. relative absolute区别：
+   relative定位设置偏移量是相对于原来的位置进行相应的偏移， 且其他元素的位置不受改变， 也就是说被定位的元素还占据原来的位置
+   absolute：相对于第一个非static定位的父元素进行偏移定位， 如果都为static，就行对于body元素， 元素会释放原来的位置，脱离文档流
+
+4.js如何获取盒模型的宽高？
+     dom.style.width/height  只能获取行内元素设置的宽高
+     dom.currentStyle.width/height  可以获取行内， style设置， 外联设置的宽高,但是只有ie支持
+     dom.getComputedStyle(dom).width/height；和上面类似，但是所有浏览器都支持
+     dom.getBoundingClientRect.width/height/yop/left  这个方法返回一个矩形对象，包含四个属性：left、top、right和buttom。
+           分别表示元素各边与页面各边的距离
+
+5.margin重叠：
+    父子元素， 兄弟元素， 空元素的上下margin
+
+6.html、body、document、window的区别
+   html表示的是文本标记语言，也是html文档的根元素
+     document.documentElement 总是会返回一个 <html> 元素
+   body代表document的主体子对象，除浏览器头部，页面中能够看到的内容都属于body中的内容；，
+    document.body
+   document对象代表整个html文档,可用来访问页面中的所有元素
+   window对象在文档打开时候自动创建， 保存dom， bom， 核心js等所有内容

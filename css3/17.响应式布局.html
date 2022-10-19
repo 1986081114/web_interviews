@@ -9,7 +9,7 @@
 <!-- 视口：
      布局视口（layout viewport）：
           布局视口是指网页的宽度，一般移动端浏览器都默认设置了布局视口的宽度， 因为通常pc的分辨率较大，
-          而默认的布局窗口时980px； 所以在不设置viewport，pc端网页默认以布局视口为基准，
+          而默认的布局窗口时980px； 所以在不设置viewport，pc端网页默认以布局视口为基准
           在移动端展示， 所以默认布局视口，pc网页在移动端展示很模糊
     视觉视口：（visual viewport）
        视觉视口表示浏览器内看到网站显示的区域，因此用户可以通过缩放查看网页显示区域， 改变视觉视口，
@@ -23,9 +23,16 @@
 -->
 
 <!-- 
+    设置mete标签
+    媒体查询
+    长度单位的合理使用
  实现： 
-       1.media query（媒介查询） @media功能，来判断终端设备宽度在多少像素内，然后执行与之对应的css样式
-       
+    0.media query（媒介查询） @media功能，来判断终端设备宽度在多少像素内，然后执行与之对应的css样式
+
+        媒体查询即针对不同的设备尺寸，设置对应样式
+
+      1.meta标签
+        设置meta标签是为了告诉浏览器使用设备的初始宽度作为视图的宽度
         注意 在手机设备上，我们要禁止用户缩放屏幕， 防止显示上错位。
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
        移动设备默认的viewport是layout viewport， 通过 viewport  让viewport的宽度等于设备的宽度，即 ideal viewport

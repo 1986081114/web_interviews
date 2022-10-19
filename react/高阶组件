@@ -1,0 +1,36 @@
+用过高阶组件吗？
+  高阶组件简称HOC， 是一个函数， 参数是一个组件，返回一个新组建的函数， 可能会根据要求
+   一般会要求是一个纯函数，因为一个高阶组件有了副作用，追踪错误会很困难。
+
+  高阶组件允许你做：
+
+    通用逻辑的复享
+    渲染劫持
+    State 抽象和更改
+    Props 更改
+
+写一个高阶组件：
+      import { Component } from "react"
+
+    export const decoratorwithHeight = (height) => {
+        return (WrappedCOmponent) => {
+            return class extends Component {
+                constructor() {
+                    super()
+                    this.state = {
+                        name: 'ceshi'
+                    }
+                }
+                render() {
+                    return (
+                        <div>
+                            <WrappedCOmponent name={this.state.name} {...this.props} />
+                            <p>身高： {height || 0}</p>
+                        </div>
+                    )
+                }
+
+
+            }
+        }
+    }

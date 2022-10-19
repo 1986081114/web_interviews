@@ -2,7 +2,7 @@
 this可以更加便捷的方式引用对象
 */
 /*
-  this在全局作用域下指向window
+  this在全局作用域下指向window,严格模式指向undefined
   this的绑定和定义位置无关，和调用位置有关，this是在运行时调用的
 */
 //绑定规则

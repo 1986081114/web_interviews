@@ -1,10 +1,9 @@
-现在网页应用程序越来越多的使用ajax异步请求完成页面的无缝刷新，spa在于页面交互的过程中，不再重新刷新页面，获取数据也是通过
-ajax异步获取，页面流畅，但是由于spa中用户的交互是通过js改变html，页面本身并没有变化， 导致两个问题：
+现在网页应用程序越来越多的使用流行使用spa应用，spa在于页面交互的过程中，不再重新刷新页面，获取数据也是通过
+ajax异步获取，页面流畅，但是由于spa中用户的交互是通过js改变html，页面地址本身并没有变化， 导致两个问题：
     spa无法记住用户的操作记录，无论是刷新，前进，后退
-    spa只有一个url，不方便搜索
+    spa只有一个url，不方便搜索和seo，
 
-单页面应用利用了js动态变换网页内容， 避免页面重载，路由则提供了浏览器地址的变化， 网页内容也随着变化，
-前端路由： 保证只有一个页面，且与用户交互时，为spa中每个视图展示匹配一个特殊的url。在刷新，前进，后退都通过这个特殊的url实现
+所以前端路由应运而生： 保证只有一个页面，且与用户交互时，为spa中每个视图展示匹配一个特殊的url。在刷新，前进，后退都通过这个特殊的url实现
 
 
 路由需要实现的三个功能：
@@ -13,13 +12,12 @@ ajax异步获取，页面流畅，但是由于spa中用户的交互是通过js�
    2.点击浏览器后退，前进按钮，网页内容跟随变化
    3.刷新浏览器，网页加载当前路由对应内容
 
-实现方式：
-    hash方式： 监听浏览器地址hash值变化，执行相应的js切换网页
-    history： 利用history API 实现url地址改变， 网页内容改变
-    最明显区别局势hash在浏览器地址添加#号，而history可以自定义地址
+实现原理：
 
 hash模式：
-  使用window.location.hash属性及窗口的onhashchange事件，可以实现监听浏览器地址hash变化执行相应的js切换页面，
+      hash变化会触发页面跳转，但是不会刷新页面，hash不会提交到服务点
+      使用window.location.hash属性及onhashchange事件，可以实现监听浏览器地址hash变化执行相应的js切换页面，
+
      hash指的是地址中#以及后面的字符，也称散列值，也可称为锚点
      散列值是不会随请求发送到服务器端，所以改变hash是不会重新加载页面
      监听window的hashchange事件，当散列值改变，可以通过location.hash来获取和设置hash的值
@@ -27,7 +25,19 @@ hash模式：
      location.hash值的变化会直接反映到浏览器地址栏
 
 history模式：
-    window.history属性指向history对象，他表示当前窗口的浏览历史。当发生改变，只会改变页面的url，不会刷新页面
+
+  history 这个对象在html的时候新加入两个api history.pushState() 和 history.repalceState()
+这两个 API也会触发页面跳转但是不刷新页面，可以在不进行刷新的情况下，操作浏览器的历史纪录。history 提供类似 hashchange 事件的 popstate 事件，
+
+通过pushState/replaceState或<a>标签改变 URL 不会触发 popstate 事件。只有浏览器前进后退事件才会触发。
+好在我们可以拦截 pushState/replaceState的调用和<a>标签的点击事件来检测 URL 变化，进而触发popstate事件。
+我们可以通过遍历页面上的所有 a 标签，阻止 a 标签的默认事件的同时，加上点击事件的回调函数，在回调函数内获取 a 标签的 href 属性值，
+再通过 pushState 去改变浏览器的 location.pathname 属性值。然后手动执行 popstate 事件的回调函数，去匹配相应的路由
+
+
+
+
+
     history.length:当前窗口访问过的网址数量
     history.back(): 移动到上一个网址，当访问第一个网址，该方法无效
     history.forward()：移动到下一个网址，访问最后一个，无效
@@ -35,11 +45,18 @@ history模式：
     history.pushState(state,title,url)：添加新的状态到历史状态栈
     history.replacState(state,title,url)用新的状态代替
     history.state： 返回当前状态
+    pushState 和 replaceState 都是 HTML5 的新 API，他们的作用很强大，可以做到改变浏览器地址却不刷新页面
+    //state：需要保存的数据，这个数据在触发popstate事件时，可以在event.state里获取
+    //title：标题，基本没用，一般传null
+    //url：设定新的历史纪录的url。新的url与当前url的origin必须是一样的，否则会抛出错误。url可以时绝对路径，也可以是相对路径。
+    //如 当前url是 https://www.baidu.com/a/,执行history.pushState(null, null, './qq/')，则变成 https://www.baidu.com/a/qq/，
+
 
 区别:
   url展示上， hash模式有#， history模式没有。
-  刷新页面时， hash可以正常加载到hash值对应的页面， 二historu没有处理会返回404， 一般需要后端将所有页面重定向
+  刷新页面时， hash可以正常加载到hash值对应的页面， 而historu没有处理会返回404， 一般需要后端将所有页面重定向
   兼容性， hash可以兼容低版本浏览器和ie
+  hash是不会提交到服务端的，但是history需要服务端支持
   
 
    

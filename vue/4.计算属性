@@ -37,10 +37,59 @@ computed:{
     而 watch 是监听已经存在且已挂载到 vm 上的数据，所以用 watch 同样可以监听 computed 计算属性的变化（其它还有 data、props）
    从使用场景上说，computed 适用一个数据被多个数据影响，而 watch 适用一个数据影响多个数据；
 
+computed实现原理：
+  watcher有一类是computed watcher，计算属性的监听器，
+  computed watcher持有一个dep实例， 通过dirty属性标记计算属性是否需要重新传值，
+  当computed依赖改变后， 就会通知订阅的watcher进行更新，对于computed watcher会将dirty设置为true，并进行计算属性方法的调用。
 
-   computed缓存原理：
 
-在watcher里面有dirty默认是false，只有在watcherupdate触发了，dirty才会变成true
-watcher.dirty 是实现计算属性缓存的触发点，watcher.evaluate 对计算属性重新求值
+computed所谓的缓存是指什么？
+ 计算属性是基于他的响应式依赖进行缓存的， 只有发生改变的时候才会重新求值，
+
+ computed缓存的意义是什么？ 经常在什么时候使用？
+  一般使用计算属性是进行一些数据的类型转换， 但是当计算属性内部的操作非常耗时，遍历一个极大的数组，就可以利用缓存，避免第二次耗时，
+  例如遍历一个大数组，查找某个值， 或者当if for一起在使用的时候，可以利用计算属性先筛选符合if条件的数据。
+
+  以下代码能实时更新吗？
+     computed: {
+		 storageMsg: function(){
+			 return sessionStorage.getItem("xxx")
+		 },
+		 newTime: function() {
+			 return Date.now()
+		 }
+	 }
+	 onclick(){
+		 sessionStorage.setItem('xxx'),111
+	 }
+
+	 无论怎么改变sessionStorage ，在计算属性中得到的值都不会改变，因为这些数据不能响应反映到页面上，
+	 只有在vue初始化被监听的数据，才能被vue监听到，响应式反应。
+
+	 watche:
+	    默认引用类型拿不到旧的值,他是浅监听需要使用函数和deep
+		  data(){
+			  return {
+				  name: 'computed',
+				  info:{
+					  city: 56
+				  }
+			  }
+		  }
+
+		  watch:{
+                 name(old, val) {
+
+				 },
+				 info:{
+					 hadler(oldval, val){
+                         // 此处注意，handler函数不能为箭头函数，this会取上下文，而不是组件里的this,此外，深度监听，必须为handler函数名，否则会无效果
+					 }
+					 deep:true
+				 }
+
+		  }
+
+  
        
    

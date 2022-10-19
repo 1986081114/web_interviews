@@ -1,0 +1,94 @@
+<!-- 
+  双栏布局往往是以一个定宽和一个自适应展示：
+     1.float + bfc 
+       浮动元素的兄弟为bfc，则不会沾满一行，只是占领剩余的宽度
+
+      2.flex布局
+      3.absolute
+
+ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      .container{
+        width: 100%;
+      }
+      .left{
+        float: left;
+        width: 20%;
+        height: 100px;
+        background-color: red;
+      }
+      .right {
+        overflow: hidden;
+        height: 100px;
+        background-color: green;
+      }
+
+      /* --------flex------ */
+      .con2{
+        width: 100%;
+        display: flex;
+      }
+      .left2{
+        width: 20%;
+        height: 100px;
+        background-color: green;
+      }
+      .right2 {
+        flex: 1;
+        height: 100px;
+        background-color: red;
+      }
+      /* ----absolute */
+      .con3{
+        position: relative;
+        width: 100%;
+        height: 100px;
+      }
+      .left3{
+        width: 20%;
+        height: 100px;
+        background-color: red;
+      }
+      .right3{
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 20%;
+        background-color: green;
+      }
+
+    </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left">
+      <p>left</p>
+    </div>
+    <div class="right">
+      <p>right-content-01</p>
+      <p class="content2">right-content-02</p>
+    </div>
+  </div>
+ 
+  <div class="con2">
+    <div class="left2">left</div>
+    <div class="right2">right</div>
+  </div>
+  
+ 
+  <div class="con3">
+    <div class="left3">left</div>
+    <div class="right3">right</div>
+  </div>
+  
+    
+</body>
+</html>

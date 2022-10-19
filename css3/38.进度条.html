@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #progress{
+            width: 400px;
+            height: 30px;
+            border:1px solid red;
+            border-radius: 15px;
+            box-shadow: 0 0 5px 0 black;
+        }
+        #progress div{
+           width: 0;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            background-color: green;
+            color: black;
+            border-radius: 15px;
+        }
+
+   
+        #progressBar{
+            width:  600px;
+            height: 50px;
+            position: relative;
+            margin: 50px 0 0 100px;
+        }
+        #progressBar div {
+            position: absolute;
+            width: 100%;
+            height: 20px;
+            background-color: blanchedalmond;
+            top: 50%;
+            transform: translateY(-50%);
+            
+        }
+   
+        #progressBar span {
+            position: absolute;
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: grey;
+        }
+
+        #progressBar span:nth-child(2){
+            left:10px;
+           background-color: hotpink;
+        }
+        #progressBar span:nth-child(3){
+            left:25%;
+           
+        }
+        #progressBar span:nth-child(4){
+            left:50%;
+           
+        }
+        #progressBar span:nth-child(5){
+            left:75%;
+         
+        }
+        #progressBar span:nth-child(6){
+            left:100%;
+             
+        }
+
+     .circle_wrapper{
+        width: 200px;
+        height: 200px;
+        border:1px solid blanchedalmond;
+       margin: 50px auto;
+       position: relative;
+     }
+     .wrapper{
+         width: 100px;/* 一半 */
+         height: 200px;
+         position: absolute;
+         top: 0;
+         overflow: hidden;
+         
+     }
+    
+    .right{
+        right: 0;
+    }
+    .left{
+        left:0;
+    }
+    .circleProgress{
+        width: 160px;
+        height: 160px;
+        border: 20px solid transparent;
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        -webkit-transform: rotate(-135deg);
+    }
+    .rightcircle{
+        border-top:20px solid green;
+        border-right:20px solid green;
+        right:0;
+        -webkit-animation: circleProgressLoad_right 5s linear infinite;
+    }
+    .leftcircle{
+        border-bottom:20px solid green;
+        border-left:20px solid green;
+        left:0;
+        -webkit-animation: circleProgressLoad_left 5s linear infinite;
+    }
+    @-webkit-keyframes circleProgressLoad_right{
+            0%{
+                -webkit-transform: rotate(-135deg);
+            }
+            50%,100%{
+                -webkit-transform: rotate(45deg);
+            }
+        }
+        @-webkit-keyframes circleProgressLoad_left{
+            0%,50%{
+                -webkit-transform: rotate(-135deg);
+            }
+            100%{
+                -webkit-transform: rotate(45deg);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="progress">
+        <div class="progre"></div>
+    </div>
+
+    <div id="progressBar">
+        <div></div>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+   </div>
+
+     <div class="circle_wrapper">
+        <div class="wrapper right">
+            <div class="circleProgress rightcircle"></div>
+        </div>
+        <div class="wrapper left">
+            <div class="circleProgress leftcircle"></div>
+        </div>
+
+     </div>
+    <script>
+     
+      let progre = document.querySelector('.progre')
+        function run(){
+            let count = 0
+            let inter = setInterval(() => {
+                count +=1
+                progre.innerHTML = count*10 + '%'
+                progre.style.width = count*10 + '%'
+                if(count == 10){
+                    clearInterval(inter)
+                }
+            }, 1000);
+      }
+      run()
+
+    //第二种
+    let progreBar = document.querySelector('#progressBar').querySelectorAll('span')
+    let len = progreBar.length
+
+    function run2(){
+       let count1 = -1
+       let int = setInterval(() => {
+           count1+=1
+           progreBar[count1].style.backgroundColor = 'hotpink'
+           console.log(Number(count1) , Number(len))
+           if(count1 == len-1){
+              
+               clearInterval(int)
+           }
+       }, 1000);
+    }
+    run2() 
+
+    //第三种
+
+    </script>
+</body>
+</html>

@@ -10,18 +10,21 @@ display：none
 
 
 区别：
-    opacity： 存在页面            能触发点击事件，  不一定会重绘  不会回流  
-    visibility：hidden 存在页面   不能触发点击事件   一定重绘      回回流     
-    display：none 不存在页面，    不能触发点击事件   一定重绘       会回流   
+    opacity：            存在页面占据空间      能触发点击事件，    不一定会重绘  不会回流  支持transition
+    visibility：hidden    存在页面占据空间    不能触发点击事件      一定重绘      回回流     支持transition
+    display：none         不存在页面不占据，    不能触发点击事件     一定重绘       会回流      不支持transition
 
     继承：
-display: none和opacity: 0：是非继承属性，子孙节点消失由于元素从渲染树消失造成，通过修改子孙节点属性无法显示。
+display: none，不能继承
+opacity: 0：是继承属性，但是子元素不能通过控制opacity显示，
 visibility: hidden：是继承属性，子孙节点消失由于继承了hidden，通过设置visibility: visible;可以让子孙节点显式。
+
+过渡动画只对opacity'有用
 
 场景：
   display：none 显示一个不存在的元素
   visibility：hidden，图片加载常我们会设置一个加载图片来告诉用户页面正在加载，然后通过回调函数，隐藏加载图片
-  opacity：可以跟transition搭配、过度，
+  opacity：可以跟transition搭配、过度，过渡动画
 
 用 CSS 隐藏页面上的一个元素有哪几种方法？
 

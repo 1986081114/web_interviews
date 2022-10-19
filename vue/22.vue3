@@ -1,0 +1,66 @@
+vue2缺点：
+   1.随着功能的增长， 需求的增加， 复杂组件的代码越来越难以维护， 虽然vue2也有逻辑复用的方法， 但是也存在一些弊端
+       如mixin，特别容易发生命名冲突，暴露意图不明显，等
+   2.vue2对于ts的支持非常有限。
+   3.objectproperty的缺点无法检测数组的变化， 无法监听属性的添加
+
+vue3的优点：
+  vue3支持vue2的大多数特性，实现对vue2的兼容
+   vue3对比vue2具有明显的性能提升
+      打包大小减少41%
+      初次渲染快55%，更新快133%
+      内存使用减少54%
+   vue3具有的composition API实现逻辑模块化和重用
+   增加了新特性，如Teleport组件，全局API的修改和优化等
+
+
+不同： 
+    响应式原理不同：
+      vue2实现双向绑定通过objectdefineproperty，根据具体的key去读取和修改。其中的setter方法来实现数据劫持的，
+      getter实现数据的修改。但是必须先知道想要拦截和修改的key是什么，所以vue2对于新增的属性无能为力，比如无法监听属性的添加和删除、
+      数组索引和长度的变更，vue2的解决方法是使用Vue.set(object, propertyName, value) 等方法向嵌套对象添加响应式。
+
+      Vue3.x使用了ES2015的更快的原生proxy 替代 Object.defineProperty。Proxy可以理解成，在对象之前架设一层“拦截”，
+      外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。Proxy可以直接监听对象而非属性，
+      并返回一个新对象，具有更好的响应式支持
+
+   生命周期不同：
+       beforeCreate -> 请使用 setup()
+      created -> 请使用 setup()
+      beforeMount -> onBeforeMount
+      mounted -> onMounted
+      beforeUpdate -> onBeforeUpdate
+      updated -> onUpdated
+      beforeDestroy -> onBeforeUnmount
+      destroyed -> onUnmounted
+      errorCaptured -> onErrorCaptured
+       使用生命周期vue2可以直接使用而vue3需要引用，所以vue3打包压缩体积更小
+
+   全局api优化：
+       在 Vue3 中，全局和内部 API 都经过了重构，并考虑到了 tree-shaking 的支持。因此，
+       全局 API现在只能作为 ES 模块构建的命名导出进行访问。
+
+    Fragment（碎片）:
+      原本在vue2在template只能允许有一个根节点， 但是在vue3中他允许可以有多个， 因为这些内容最后都变成一个碎片
+
+    Component API：
+       更加推荐使用component api来写api，最大好处就是逻辑重用， 方便把一些功能部分抽离出来， 另一方卖弄
+       相对于opation来说更加集中
+
+
+
+Object.defineProperty() 的问题主要有三个：
+
+不能监听数组的变化
+必须遍历对象的每个属性
+必须深层遍历嵌套的对象
+Proxy 在 ES2015 规范中被正式加入，它有以下几个特点
+
+针对对象：针对整个对象，而不是对象的某个属性，所以也就不需要对 keys 进行遍历。这解决了上述 Object.defineProperty() 第二个问题
+支持数组：Proxy 不需要对数组的方法进行重载，省去了众多 hack，减少代码量等于减少了维护成本，而且标准的就是最好的。
+除了上述两点之外，Proxy 还拥有以下优势：
+
+Proxy 的第二个参数可以有 13 种拦截方法，这比起 Object.defineProperty() 要更加丰富
+Proxy 作为新标准受到浏览器厂商的重点关注和性能优化，相比之下 Object.defineProperty() 是一个已有的老方法。
+
+

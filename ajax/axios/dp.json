@@ -1,0 +1,32 @@
+{
+  "posts": [
+    {
+      "data": "put修改",
+      "author": "zj",
+      "id": 1
+    },
+    {
+      "title": "jsonp-serve",
+      "autor": "zhangsan",
+      "id": 2
+    },
+    {
+      "title": "jsonp-serve",
+      "autor": "zhangsan",
+      "id": 3
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  },
+  "启动": {
+    " json-server --watch db.json": 5
+  }
+}

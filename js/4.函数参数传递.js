@@ -1,4 +1,5 @@
-/*
+
+33/*
 1.按值传递：
     var value = 1;
 function foo(v) {

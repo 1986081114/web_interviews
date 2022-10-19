@@ -1,0 +1,84 @@
+diff:
+   diff算法将两个虚拟dom做对比，生成patch对象， 即补丁对象，再通过特定操作解析patch， 完成页面的重新渲染
+
+react diff算法：
+    在update组件时候， 会将当前组件与该组件在上次更新时对应的fiber节点做对比， 将比较结果生成新的fiber节点， 
+    比较方法就是diff算法。通俗讲就是将render返回的结果jsx描述的对象与 current fiber节点做对比，生成
+    workInprocess fiber节点
+
+    本来diff算法有一些通用的解决方案，就是生成一个树转换成另一棵树的最小操作数， 复杂度是n3.
+    但是react在假设条件下改善了以上算法变成o（n）：
+      0.虚拟dom只对同一层级元素对比，如果同一个dom节点在前后两次更新中跨越了层级， react不会复用他。
+      1.两个不同类型的元素会产生出不同的树，
+      2.开发者可以通过key 来按时哪些元素在不同的渲染下保持稳定。
+
+    维护虚拟dom和diff计算量， 简化了dom操作， 和mvvm变更整个dom数相比， 确实节省了不少时间。
+    但是和原生的js的开发模式相比， 还是直接操作dom更快，
+
+diff算法过程：
+   diff算法从reconcileChildFiber函数开始，比较新旧节点，一边比较一边给真实的DOM打补丁
+   dif算法会对新旧两棵树做深度优先遍历，然后给每个节点生成一个唯一的标志。
+   在遍历的过程中， 对同一级别的元素在新旧两个树上做比较。如果有差异就记录到一个对象中。。
+
+   将同级的节点数量将diff分为两类， 
+       object， number， string 待变同级只有一个节点
+       类型为array，同级有多个节点。
+
+       单节点: 最终会生成一个workInprogressfiber节点，只是这个节点时新创建的还是复用的。
+
+         dom节点是否可复用依据是： 首先判断dom是否存在， 之后比较key，可以相同在比较type是否相同
+
+         key相同，type不同，将fiber和兄弟fiber都删除， 因为key相同，代表兄弟节点的key一定和这个不同， 所以都删除
+         key不同 ，将该fiber标记为删除， 只能表示该ffiber不能被复用，后面的兄弟哈没有被遍历到。
+
+      多节点diff：
+       分为节点更新，节点新增或减少， 节点位置变化：
+         节点更新： 
+            节点属性变化：
+            节点类型更新：
+         在应用中节点更新出现的概率是最高的， 所以优先考虑节点更新
+          由于更新的fiber对象 newChildred是以数组形式存储， 但是 与之对比的 currrent fiber是由sibling指针连接形成的单链表。
+          不支持双指针遍历。
+          所以diff会做两次遍历：
+             第一轮处理更新的节点
+             第二轮处理不更新的节点
+
+               第一轮： 
+                 比较 newChildren[I]和oldFiber，， 判断是否可以复用， 如果可以，i++，与old Fiber.sibling遍历比较。
+                 如果不可以复用分为：
+                     因为key不同不可以复用，立即跳出整个遍历，因为这可能是因为节点位置变化导致的。第一轮便利结束
+                     key相同， type不同， 将oldFiber打标机 deletion，并插入新的节点，继续遍历。
+
+                如果newChildren遍历完， 或者oldFiber遍历完， 跳出遍历
+
+               第二轮：
+                  1.如果 newChildren与oldFiber同时遍历完， 只需要在第一轮进行更新， diff'结束。
+                  2. newChildren没遍历完， oldFiber遍历完， 意味着本次更新有新的节点插入， 只需要遍历newChildren生成
+                   workinprogressfiber并标记为placement。
+                  3.newChildren遍历完， oldFiber没遍历完，意味着这些节点都要被删除， 遍历oldFiber标记delection。
+                  4.newChildren， oldFiber都没遍历完：意味着有节点位置改变了，也就是diff重点：
+
+                    我们需要使用key快速找到对应的oldFiber， 我们将未处理的oldFiber存入以key为key， oldFiber为value的map中
+                    遍历newChildren，通过key在map中查找key相同的oldFiber。
+                    本次更新中节点是按照newChildren的顺序排序的， 在便利的过程中，最后一个可复用的节点的索引赋值给lastPlacedIndex
+                    只需要比较 lastplaceIndex和当前可复用节点的索引oldIndex大小， 
+                     如果oldIndex >= lastPlaceIndex,怎fiber不动，将lastPlaceIndex= oldIndex
+                     如果oldIndex< lastPlaceIndex, 将节点又移
+                     当复用完一个fiber，就在map去掉， 如果最后newchildren遍历完成， map还有剩余， 就将所有剩余打上deletion标记。
+               考虑性能，我们要尽量减少将节点从后面移动到前面的操作。
+                    
+
+
+
+
+
+           
+         
+    
+
+
+    
+
+        
+
+       

@@ -4,7 +4,6 @@
   thisArgm,可选的，在函数function调用时指向的this 如果thisArg不存在则默认为window
 */
 /* let name2 = "ajianajian";
-
 setTimeout(function () {
     name2 = "kuangzhanshi";
     console.log(b);
@@ -51,33 +50,42 @@ bind方法域apply和call比较类似， 也是改变函数体内的this， 不�
 利用arguments类数组对象实现参数不定长
 不能增加对象的属性，所以在结尾需要delete
 */
-Function.prototype.myCall = function(context) {
-    if(typeof this !== 'function') {
-        throw "function"
+
+Function.prototype.mycall = function(context,...args) {
+    console.log(this) //使用call的函数
+    console.log(context)
+    if(typeof this !=='function') {
+      throw new Error('')
     }
-    //call的本质用参数调用context
-    // 如果没有传或传的值为空对象 context指向window
-    context = context || window;
+  
+     context = context || window
     context.fn = this
-    const arg = [...arguments].slice(1);
-    const result = context.fn(arg)
-    delete context.fn;
-    return result;
+    const res = context.fn(...arg)
+    delete context.fn
+    return res
   }
-//apply
-Function.prototype.myApply = function(context){
-    if(typeof this !== 'function'){
-        throw new TypeError('Error')
+  
+  
+  Function.prototype.myapply = function(context,args) {
+    if(typeof this !=='function') {
+      throw new Error('')
     }
-    //bind的本质同call,区别在于是否有arguments[1];
-    context = context||window;
-    context.fn = this;
-    let result;
-    if(arguments[1]){
-     result = context.fn(...arguments[1]);
-    }else{
-        result = context.fn()
-    }
-    delete context.fn;
-    return result;
-};
+  
+     context = context || window
+    context.fn = this
+    const res = context.fn(args)
+    delete context.fn
+    return res
+    
+  }
+  
+  var name = "小白";
+  var obj = {
+      name: "小红"
+  };
+  
+  function sayName() {
+      return this.name;
+  }
+  console.log(sayName.myapply(obj));   //小红
+  console.log(sayName.mycall(obj));    //小红

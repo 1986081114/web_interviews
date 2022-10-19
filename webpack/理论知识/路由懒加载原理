@@ -1,0 +1,12 @@
+路由懒加载通常使用import实现， 然后通过webpack编译打包后，会把每个路由组件的代码分割成一个js文件。初始化时惠加载
+这些js文件，只当激活路由组件才会取加载对应的js文件。
+
+那么怎么实现按需加载对应的js文件：
+   利用webpackChunkName使得编译后的js文件名字和路由组件对应
+   function load(component) {
+    return () => import(/* webpackChunkName: "[request]" */ `views/${component}`)
+  }
+
+  ref=preload：告诉浏览器这个资源要给我提前加载。
+  rel=prefetch：告诉浏览器这个资源空闲的时候给我加载一下。
+  as=script：告诉浏览器这个资源是script，提升加载的优先级。
