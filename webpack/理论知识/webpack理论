@@ -183,6 +183,12 @@ source map 是将编译打包压缩后的代码映射到源代码的过程。打
          ES6模块依赖关系是确定的，和运行时的状态无关，可以进行可靠的静态分析，这就是tree-shaking的基础。
          commonjs的动态特性模块意味着tree-shaking不适用，因为它是不可能确定哪些模块实际运行之前是需要或者是不需要的。
          打包过程中检测工程中没有引入使用过的模块并进行标记， 在资源压缩时将他们从最终的bundle中去掉。
+      适用场景
+         ESM: tree-shaking 通常更适用于 ESM（ECMAScript Modules）格式的代码，
+               因为 ESM 的静态结构使得构建工具更容易分析哪些代码是多余的。
+         副作用：  如果代码有副作用（side-effects），那么 tree-shaking 可能会导致问题。
+                 例如，如果一个模块在被导入时执行了某些全局操作，即使没有直接使用这个模块，
+                 它也不能被安全地移除。
 
     scope hoisting：
       构建后的代码存在大量的闭包， 造成体积增大，运行代码时创建的函数作用域变多，scope hoisting将所有模块的代码按照顺序放在一个函数作用域里，
@@ -222,7 +228,7 @@ source map 是将编译打包压缩后的代码映射到源代码的过程。打
 
 16.webpack module如何表达依赖关系：
   ESM import语句
-  CommonJS require
+  CommonJS require (CJS)
   AMD define require
   css/sass/less @import
 

@@ -1,0 +1,49 @@
+<html>
+    <head>
+        <style>
+            * {
+                padding: 0;
+                margin: 0;
+            }
+            .text{
+                position: absolute;
+                left: 130;
+                top: 50;
+                z-index: -1;
+            }
+        </style>
+      
+    </head>
+    <body>
+        <canvas id="can" ></canvas>
+        <div class="text">恭喜您获得100w</div>
+    
+        <script>
+            const can = document.getElementById('can');
+            const ctx = can.getContext('2d');
+            ctx.fillStyle='darkgray';
+            ctx.fillRect(0, 0, 400, 100);
+            ctx.fillStyle = 'red';
+            ctx.fillText('刮刮乐', 150, 50);
+
+            let isDraw = false;
+            can.onmousedown = function(){
+                isDraw = true;
+            }
+            can.onmouseup = function(){
+                isDraw = false;
+            }
+            can.onmousemove = function(e){
+                if(!isDraw) return;
+                let x = e.pageX - can.offsetLeft;
+                let y = e.pageY - can.offsetTop;
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.arc(x, y, 10, 0, 2 * Math.PI);
+                ctx.fill();
+           
+
+            }
+ 
+        </script>
+    </body>
+</html>

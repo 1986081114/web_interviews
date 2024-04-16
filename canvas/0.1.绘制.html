@@ -1,0 +1,82 @@
+<html>
+
+</html>
+<body>
+    <canvas id="can" width="100" height="200" style="border: 1px solid #ccc;"></canvas>
+    <canvas id="can1" width="100" height="200" style="border: 1px solid #ccc;"></canvas>
+     
+    <div id='radios'>
+        <input type='radio' id='repeatRadio' name='patternRadio' checked/>repeat
+        <input type='radio' id='repeatXRadio' name='patternRadio'/>repeat-x
+        <input type='radio' id='repeatYRadio' name='patternRadio'/>repeat-y
+        <input type='radio' id='noRepeatRadio' name='patternRadio'/>no repeat
+     </div>
+    <canvas id="can2" width="400" height="300" style="border: 1px solid #ccc;">
+        Canvas not supported</canvas>
+    <script>
+        let canvas = document.getElementById('can'),
+            context = canvas.getContext('2d'),
+            // 线性渐变
+            // gradient = context.createLinearGradient(0, 0, canvas.width, 0);
+            gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
+            // 添加颜色和停止点  
+            gradient.addColorStop(0, 'blue')
+            gradient.addColorStop(0.25, 'white')
+            gradient.addColorStop(0.5, 'purple')
+            gradient.addColorStop(0.75, 'red')
+            gradient.addColorStop(1, 'yellow')
+            context.fillStyle = gradient;
+            context.rect(0, 0, canvas.width, canvas.height);
+            context.fill();
+
+        // 放射渐变 createRadialGradient(x, y, r, x1, y1, r1) x，y，r画圆为起始区域 x1,y1,r1画圆为终止区域
+        let canvas1 = document.getElementById('can1'),
+            context1 = canvas1.getContext('2d'),
+            gradient1 = context1.createRadialGradient(canvas1.width/2, canvas1.height, canvas1.width/4,
+                               canvas1.width/2, 0, canvas1.width/2);
+            gradient1.addColorStop(0, 'red');
+            gradient1.addColorStop(0.25, 'white');
+            gradient1.addColorStop(0.5, 'purple');
+            gradient1.addColorStop(0.75, 'red');
+            gradient1.addColorStop(1, 'yellow');
+            context1.fillStyle = gradient1;
+            context1.fillRect(0, 0, canvas1.width, canvas1.height);
+        // 图案填充createPattern 用来在canvas之中对图案和文本，video进行描述与填充
+        let canvas2 = document.getElementById('can2'),
+            context2 = canvas2.getContext('2d'),
+            repeatRadio = document.getElementById('repeatRadio'),
+            noRepeatRadio = document.getElementById('noRepeatRadio'),
+            repeatXRadio = document.getElementById('repeatXRadio'),
+            repeatYRadio = document.getElementById('repeatYRadio'),
+            image = new Image();
+
+        function fillCanvasWithPattern(repeatString) {
+            let pattern = context2.createPattern(image, repeatString);
+            context2.clearRect(0 ,0, canvas2.width, canvas2.height);
+            context2.fillStyle = pattern;
+            context2.fillRect(0, 0, canvas2.width, canvas2.height);
+        }
+        repeatRadio.onclick = function (e) {
+            fillCanvasWithPattern('repeat'); 
+        };
+
+            repeatXRadio.onclick = function (e) {
+            fillCanvasWithPattern('repeat-x'); 
+        };
+
+            repeatYRadio.onclick = function (e) {
+            fillCanvasWithPattern('repeat-y'); 
+        };
+
+            noRepeatRadio.onclick = function (e) {
+            fillCanvasWithPattern('no-repeat'); 
+        };
+
+            image.src = 'redball.png';
+            image.onload = function (e) {
+            fillCanvasWithPattern('repeat');
+        };
+
+
+    </script>
+</body>

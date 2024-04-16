@@ -1,0 +1,73 @@
+<html>
+    <head>
+
+    </head>
+    <body>
+        <canvas id="can" width="500px" height="500px" style="border: 1px solid black"></canvas>
+        <script>
+            let can = document.getElementById('can')
+            let ctx = can.getContext('2d');
+            // 想要很多小球 直接new就好，参数为属性
+            // 小球在最左边是 x = r ，所以圆心边界是[r, width -r]，[r, height -r]
+            function DrawArc(x, y, r, color, dx, dy) {
+                this.x = x;
+                this.y = y;
+                this.dx = dx;
+                this.dy = dy;
+                this.draw = function() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, r, 0, 2 * Math.PI);
+                    ctx.fillStyle = color;
+                    ctx.fill();
+                    ctx.closePath();
+                }
+                this.update = function() {
+                    // 左右边界检测，碰到边界改变方向
+                    if(this.x < r || this.x > can.width - r) {
+                        this.dx = - this.dx;
+                    }
+                    if( this.y < r || this.y > can.height - r) {
+                        this.dy = -this.dy;
+                    }
+                    this.x += this.dx;
+                    this.y += this.dy;
+                    this.draw();
+                }
+
+            }
+            // 根据边界获取随机数
+            function getRandom(min, max) {
+                return Math.floor(Math.random() * (max - min + 1) + min);
+            }
+            // 颜色列表
+            const COLOR_LIST = ['#ff4858', '#1b7f79', '#00ccc0', '#72f2eb', '#747f7f']
+            // 随机获取颜色
+            const giveMeColor = () => {
+               const index = getRandom(0, COLOR_LIST.length);
+               return COLOR_LIST[index]
+            }
+            // 需要小球池子存放小球
+            let BALL_POOL =  [];
+            for(let i = 0; i < 1; i++) {
+                const r = getRandom(1, 15);
+                const x = getRandom(r, can.width - r);
+                const y = getRandom(r, can.height - r);
+                const dx = (Math.random() - 0.5) * 20;
+                const dy = (Math.random() - 0.5) * 20;
+                const color = giveMeColor();
+                BALL_POOL.push(new DrawArc(x, y, r, color, dx, dy));
+            }
+            // 小球动起来实际上是刷新画布，且小球左边改变，绘制-坐标更新-清空画布-绘制
+            function animate() {
+                // 调用自身
+                requestAnimationFrame(animate);
+                ctx.clearRect(0, 0, can.width, can.height);
+                for (let ball of BALL_POOL) {
+                    ball.update();
+                };
+            }
+            animate();
+
+        </script>
+    </body>
+</html>

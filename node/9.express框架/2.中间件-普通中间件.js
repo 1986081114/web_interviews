@@ -5,7 +5,7 @@ const app = express()
 app.use((req,res,next) => {
     console.log('注册第一个中间件')
   
-    next() //z这个是为了执行下一个能匹配到的中间件
+    next(111) //z这个是为了执行下一个能匹配到的中间件 next 如果带参数 就会终止
 })
 app.use((req,res,next) => {
     console.log('注册第二个中间件')

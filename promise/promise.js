@@ -1,6 +1,9 @@
 /* https://www.bilibili.com/video/BV1GA411x7z1?p=27&spm_id_from=pageDriver */
 /* https://blog.csdn.net/luo1831251387/article/details/115643059 */
 //构造函数
+//  promise 构造函数必须传入一个 执行函数 ，否则会报错
+// then 方法是 创建实例之后调用的， 所以需要再创建一个类方法， 千万不要在constructor里面
+// then 传递两个参数， 一个是当状态为fulfilled 成功 时执行的代码，另一个是当状态为 rejected 拒绝 时执行的代码。
 function myPromise(executor) {
     this.promiseState = 'pending'
     this.promiseResult = null;
@@ -28,7 +31,7 @@ function myPromise(executor) {
         self.promiseState = 'rejected'
         self.promiseResult = data
         setTimeout(() => {
-            self.callabcks.forEach(item => {
+            self.callbacks.forEach(item => {
                 item.onRejected(data)
             })
         });

@@ -11,6 +11,14 @@ class Greeter {
     }
 }
 let greeter = new Greeter("world")
+
+// 构造函数不能声明返回类型。 因为他总是返回实例对象
+        class B {
+            constructor():object { // 报错
+                // ...
+            }
+        }
+
 //2.继承
 class Animal {
     move(distance: number = 0) {
@@ -47,12 +55,17 @@ class Dog extends Animal {
         this.dogname = dogname
     }
     fathermove(distance = 5) {
+        // super相当于调用基类的move方法
         super.move(distance)
     }
     //重写父类的方法
     move(distace = 6) {
         console.log(`${this.dogname}` + distace)
 
+    }
+    // 但是，子类的同名方法不能与基类的类型定义相冲突。
+     move(distace: string) {
+        // 报错，定义不相同
     }
 }
 
@@ -73,7 +86,7 @@ class Animal {
 }
 */
 /* 当成员标记成private， 他就不能在声明她的类外部访问，如果其中一个类型里包含一个private成员， 
-那么只有当另一个类型中也存在这样一个private成员， 并且都是来自同一处声明，才认为这两个类型是兼容的 protected类似
+   那么只有当另一个类型中也存在这样一个private成员， 并且都是来自同一处声明，才认为这两个类型是兼容的 protected类似
  */
 class Animal {
     private name: string;
@@ -89,6 +102,9 @@ class Rhino extends Animal {
     constructor() {
         super("rhino")
     }
+    // showX() {
+    //     console.log(this.name); // 报错 子类不能访问
+    // }
 }
 class Employee {
     private name: string;
@@ -100,14 +116,13 @@ class Employee {
 let animal = new Animal("animal")
 let rhino = new Rhino;
 let employee = new Employee("Bob")
-//animal.name不能这么访问，因为是私有的
-//animal.test()可以输出animal.访问私有变量    但是如果public改成private就不能访问了
-//rhino.test().输出rhino
+//animal.name 子类不能访问，因为是私有的
+
 
 animal = rhino//正确，这两个私有变量来自一处 ，animal.name是错误的，因为name是私有的，
 animal = employee//错误，不兼容
 
-//protected与private很相似，但是成员在派生类中可以访问
+//protected与private很相似，但是子类可以访问
 class Animal {
     private name: string;
     protected age: number;
@@ -134,12 +149,28 @@ class Rhino extends Animal {
         return `Hello, my age is ${this.age} and I work in ${this.department}.`;
     }
 }
-//注意顺序，不能论 string number string
+
+//注意顺序，不能乱 string number string
 let howard = new Rhino("Howard", 20, "Sales");
 console.log(howard.getPublic());
 console.log(howard.age); // 错误  protected只能自己和子类访问， howard不是子类
 
 //5.只读 readonly ，不能修改，只能在声明时或者构造函数里被初始化
+    class A {
+        readonly id:string;
+        constructor() {
+            this.id = 'bar'; // 正确
+        }
+    }
+    // 构造函数内部设置只读属性的初值是可以的
+
+    class A {
+        readonly id:string = 'foo';
+        constructor() {
+            this.id = 'bar'; // 正确
+        }
+    }
+    // 构造函数内部修改只读属性也是可以的，，或者说两个地方设置只读属性值，以构造函数为准
 
 //6.存取器：
 class Employee {
@@ -197,7 +228,6 @@ class Person extends Man {
     constructor() {
         super("person")
     }
-
 }
 let man = new Man("footballer");
 //man.player//错误
@@ -273,3 +303,75 @@ console.log(greeter2.greet());//hey there
  或者更确切的说，"告诉我 Greeter标识符的类型"，也就是构造函数的类型。 这个类型包含了类的所有静态成员和构造函数。
   之后，就和前面一样，我们在 greeterMaker上使用 new，创建 Greeter的实例。
 */
+
+
+/**
+ * 9. 类的 interface接口
+ *    implements关键字
+ *        interface或者tyep别名，可以用对象的形式，为class指定一组检查条件，class使用implements关键字使用
+                * interface Country {
+                    name:string;
+                    capital:string;
+                }
+                // 或者
+                type Country = {
+                    name:string;
+                    capital:string;
+                }
+                class MyCountry implements Country {
+                    name = '';
+                    capital = '';
+                }
+    class使用接口或者关键字只是实现类型检查，但是还需要类型声明，否则在class使用属性值时会报错
+    impletement后面也可以是另一个类
+ *        
+ * 
+ */
+
+    /**
+     * 10. class的类型
+     *   实例类型： ts的类都是代表自身的实例类型而不是class的自身类型
+     *            作为类型使用时，类名只能表示实例的类型，不能表示类的自身类型。
+     * class Point {
+            x:number;
+            y:number;
+        }
+        // 错误
+        function createPoint(
+            PointClass: Point, // 错误， point是实例类型，而不是class的自身类型
+            x: number,
+            y: number
+        ) { 
+            return new PointClass(x, y);
+        }
+        
+     *  
+         自身类型：回去类的自身类型最简单方法就是typeof
+           function createPoint(
+            PointClass: typeof Point,
+            x:number,
+            y:number
+            ):Point {
+                return new PointClass(x, y);
+            }
+        
+        // 类只是构造函数的语法糖，本质上是构造函数的另一种写法，所以类的自身属性也可以写成构造函数形式
+            function createPoint(
+                PointClass: new (x:number, y:number) => Point,
+                x: number,
+                y: number
+            ):Point {
+                return new PointClass(x, y);
+            }
+     *  // 构造函数也可以写成对象形式，
+             function createPoint(
+                PointClass: {
+                    new (x:number, y:number)： Point,
+                }
+                x: number,
+                y: number
+            ):Point {
+                return new PointClass(x, y);
+            }
+     * 
+     */

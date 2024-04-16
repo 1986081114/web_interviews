@@ -1,0 +1,77 @@
+<html>
+    <body>
+        <canvas id="mycanvas" width="800px" height="500px" style="border: 1px solid black"></canvas>
+        
+        <script>
+            let can = document.getElementById('mycanvas');
+            let ctx = can.getContext('2d');
+            // 重力
+            let Gravity = 0.8;
+            let Friction = 0.9;
+             // 根据边界获取随机数
+             function getRandom(min, max) {
+                return Math.floor(Math.random()*(max - min + 1) + min);
+            }
+            // 随机获取颜色
+            const giveMeColor = () => {
+               const index = getRandom(0, COLOR_LIST.length);
+               return COLOR_LIST[index]
+            }
+            // 颜色列表
+            const COLOR_LIST = ['#ff4858', '#1b7f79', '#00ccc0', '#72f2eb', '#747f7f'];
+
+            function Ball( x, y, r, color, dx, dy) {
+                this.dx = dx;
+                this.dy = dy;
+                this.x = x;
+                this.y = y;
+                this.draw = function(){
+                    ctx.beginPath();
+                    ctx.fillStyle = color;
+                    ctx.arc(this.x, this.y, r, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.closePath();
+                };
+                this.update = function() {
+                    // 要判断加上dy后，也就是更新后是否超过底部， 所以有this.dy + Gravity
+                    // 每次接触地面的时候，增加摩擦力Friction
+                    if (this.y + r + this.dy + Gravity > can.height) {
+                        this.dy = -this.dy;
+                        this.dy *= Friction;
+                        this.dx *= Friction;
+                    } else {
+                        // 往下落加速度 0.8
+                        this.dy += Gravity;
+                    }
+                    // 左右边界检测，碰到边界改变方向
+                    if(this.x < r || this.x > can.width - r) {
+                        this.dx = - this.dx;
+                    }
+                    this.x += this.dx;
+                    this.y += this.dy;
+                    this.draw();
+                }
+            }
+            let ballArray = []
+            for(let i = 0; i < 100; i++) {
+                let r = getRandom( 1, 15);
+                let x = getRandom(r, can.width - r);
+                let y = getRandom(r, can.height - r);
+                const dx = (Math.random() - 0.5) * 20;
+                const dy = (Math.random() - 0.5) * 20;
+                let color = giveMeColor(COLOR_LIST);
+                ballArray.push(new Ball(x, y, r, color, dx, dy));
+            }
+            function animate(){
+                requestAnimationFrame(animate);
+                ctx.clearRect(0, 0, can.width, can.height);
+                for(let ball of ballArray) {
+                    ball.update();
+                }
+
+            }
+            animate();
+
+        </script>
+    </body>
+</html>

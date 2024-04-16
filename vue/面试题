@@ -3,10 +3,12 @@
   组件事件绑定通过vue自定义的$on实现
 
 2.为什么v-if和v-for不建议一起使用：
-   当v-for和v-if处于同一个节点， v-for优先级比v-if更高， 这意味着v-if将分别重复运行在每一个v-for循环中， 先循环在判断，性能浪费
+   当v-for和v-if处于同一个节点， vue2 v-for优先级比v-if更高， 这意味着v-if将分别重复运行在每一个v-for循环中， 先循环在判断，性能浪费
+      但是在vue3 v-if优先级比v-for更高，但是依旧不能一起使用
     解决：
         在外层嵌套一个template（页面不会生成dom节点）， 在这一层先v-if判断在内部进行v-for
         如果出现条件在内部， 使用computed，对数据过滤
+   
 
 3.组建的data为什么是函数：
    组件可以复用，而且每个组件都有自己的状态，如果data是一个对象，在js里对象是引用关系，那么复用的组件共享一样的data，子组件data属性会相互影响，
@@ -324,10 +326,18 @@ watch: { //通过watch来监听路由变化
          <template v-slot:header>
        v-slot缩写#
 
-      作用域插槽： 访问子组件的值
+      作用域插槽： 父组件访问子组件的值, 父组件根据子组件传过来的插槽数据进行不同的展示
           <slot v-bind:user="user">
                {{ user.lastName }}
             </slot>
+           data: {
+            return :
+              user: {
+                 lastName: 222,
+                 furstname: 11
+              }
+           }
+
          父组件：
              <template v-slot:default="slotProps">
                {{ slotProps.user.firstName }}

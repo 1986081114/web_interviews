@@ -1,20 +1,85 @@
-vue组件有相同的逻辑就用mixin
+ Mixin 提供了一种非常灵活的方式，来分发 Vue 组件中的可复用功能，Mixin对象能够使用组件的任何属性
+    （data，mounted，created，update等），而且当组件使用Mixin时，这个Mixin的所有信息也会混合到这个组件里，
+     这个组件就能够访问到所有Mixin的属性就像声明在自己对象中一样。在日常的开发中，我们经常会遇到在不同的组件中经
+     常会需要用到一些相同或者相似的代码，这些代码的功能相对独立。
+     我们想要去监听在什么阶段时什么组件被加载了，被卸载了等等，我们可以这么做：
 
-  mixins: [mixin],
+    Vue.mixin({
+        mounted() {
+            console.log(`${this.$route.name} component mounted!`)
+        },
+        destroyed() {
+            console.log(`${this.$route.name} component destroyed!`)
+        }
+    })
+  如果我们并不想给每一个组件实例都混入这些配置options，而只是个别的组件，最好不要使用mixin，它可能会影响到我们组件的性能。
 
-  如多个组件都是用mounted做相同的事情，
-  都是用同一个数据
 
-选项合并：
-  组件和混入对象含有同名属性，那么会合并，如果是data等，发生冲突以组件数据优先，
-  同名钩子函数也会被合并，但是混入对象的狗仔将在组件自身的钩子之前。
-  值为对象的选项，例如 methods、components 和 directives，将被合并为同一个对象。两个对象键名冲突时，取组件对象的键值对。
+  Mixin 和 mixins 的区别
+   Mixin 接收的是对象。
+       Mixin 用于全局混入，会影响到每个组件实例，通常插件都是这样做初始化的。使用时格外小心！一旦使用全局混入，
+       它将影响每一个之后创建的 Vue 实例。使用恰当时，这可以用来为自定义选项注入处理逻辑
+  mixins 接收的是一个 Mixin 对象的数组。
+   组件中单独混入，即局部混入。是我们最常使用的扩展组件的方式了。如果多个组件中有相同的业务逻辑，就可以将这些逻辑剥离出来，
+   通过 mixins 混入代码。
+
+使用mixins：
+    在所需组件引入并通过 mixins 使用。该组件在使用的时候，混合了mixin里面的方法，在自动执行create生命钩子，执行hello方法
+      const myMixin = {
+        created: function() {
+            this.hello()
+        },
+        methods: {
+            hello: function() {
+                console.log('hello from mixin!')
+            }
+        }
+    }
+    export default myMixin
+
+  //  局部混入引入mixin
+  import myMixin from '@/mixin/mixin.js';
+
+  export default defineComponent({
+      // 局部混入,使用mixin
+      mixins: [myMixin],
+      name: 'MixinDemo',
+  });
+
+  全局混入
+  在 main.js 文件中，通过 Vue.mixin() 进行全局的混入,
+// 引入mixin
+import myMixin from '@/mixin/mixin.js';
+// 全局混入,使用mixin
+Vue.mixin(myMixin)
+
+特点：
+方法和参数在各组件中不共享
+  如混入对象中有一个 cont:1的变量, 在组件A中改变cont值为5，这时候在组件B中获取这个值，拿到的还是1，
+  还是混入对象里的初始值，数据不共享
+值为对象的选项
+   如methods, components等，选项会被合并，键冲突的组件会覆盖混入对象的，比如混入对象里有个方法A，
+   组件里也有方法A，这时候在组件里调用的话，执行的是组件里的A方法
+值为函数的选项 
+   如created, mounted等，就会被合并调用，混合对象里的钩子函数在组件里的钩子函数之前调用，同一个钩子函数里，
+   会先执行混入对象的东西，再执行本组件的
+
+
+与vuex的区别:
+vuex：用来做状态管理的，里面定义的变量在每个组件中均可以使用和修改，在任一组件中修改此变量的值之后，其他组件中此变量的值也会随之修改。
+Mixins：可以定义共用的变量，在每个组件中使用，引入组件中之后，各个变量是相互独立的，值的修改在组件中不会相互影响。
+
+
+与公共组件的区别
+
+组件：在父组件中引入组件，相当于在父组件中给出一片独立的空间供子组件使用，然后根据props来传值，但本质上两者是相对独立的。
+
 
 
   缺点：
      变量来源步明确，不利于阅读。
      可能有命名冲突，
+     可重用性是有限的：我们不能向 mixin 传递任何参数来改变它的逻辑，这降低了它们在抽象逻辑方面的灵活性。
      mixin出现多对多关系，复杂度高
-
-vue-router vuex怎么在vue生效
-    通过vue的插件系统，用vue.mixin混入到全局，在每个组件的生命周期的某个阶段注入组件实例。
+     
+解决就是vue3的组合式API

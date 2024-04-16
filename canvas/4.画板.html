@@ -1,0 +1,105 @@
+<html>
+    <head>
+        <style>
+            * {
+                padding: 0;
+                margin: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <button id="huabi">画笔</button>
+            <button id="rect">正方形</button>
+            <button id="arc">圆形</button>
+            <button id="clear">清空</button>
+            <button id="save">保存</button>
+        </div>
+        <canvas
+            id="canvas"
+            width="800"
+            height="600"
+            style="border: 1px solid #ccc;"
+        >
+        </canvas>
+        <script>
+            let isDraw = false;
+            let beginX = 0, beginY = 0;
+            let type = 'huabi',imageData = ''
+            let canvas = document.getElementById('canvas');
+            let ctx = canvas.getContext('2d');
+            canvas.onmousedown = function(e){
+                console.log('down')
+                isDraw = true;
+                beginX = e.pageX - canvas.offsetLeft;
+                beginY = e.pageY - canvas.offsetTop;
+            }
+            canvas.onmousemove = function(e){
+                if(!isDraw) return;
+                let x = e.pageX - canvas.offsetLeft;
+                let y = e.pageY - canvas.offsetTop;
+                window[`${type}Fn`](x, y)
+            }
+            canvas.onmouseup = function(){
+                imageData = ctx.getImageData(0, 0, 800, 600);
+                isDraw = false
+            }
+            let huabi = document.getElementById('huabi');
+            huabi.addEventListener('click', function(){
+               type = 'huabi'
+            })
+            let rect = document.getElementById('rect');
+            rect.addEventListener('click', function(){
+                console.log('rect')
+                type = 'rect'
+            })
+            let arc = document.getElementById('arc');
+            arc.addEventListener('click',function(){
+                type = 'arc'
+            })
+            let clear = document.getElementById('clear');
+            clear.addEventListener('click',function(){
+               imageData = '';
+               ctx.clearRect(0 ,0, 800, 600);
+            })
+            let save = document.getElementById('save');
+            save.addEventListener('click',function(){
+               const url = canvas.toDataURL();
+               console.log(url)
+               const a = document.createElement("a");
+               a.download = 'zj';
+               a.href = url;
+               document.body.appendChild(a);
+               //a.innerHTML = '下载链接'
+               a.click();
+               document.body.removeChild(a);
+            })
+            function huabiFn(x, y){
+               ctx.beginPath();
+               ctx.arc(x, y, 3 , 0, 2 * Math.PI);
+               ctx.fillStyle = 'red';
+               ctx.fill();
+               ctx.closePath();
+            }
+            function rectFn(x , y){
+                ctx.clearRect(0 ,0, 800, 600);
+                //保留之前画的图案
+                imageData&& ctx.putImageData(imageData, 0, 0, 0, 0, 800, 600);
+                ctx.beginPath();
+                ctx.strokeStyle = 'red';
+                ctx.rect(beginX, beginY, x-beginX, y-beginY);
+                ctx.stroke();
+                ctx.closePath();
+            }
+            function arcFn(x, y){
+                ctx.clearRect(0, 0, 800, 600);
+                imageData && ctx.putImageData(imageData, 0, 0, 0, 0, 800, 600);
+                ctx.beginPath();
+                ctx.arc(beginX, beginY, Math.round(Math.sqrt((x - beginX) * (x - beginX) + (y - beginY) * (y - beginY))),0 , 2 * Math.PI);
+                ctx.stroke();
+                ctx.closePath();
+            }
+     
+        </script>
+    </body>
+</html>

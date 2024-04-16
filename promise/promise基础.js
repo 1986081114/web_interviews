@@ -1,3 +1,19 @@
+/* 
+  promise 是异步编程的一种解决方案, promise是一个对象从中可以获取异步操作的消息，它提供各种统一
+    api，各种异步操作可以用同样的方法进行处理。
+    promise对象主要有两个特点：
+       对象的状态不受外界影响，只有异步操作的结果可以决定当前是那个状态，其余任何操作都无法改变这个状态
+       这也是promise名称的由来， 承诺，表示其他手段无法改变
+
+       一旦状态改变，就不会在变了，promise状态的改变只有两种： 从pednging到 成功 或 从等待到失败。
+       如果改变已经发生，只要添加回调函数就能获取到结果，这与事件是不同的，事件的特点是，如果你错过了他，再去监听他，是的不到结果的。
+
+    缺点：
+       无法取消promise，一旦创建就会执行，无法中途取消
+       不设置回调函数，内部抛出错误，不会反应到外部
+       当处于pengding状态时，无法得知进展到了哪一步（刚开始还要要完成）
+*/
+
 /*
  promise有三种状态， 等待状态pending， 执行状态fulfilled，拒绝状态rejected，一旦promise被resolve或reject
  不能再迁移至其余状态。
@@ -14,28 +30,26 @@ promise凭什么解决了回调地狱问题：
    3.错误冒泡 .cache
    前面的错误会一直传递下去直到cache
 
-错误冒泡机制：
+错误冒泡机制：也是异常穿透
 一旦其中有一个PENDING状态的 Promise 出现错误后状态必然会变为失败, 然后执行 onRejected函数，而这个 onRejected 执行又会抛错，
 把新的 Promise 状态变为失败，新的 Promise 状态变为失败后又会执行onRejected......就这样一直抛下去，
 直到用catch 捕获到这个错误，才停止往下抛。这就是 Promise 的错误冒泡机制。
 
-
 */
+
 /* 
 链式调用：
   then中新创建的promise状态变为fullfilled的节点是在上一个promsie的回调执行完毕的时候， 也就是说， 当一个promise的状态被fulfilled之后
-  就会执行其回调函数， 而回调函数返回结果会被当作value返回给下一个promise（then中产生的），同时下一个promsie状态也会改变（resolve，或reject）
-  然后再去执行其1回调， 以此类推， 就是链式调用
-
+  就会执行其回调函数，而回调函数返回结果会被当作value返回给下一个promise（then中产生的），同时下一个promsie状态也会改变（resolve，或reject）
+  然后再去执行其回调， 以此类推， 就是链式调用
 
   将传给 then 的函数和新 promise 的 resolve 一起 push 到前一个 promise 的 callbacks 数组中，达到承前启后的效果
 承前：当前一个 promise 完成后，调用其 resolve 变更状态，在这个 resolve 里会依次调用 callbacks 里的回调，这样就执行了 then 里的方法了
 启后：上一步中，当 then 里的方法执行完成后，返回一个结果，如果这个结果是个简单的值，就直接调用新 promise 的 resolve，让其状态变更，
 这又会依次调用新 promise 的 callbacks 数组里的方法，循环往复。。如果返回的结果是个 promise，则需要等它完成之后再触发新 promise 的 resolve，
 所以可以在其结果的 then 里调用新 promise 的 resolve
-
-
 */
+
 /* 
 
 promise为什么引入微任务：
@@ -55,6 +69,27 @@ promise为什么引入微任务：
     
    
 */
+
+// promise异常穿透： 前一个p1的状态决定后一个p2的状态
+//    当使用promise then链式调用，可以在最后指定失败的回调
+//    前面任何操作出现了异常，都会传递到最后失败的回调中进行处理；
+//    let p = new Promise((resolve, reject) => {
+//     setTimeout(() => {
+//         reject('第一种err');
+//     }, 2000)
+// })
+// p.then(res => {
+//     console.log(111); //2s后不会输出111
+// }).then(res => {
+//     console.log(222); //2s后不会输出222
+// }).catch(err => {
+//     console.log(err) //最终直接走这里哈
+// })
+// 之所以会走这里是因为，是setTimeout抛出了一个错误的异常；所以不会走then;而是直接走catch;
+// 之所以是走catch;根据Promise的异常穿透
+// 异常穿透前提是之前的then没有reject回到函数
+
+
 /*
 异步编程：
    fs文件操作
@@ -125,24 +160,7 @@ resolve（）
       throw‘出问题了’ reject
 */
 /*
-promise异常穿透：
-   当使用promise then链式调用，可以在最后指定失败的回调
-   前面任何操作出现了异常，都会传递到最后失败的回调中进行处理；
-   let p = new Promise((resolve, reject) => {
-    setTimeout(() => {
-        reject('第一种err');
-    }, 2000)
-})
-p.then(res => {
-    console.log(111); //2s后不会输出111
-}).then(res => {
-    console.log(222); //2s后不会输出222
-}).catch(err => {
-    console.log(err) //最终直接走这里哈
-})
-之所以会走这里是因为，是setTimeout抛出了一个错误的异常；所以不会走then;而是直接走catch;
-之所以是走catch;根据Promise的异常穿透
-异常穿透前提是之前的then没有reject回到函数
+
 
 */
 /*

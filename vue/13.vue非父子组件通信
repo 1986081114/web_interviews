@@ -14,18 +14,17 @@
 
 4.provide/inject：（祖孙）
     父组件通过provider提供变量， 子组件通过inject注入变量。
+     注入方：
+        function update() {}
+        provide('注入名字'， {
+           传递值，
+           传递函数 update， 可以通过这个函数让接收方改变注入方的值，因为建议在一个容器内改变值
+        })
+        provide('read-only-count', readonly(count))  可以使用readonly强制约束数据不能被接收方改变。
 
-     export default {
-    name: "A",
-    provider: {
-      for: "demo"
-    },
-    components:{
-      comB
-    }
-  }
-
-  接收：inject: ['for'],
+    接收方
+      const {值， 函数update} = inject('约定的名字'， ' 默认值');
+    
 
   
 

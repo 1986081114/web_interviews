@@ -43,7 +43,7 @@
     难以维护：
       
 模块化规范：
-   1）：CommonJS:
+   1）：CommonJS: CJS(node中使用)
         在服务器端：模块的加载是运行时同步加载的
         在浏览器端，模块需要提前编译打包；
         
@@ -106,7 +106,7 @@
                 m1.show()
                 m4.show()
                 })
-    4）ES6模块化：
+    4）ES6模块化： (ESM)
          es6模块的设计思想是尽量的静态化， 使得编译时就能确定模块的关系， 以及输入输出关系
          commonjs和amd只有在运行时才能确定， 异步的
 
@@ -116,14 +116,77 @@
              不能将import放在if等语句内
 
         es6和commonjs差异：
-            两者的模块导入导出语法不同：commonjs是module.exports，exports导出，require导入；ES6则是export导出，import导入。
-            commonjs是运行时加载模块，ES6是在静态编译期间就确定模块的依赖。
-            ES6在编译期间会将所有import提升到顶部，commonjs不会提升require。
-            commonjs导出的是一个值拷贝，会对加载结果进行缓存，一旦内部再修改这个值，则不会同步到外部。ES6是导出的一个引用，内部修改可以同步到外部。
+            语法:
+                CJS: 使用 require() 来导入模块，使用 module.exports 或 exports 来导出。
+                ESM: 使用 import 和 export 关键字。
+            运行时与编译时:
+                CJS: 在运行时解析依赖。
+                ESM: 在编译时解析依赖。（静态）
+            异步与同步:
+                CJS: 同步加载模块。
+                ESM: 支持异步加载。
+            作用域:
+                CJS: 每个模块有自己的作用域。
+                ESM: import 和 export 必须位于模块作用域。
+            互操作性:
+                CJS: 在 Node.js 中广泛使用，但不是原生浏览器支持。
+                ESM: 既可以在现代浏览器中使用，也逐渐在 Node.js 中得到支持。
+             commonjs导出的是一个值拷贝(值传递)对象，会对加载结果进行缓存 缓存的实现就是在编译执行阶段完成的，会先去判断是否已经加载过相同模块的, 如果已经加载将直接返回缓存内容的，而不是值的缓存
+             基本数据类型相当于赋值，开辟了新的内存地址，所以info改了并不会影响module.export里面的值 但如果是引用类型，相当于是导出info的内存地址， info改变 module.export也会改变
+
+            ES6是导出的一个只读引用，内部修改可以同步到外部（引用传递）。 对于原始类型，不能改变这个引用值， 但如果是数组等，可以改变其属性值。
+
+             ES6在编译期间会将所有import提升到顶部，commonjs不会提升require。
             commonjs具有缓存
             commonjs中顶层的this指向这个模块本身，而ES6中顶层this指向undefined。
             CommonJs 是单个值导出，ES6 Module可以导出多个
 
+        https://es6.ruanyifeng.com/#docs/module-loader#%E5%BE%AA%E7%8E%AF%E5%8A%A0%E8%BD%BD
+        CJS和ESM分别是怎么解决循环依赖的吗
+            在cjs中发生循环依赖时，模块系统会返回目前为止已经解析并执行的部分，这意味着，在循环依赖的情况下，
+            可能会得到一个不完全初始化的模块。
+
+            ESM采用了一种不同的方法来出来循环依赖，由于esm在编译时解析依赖，他能更好的处理这种情况
+            在esm中，导入的值是可读的引用，而不是拷贝，所以即使存在循环依赖，也能得到预期的效果。
+            假设 从a.js开始执行，发现了另外一条import语句，执行b.js 
+                 在b.js开始执行，发现了一条import语句，引入a.js，因为之前a.js已经被依赖过，我们不会再去执行这条路径
+            深度优先的方式 模块依赖关系图已经形成一个树状图
+
+            两种模块化方案对于循环依赖的处理其实很相似，都是会 优先加载引入的模块，如果模块已经存在就会提取
+            当前已经定义的变量值(CommonJS 使用值传递，而 ESM 则是引用传递)，由于两个方案的引入机制不同，
+            所以会造成引入变量在原始模块的变量改变之后，产生不一样的结果(CommonJS 维持引入当下的值，
+            ESM 的引用会正确的与原始变量同步更新)实际上要使两种方案都有一样的表现并且同步变量的解决方案也很简单，
+            我们就只需要定义一个不会改变的对象 const obj = {}
+
+
+    es6和 cjs互相引用： https://es6.ruanyifeng.com/#docs/module-loader#CommonJS-%E6%A8%A1%E5%9D%97%E5%8A%A0%E8%BD%BD-ES6-%E6%A8%A1%E5%9D%97
+       1. cjs的的 require不能加载es6模块， 因为 require是同步加载，而 es6内可以使用顶层await命令，导致无法同步加载
+       但是  在 cjs中可以执行如下方法
+       (async () => {
+            await import('./my-app.mjs');
+            })();
+
+       2. es6 import可以 加载cjs模块，但是只能整体加载,这是因为es6需要支持静态代码分析，
+          而cjs模块输出的是一个对象，无法静态解析,只能整体加载
+          可以使用module.createRequire解决
+        // 正确
+        import packageMain from 'commonjs-package';
+        // 报错
+        import { method } from 'commonjs-package';
+
+        3. 同时支持
+         如果原始模块是cjs，可以加个包装成
+             import cjsModule from '../index.js';
+            export const foo = cjsModule.foo;
+             // 整体加载csj在根据需要输出 具名接口
+        如果原始 模块是 es6，可以给出一个 整体输出接口
+          比如export default obj，使得 CommonJS 可以用import()进行加载
+
+        在 package.json 内添加exports字段指明两种格式模块各自的加载入口。
+          "exports"：{
+            "require": "./index.js"，
+            "import": "./esm/wrapper.js"
+            }
     
     AMD 和 CMD 规范的区别？
 

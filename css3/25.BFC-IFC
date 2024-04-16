@@ -1,5 +1,6 @@
 BFC（Block Formatting Context）块级格式化上下文
 IFC（Inline Formatting Context） 行内格式化上下文
+FFC Flexible Formatting Context弹性盒格式化上下文 flex 布局
 
 块级格式化上下文，是一个独立的渲染区域，只有块级盒子参与，规定了内部的块级盒子如何布局
 渲染规则：

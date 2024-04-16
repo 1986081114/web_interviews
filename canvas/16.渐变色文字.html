@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Telescoping with the Canvas clip region</title>
+      <style>
+         #canvas {
+            margin-left: 10px;
+            margin-top: 10px;
+              border: 1px solid cornflowerblue;
+            background: #eeeeee;
+            border: thin solid #aaaaaa;
+            -webkit-box-shadow: rgba(200, 200, 255, 0.9) 5px 5px 10px;
+            -moz-box-shadow: rgba(200, 200, 255, 0.9) 5px 5px 10px;
+            box-shadow: rgba(200, 200, 255, 0.9) 5px 5px 10px;
+         }
+      </style>
+   </head>
+
+   <body>
+        <canvas id='canvas' width='1000' height='620'>
+         Canvas not supported
+        </canvas>
+
+      <script>
+        let canvas = document.getElementById('canvas');
+            context = canvas.getContext('2d'),
+            image = new Image(),
+            gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
+
+            function drawGradientText() {
+                context.fillStyle = gradient;
+                context.fillText('canvas', 65, 200);
+                context.strokeText('canvas', 65, 200);
+            }
+
+            function drawPatternText() {
+                context.fillStyle = pattern;
+                context.fillText('canvas', 65, 450);
+                context.strokeText('canvas', 65, 450);
+            }
+
+            image.onload = function(e) {
+                pattern = context.createPattern(image, 'repeat');
+                drawPatternText();
+            }
+
+            image.src = 'redball.png';
+            context.font = '256px Palatino';
+            context.fillStyle = 'cornflowerblue';
+            gradient.addColorStop(0, 'blue');
+            gradient.addColorStop(0.25, 'blue');
+            gradient.addColorStop(0.5, 'white');
+            gradient.addColorStop(0.75, 'red');
+            gradient.addColorStop(1.0, 'yellow');
+
+            drawGradientText();
+        
+       
+      </script>
+   </body>
+</html>
