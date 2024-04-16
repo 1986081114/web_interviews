@@ -1,0 +1,82 @@
+<html>
+    <head>
+        <!-- 
+            贝塞尔曲线
+               是描述二维图形应用程序的数学曲线,起始点，终止点，控制点（调整控制点，图形会发生变化）
+                一阶贝塞尔曲线本质是一个线性函数，y = kx + b;
+            二阶贝塞尔曲线是canvas内容，quadraticCurveTo（拉扯点，终止点）, 但是无法控制k，也就是斜率.
+               二阶的每个点都是满足一阶贝塞尔曲线
+
+         -->
+
+    </head>
+    <body>
+        <canvas id="can" width="1000" height="1000" style="border: 1px solid black"></canvas>
+
+        <script>
+            const canvas = document.getElementById('can');
+            const ctx = canvas.getContext( '2d' );
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#000';
+            let percent = 20;
+            let count = 80;
+            // 定义圆心
+            const center = [300, 300];
+            const radius = 300;
+            const colors = [];
+            getRandomColor(colors,count);
+            function animate() {
+                ctx.clearRect(0 ,0, canvas.width, canvas.height);
+                for( let i = 0; i < count; i++) {
+                    const angle = Math.PI * 2 / count * i ;
+                    const x = center[0] + radius * Math.sin(angle);
+                    const y = center[1] + radius * Math.cos(angle);
+                    ctx.strokeStyle = colors[ i ];
+                    ctx.beginPath();
+                    drawWithDiscrete(ctx, center,[180,50],[x,y],percent)
+                    ctx.stroke();
+                }
+                percent = ( percent + 1 ) % 100;
+                requestAnimationFrame(animate);
+            }
+            animate();
+            // 这个方程就是二次贝赛尔曲线方
+            function twoBezizer(p0, p1, p2, t) {
+                const k = 1 - t
+                return k * k * p0 + 2 * (1 - t) * t * p1 + t * t * p2
+            }
+            // 一阶贝塞尔曲线(两个点)
+            function oneBezizer(p0,p1,t) {
+                return p0 + (p1 - p0) * t;
+            }
+            function drawWithDiscrete(ctx, start, control, end,percent) {
+                ctx.moveTo(start[0], start[1]);
+                const t = percent/ 100;
+                // 求出A点
+                const A = [];
+                const C = [];
+                A[0] = oneBezizer(start[0],control[0],t);
+                A[1] = oneBezizer(start[1],control[1],t);
+                C[0] = twoBezizer(start[0], control[0], end[0], t)
+                C[1] = twoBezizer(start[1], control[1], end[1], t)
+                ctx.quadraticCurveTo( 
+                    A[ 0 ], A [ 1 ],
+                    C[ 0 ], C[ 1 ]
+                );
+            }
+            function getRandomColor(colors, count) {
+                // 生成随机颜色
+                for ( let i = 0; i < count; i++ )  {
+                    colors.push( 
+                        'rgb( ' + 
+                            ( Math.random() * 255 >> 0 ) + ',' +
+                            ( Math.random() * 255 >> 0 ) + ',' + 
+                            ( Math.random() * 255 >> 0 ) + 
+                        ' )'
+                    );
+                }
+            }
+
+        </script>
+    </body>
+</html>

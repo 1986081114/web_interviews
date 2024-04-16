@@ -1,0 +1,28 @@
+HTML5引入的最让人惊讶的最新能力之一是对2D和3D图形以及多媒
+体方面的支持，这将彻底改变网页的渲染方式和复杂度。这里包括但
+是不限于HTML5视频、Canvas 2D、WebGL（也就是Canvas 3D），以及
+CSS3 3D变换（transform）和转换（transition）。HTML5视频引入了
+一个新的“video”元素，支持在网页中播放视频。Canvas2D通过定义
+一个新的“canvas”元素，网页开发者利用该元素的2D绘图上下文
+（graphics context）调用标准定义的接口，绘制常见的2D图形，例
+如点、线、矩形、多边形等。WebGL则是使用“canvas”元素，网页开
+发者可以利用该元素的3D绘图上下文调用标准定义的接口，绘制3D图
+形，这些接口类似于OpenGL ES的接口。CSS 3D的变换和转换则可以作
+用于HTML的任意可视元素，制造出各种炫丽的3D效果。
+
+1新增 document.queryselector和document.querySelectorAll
+2.媒体新增video和audio
+3.本地存储新增localstorage和sessionstorage
+4.语义化标签 footer header section
+5.全双工通信协议 websocket
+6.历史管理 history pushSatete replacestate
+
+移除元素：
+  对页面产生负影响元素：
+    frame， frameset
+
+iframe缺点：
+   iframe会阻塞onload事件
+   搜索引擎检索程序不会打开这种页面， 不利于seo
+   iframe与页面共享连接池， 浏览器对相同域的连接有限制， 会影响页面的并行加载
+   可以通过给iframe动态添加src属性，绕开上述两个问题。

@@ -161,6 +161,32 @@ Bigint和Number区别：
  
 */
 
+/* 
+判断空对象：
+   1, json.stringify()
+   console.log(JSON.stringify({}) === '{}'); // true
+   console.log(JSON.stringify({a:1}) === '{}'); // false
+    console.log(JSON.stringify({a: function(){}}) === '{}') // true json方法在对象内全是函数时 时效，
+
+    2, for in
+    let result=function(obj){
+    for(let key in obj){
+        return false;//若不为空，可遍历，返回false
+    }
+      return true;
+    }
+   console.log(result(obj));
+
+   3. Object.keys()方法
+   console.log(Object.keys({a: function() {}}).length === 0); // false
+   console.log(Object.keys({}).length === 0); // true
+   console.log(Object.keys({a :1}).length === 0); // false
+
+
+   
+
+*/
+
 
 
 

@@ -3,8 +3,8 @@
  创建项目 express express-demo
  进入项目
  安装依赖： npm install
- 启动项目： node bin/www
- m
+ 启动项目： node name
+ 
  默认打开是 localhost: 3000
 */
 /* 
@@ -32,21 +32,44 @@
 */
 
 const express = require('express')
+const cors = require('cors')
 
 const app = express()
+app.use(cors())
+app.set('host', '172.24.246.23')
+
+// app.all('*', function (req, res, next) {
+//   console.log('all')
+//   res.header('Access-Control-Allow-Origin', '172.24.246.23');
+//   //Access-Control-Allow-Headers ,可根据浏览器的F12查看,把对应的粘贴在这里就行
+
+//   res.header('Access-Control-Allow-Methods', '*');
+//   res.header('Access-Control-Allow-Credentials', 'true');
+//   res.next()
+
+// });
 
 app.get('/',(req,res) => {
     res.end("Hello Express");
 })
 app.post('/', (req, res, next) => {
-  
+  res.end("Hello Express");
 })
 
 app.post('/login', (req, res, next) => {
   res.end("Welcome Back~");
 })
+app.post('/trade/gateway/h5Inner/channelAllInfo', (req, res, next) => {
+  console.log('req', req)
+  res.setHeader('Access-Control-Allow-Origin', 'http://172.24.246.23:3000');
+  //Access-Control-Allow-Headers ,可根据浏览器的F12查看,把对应的粘贴在这里就行
+
+  res.setHeader('Access-Control-Allow-Methods', '*');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.end("user register success~");
+})
 
 //监听
 app.listen(8000, () => {
-    console.log('open')
+    console.log('open11')
 })

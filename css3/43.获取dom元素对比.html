@@ -1,0 +1,81 @@
+<html>
+    <head>
+        <!-- 
+        Dom：将 web页面和 脚本或者程序语言结合起来。
+            文档对象模型，是html和xml文档的编程接口，提供了对文档的结构化表述，提供一种方式可以使从程序中对该结构访问,从而改变
+            文档的样式， 结构和 内容.Dom将文档解析为一个由节点和 对象组成的集合。
+         -->
+         
+        <!-- 
+            getElement ： 通过 一种标志（id, 类名，标签名）获取
+            querySelector: 查询选择器
+
+            getElementsByTagNameNS(namespace, name) 方法返回带有指定名称和命名空间的所有元素的 NodeList。
+
+            getElementsByClassName, getElementsByTagName, 得到的是html引用对象（HTMLCollection）,不能forEach循环
+            getElementsByName、querySelectorAll得到的是NodeList。， 可以forEach循环循环。
+            querySelectorAll获取到的数组是静态的
+            getElementsByName、getElementsByClassName和getElementsByTagName获取到的数组是动态的
+
+            1.getElement(s)Byxxxx 获取的是动态集合，querySelector 获取的是静态集合
+            2. nodeList 和 HTMLCollection都返回后类似数组的对象， 
+            但是nodeList可以forEach循环循环，HTMLCollection不能forEach循环循环
+            HTMLCollection可以通过id,class等名字进行获取,或者索引,而NodeList只可以通过索引进行获取
+
+            NodeList 对象会包含文档中的所有节点，如 Element、Text 和 Comment 等；
+            HTMLCollection 对象只会包含文档中的 Element 节点, 是node的一种。
+
+            node是个基本类型， DOM中的Element(元素)，Text(文本)和Comment(注释)都继承于它,一共有十多种。
+            元素一定是节点，而节点不一定是元素。
+
+            只是进行读操作，不涉及写操作，那么getElementByXX性能更好。querySelector的查找性能不是非常完备，
+            但是因为是一次性查找，不涉及引用，所以可以读写交叉。
+         -->
+
+    </head>
+    <body>
+        <div id="box" class="box">111</div>
+        <div class="box" name="boxDiv">2222</div>
+        <div class="box" name="boxDiv">3333</div>
+        <div class="box"></div>
+        <div class="box"></div>
+        
+    </body>
+    <script>
+        let getElementById = document.getElementById('box');
+        let querysSelectorAll = document.querySelectorAll('div');
+        let getElementsByTagName = document.getElementsByTagName('div');
+        console.log('getElementById', getElementById);
+        console.log('getElementByClassName', document.getElementsByClassName('box'));
+        console.log('getElementsByTagName', getElementsByTagName);
+        console.log('getElementByName', document.getElementsByName('boxDiv'));
+        console.log("querysSelectorAll", querysSelectorAll);
+        console.log("querysSelectorAll", document.querySelectorAll('.box'));
+
+        let addDiv = document.createElement('div');
+        addDiv.setAttribute("name", "boxDiv");
+        document.body.appendChild(addDiv);
+        console.log('querysSelectorAllAdd', querysSelectorAll.length); // 5 静态不会动态增长
+        console.log('getElementsByTagNameAdd', getElementsByTagName.length); // 6 动态
+ 
+        // 可以改变元素样式
+        getElementById.style.backgroundColor = 'red';
+        // 可以改变元素样式
+        querysSelectorAll.forEach(item => {
+            item.style.color = 'green';
+        });
+
+        // 会报错， 不能forEach循环
+        // getElementsByTagName.forEach(item => {
+        //     item.style.color = 'black';
+        // })
+        // 但是可以for循环
+        for(let j = 0; j<getElementsByTagName.length; j++) {
+            console.log('getElementsByTagName[j]',getElementsByTagName[j])
+            getElementsByTagName[j].style.color = 'pink';
+        }
+
+
+
+    </script>
+</html>

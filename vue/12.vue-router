@@ -39,11 +39,42 @@ SEO 难度较大：由于所有的内容都在一个页面中动态替换显示�
 
 vuerouter种路由模式的说明如下：
 
+更新视图但不重新请求页面是前端路由原理的核心之一
+
 hash: 使用 URL hash 值来作路由。支持所有浏览器，包括不支持 HTML5 History Api 的浏览器；
 
 history : 依赖 HTML5 History API 和服务器配置。具体可以查看 HTML5 History 模式；
 
 abstract : 支持所有 JavaScript 运行环境，如 Node.js 服务器端。如果发现没有浏览器的 API，路由会自动强制进入这个模式.
+
+hash模式：在浏览器会出现 符号# #以及后面跟着的字符都被称为hash，
+      可以改变URL，但不会触发页面重新加载 所以这种模式不利于 SEO 优化
+      只能修改  #  后面的部分，因此只能跳转与当前 URL 同文档的 URL
+      通过  window.onhashchange  监听  hash  的改变，借此实现无刷新跳转的功能。
+      hash 值得改变会在浏览器的历史记增加访问记录，所以可以通过浏览器的回退、前进控制 hash 值的改变。
+      路由的hash模式 利用window可以监听onhashchange事件来实现，也就是说hash值是用来指导浏览器动作的
+      对服务器没有影响，没改变一次hash值都会在浏览器访问历史中增加一个记录，
+     。
+
+
+history模式： history采用html的新特性， 完成URL 跳转而无须重新加载页面
+        history  模式是通过调用  window.history  对象上的一系列方法来实现页面的无刷新跳转。   
+        通过pushState、replaceState实现无刷新跳转的功能。
+   hash模式url里面永远带着#号，开发当中默认使用这个模式。如果用户考虑url的规范那么就需要使用history模式，
+   因为history模式没有#号，是个正常的url，适合推广宣传；
+   路径直接拼接在端口号后面，后面的路径也会随着http请求发给服务器，因此前端的URL必须和向发送请求后端URL保持一致，否则会报404错误。
+
+   功能上：比如我们在开发app的时候有分享页面，那么这个分享出去的页面就是用vue或是react做的，
+   咱们把这个页面分享到第三方的app里，有的app里面url是不允许带有#号的，所以要将#号去除那么就要使用history模式，
+  
+生产环境问题：
+   因为history模式 路径会随着http请求发送给服务器，项目打包部署时，需要后端配置nginx，当应用通过router跳转到某个页面后
+   因为此时是前端路由控制页面跳转，虽然url改变但是只是页面内容发生改变并没有重新发送请求，但是当前页面刷新下，就会重新发起请求
+   如果当前nginx没有匹配到当前URL，就会404
+
+   但是hash模式不会出现，因为hash虽然改变了url但是不会包括在http请求中，所以对于请求来讲，页面路径还是之前的路径，nginx不会拦截
+
+   那为什么开发环境时就不会出现404呢？ 因为在 vue-cli  中  webpack  帮我们做了处理
 
 
  this.$router和this.$route区别：
@@ -55,6 +86,7 @@ query和params区别：
    query是path和name来引用， params只能用name引用，在path会被忽略 分别是this.$route.query.name , this.$route.params.name
    url地址显示， query在url显示， params不显示
    query刷新不会丢失query里面的数据 params刷新 会 丢失 params里面的数据。
+   params传参，push里面只能是 name:‘xxx’,不能是path:‘/xxx’,因为params只能用name来引入路由，如果这里写成了path，接收参数页面会是undefined！！！
 
 router-link-active
 

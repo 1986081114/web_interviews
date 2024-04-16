@@ -1,0 +1,22 @@
+<html>
+<head>
+  <title>Web Work Demo</title>
+  <meta charset="UTF-8" />
+</head>
+<body>
+  <div id="app"> Hello Jartto! </div>
+</body>
+<script>
+    // 一般需要服务器才能使用 web work
+    const worker = new Worker('./worker.js')
+    // 监听接收worker线程发的消息
+    worker.onmessage = e => {
+        const message = e.data;
+        console.log(`[From Worker]: ${message}`);
+        document.getElementById('app').innerHTML = message;
+    };
+    // 向worker线程发送消息
+   worker.postMessage('写的真好!');
+
+</script>
+</html>

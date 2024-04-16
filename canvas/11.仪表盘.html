@@ -1,0 +1,180 @@
+<html>
+  <head>
+    <title>A Dial Showing the Degrees of a Circle</title>
+
+    <style>
+      body {
+         background: #eeeeee;
+      }
+
+      #canvas {
+         background: #ffffff;
+         cursor: crosshair;
+         margin-left: 10px;
+         margin-top: 10px;
+         -webkit-box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+         -moz-box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+         box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+      }
+
+    </style>
+  </head>
+
+   <body>
+      <canvas id='canvas' width='650' height='450'>
+         Canvas not supported
+      </canvas>
+
+    <script>
+        let canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            // 表盘基础样式
+            CENTRO_RADIUS = 10,
+            CENTRO_STROKE_STYLE = 'rgba(0, 0, 0, 0.5)',
+            CENTRO_FILL_STYLE = 'RGBA(80, 190, 240, 0.6)',
+            // 内外半径
+            RING_INNER_RADIUS = 35,
+            RING_OUTER_RADIUS = 55,
+            // 刻度样式
+            ANNOTATIONS_FILL_STYLE = 'rgba(0, 0, 230, 0.9)',
+            ANNOTATIONS_TEXT_SIZE = 12,
+
+            TICK_WIDTH = 10,
+            TICK_LONG_STROKE_STYLE = 'rgba(100, 140, 230, 0.9)',
+            TICK_SHORT_STROKE_STYLE = 'rgba(100, 140, 230, 0.7)',
+
+            TRACKING_DIAL_STROKING_STYLE = 'rgba(100, 140, 230, 0.5)',
+
+            GUIDEWIRE_STROKE_STYLE = 'goldenrod',
+            GUIDEWIRE_FILL_STYLE = 'rgba(250, 250, 0, 0.6)',
+            circle = { x: canvas.width/2,
+               y: canvas.height/2,
+               radius: 150
+             };
+             // 绘制背景框
+             function drawGrid(color, stepx, stepy) {
+                context.save();
+                
+                context.strokeStyle = color;
+                context.fillStyle = '#ffffff';
+                context.lineWidth = 0.5;
+                context.fillRect(0, 0, context.canvas.width,
+                                        context.canvas.height);
+                for(let i = stepx + 0.5; i < canvas.width; i += stepx) {
+                    context.beginPath();
+                    context.moveTo(i, 0);
+                    context.lineTo(i, canvas.height);
+                    context.stroke();
+                }
+                for(let j = stepy + 0.5; j < canvas.height; j += stepy) {
+                    context.beginPath();
+                    context.moveTo(0, j);
+                    context.lineTo(canvas.width, j);
+                    context.stroke();
+                }
+                context.restore();
+                                        
+             }
+
+             function drawDial() {
+                let loc = {x: circle.x, y: circle.y};
+                drawCentroid();
+                drawCentroidGuidewire(loc);
+                drawRing();
+                drawTickInnerCircle();
+                drawTicks();
+                drawAnnotations();
+             }
+             // 绘制圆心
+             function drawCentroid() {
+                context.beginPath();
+               
+                context.strokeStyle = CENTRO_STROKE_STYLE;
+                context.fillStyle = CENTRO_FILL_STYLE;
+                context.arc(circle.x, circle.y, CENTRO_RADIUS, 0, Math.PI*2, false);
+                context.fill();
+                context.stroke();
+               
+             }
+             // 绘制刻度到圆心的线
+             function drawCentroidGuidewire(loc) {
+                
+             }
+             // 绘制刻度盘的外边园
+             function drawRing() {
+               context.beginPath();
+               context.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+               context.arc(circle.x, circle.y, circle.radius + RING_INNER_RADIUS, 0, Math.PI * 2, false);
+               context.stroke();
+
+               context.shadowColor = 'rgba(0, 0, 0, 0.7)';
+                context.shadowOffsetX = 3,
+                context.shadowOffsetY = 3,
+                context.shadowBlur = 6,
+               context.strokeStyle = TRACKING_DIAL_STROKING_STYLE;
+               context.arc(circle.x, circle.y, circle.radius + RING_OUTER_RADIUS, 0, Math.PI * 2, true);
+               // 非0环绕规则
+               context.fillStyle = 'rgba(100, 140, 230, 0.1)';
+               context.fill();
+               context.stroke();
+             }
+             function drawTickInnerCircle() {
+               
+                context.beginPath();
+                context.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+                context.arc(circle.x, circle.y,
+                            circle.radius + RING_INNER_RADIUS - TICK_WIDTH,
+                            0, Math.PI*2, false);
+                context.stroke();
+                
+             }
+             function drawTicks() {
+                var radius = circle.radius + RING_INNER_RADIUS,
+                    ANGLE_MAX = 2*Math.PI,
+                    ANGLE_DELTA = Math.PI/30,
+                    tickWidth;
+                
+                for (var angle = 0, cnt = 0; angle < ANGLE_MAX;
+                                                angle += ANGLE_DELTA, cnt++) {
+                    drawTick(angle, radius, cnt); 
+                }
+
+            }
+            function drawTick(angle, radius, cnt) {
+                var tickWidth = cnt % 5 === 0 ? TICK_WIDTH : TICK_WIDTH/2;
+                
+                context.beginPath();
+                        
+                context.moveTo(circle.x + Math.cos(angle) * (radius - tickWidth),
+                                circle.y + Math.sin(angle) * (radius - tickWidth));
+
+                context.lineTo(circle.x + Math.cos(angle) * (radius),
+                                circle.y + Math.sin(angle) * (radius));
+
+                context.strokeStyle = TICK_SHORT_STROKE_STYLE;
+                context.stroke();
+            }
+            // 刻度数字
+            function drawAnnotations() {
+                let radius = circle.radius + RING_INNER_RADIUS;
+                context.fillStyle = ANNOTATIONS_FILL_STYLE;
+                context.font = ANNOTATIONS_TEXT_SIZE + 'px Helvetica'; 
+                // 一共16个数字
+                for(let angle = 0; angle < 2 * Math.PI; angle += Math.PI/6) {
+                    context.beginPath();
+                    context.fillText((angle * 180 / Math.PI).toFixed(0),
+                    circle.x + Math.cos(angle) * (radius - TICK_WIDTH*2),
+                    circle.y - Math.sin(angle) * (radius - TICK_WIDTH*2));
+                }
+            }
+             context.shadowOffsetX = 2;
+             context.shadowOffsetY = 2;
+             context.shadowBlur = 4;
+
+             context.textAlign = 'center';
+             context.textBaseline = 'middle';
+             drawGrid('lightgray', 10, 10);
+             drawDial();
+    </script>
+  </body>
+</html>

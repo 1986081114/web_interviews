@@ -4,6 +4,7 @@
               避免使用iframe：样式和脚本需要额外链入，调用外部页面,需要额外调用css,增加页面额外的请求次数，增加服务器的http请求；
 
     CSS优化： 避免使用css的@import：使用@import引入CSS会影响浏览器的并行下载
+              两个css文件用link引入是并行下载的 ，但是如果有@import是串行请求的了,且 多个import文件只有当所有的link文件完成后会并行引入。
               避免使用通配符
               避免使用！import
               避免使用css表达式，
@@ -20,6 +21,24 @@
                减少加载体积， 压缩图片，css，js html 代码等。
       组件不要太深
       使用事件委托取代大量事件的绑定
+
+    懒加载： 资源懒加载 任何媒体资源、CSS、JavaScript、图像、甚至HTML都可以被懒加载。每次加载有限的页面的内容，可以提高关键渲染路径。
+                      * 不要在加载页面时加载这个整个页面的 CSS、JavaScript 和 HTML。
+                      * 相反，可以为一个button添加一个事件监听，只有在用户点击按钮时才加载脚本。
+                      * 使用Webpack来完成懒加载功能。
+            路由懒加载
+    合理使用web worder: Web Worker是HTML新标准中引入的规范,定义了一套API,允许一段JavaScript程序允许在主线程之外的另外一个线程中, Web worker使得网页中进行多线程编程成为可能
+              无法访问DOM元素,document,window
+                   很容易理解,想象JavaScript被设计成单线程的原因就知道了,如果有多个页面可以操作DOM,那么很有可能在操作同一个DOM不同的线程出现冲突,我们也称之为了race condition。
+              无法访问LocalStorage
+                   和对 dom 元素的限制一样，因为读写 LocalStorage 是同步的，一定会引起 race condition
+              Web Worker 不支持跨域
+                   无法和主线程共享内存、worker 之间也无法共享内存，所以无需保护数据
+    使用骨架屏 减少白屏
+
+
+
+    骨架屏优化白屏时长: 
 
     描述一个互联网产品的时候：
       首屏加载的速度

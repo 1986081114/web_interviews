@@ -32,7 +32,7 @@ js异步加载：
     严格来说这并不算异步加载， 但是最常用的方式。 一是不会造成页面的阻塞， 就算加载时间过长也不会看到页面一片空白， 而且也可以在脚本中操作dom
 
     2.defer： 
-       通过给script标签设置defer书香，将脚本设为延迟加载，当浏览器遇到带有defer的script标签时，
+       通过给script标签设置defer标签，将脚本设为延迟加载，当浏览器遇到带有defer的script标签时，
        就会在开启一个线程去下载js文件， 同时继续解析html文档，等全部的html全部解析完成dom之后再去执行加载好的js文件（DomContentLoaden执行之后在执行）
        这种方式只适用于引用外部的js文件的script，可以保证多个js执行顺序就是他们的defer顺序，
        但是添加了defer的文件不应该使用document.write方法。

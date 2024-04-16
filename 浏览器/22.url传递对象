@@ -1,0 +1,22 @@
+传递参数为对象的时候， 需要转换成字符串，然后再接收的时候，在转化成对象。
+
+ let curr = `${str}${location.href.indexOf('?') !== -1 ? '&' : '?'}authid=${authid}&params=${encodeURIComponent(JSON.stringify(obj))} `;
+  // 解析
+ let queryArr = window.location.search.substring(1).split('&');
+ queryArr.forEach(queryVal => {
+    if(queryVal.split('=')[0] === 'params') {
+        let mydata = JSON.parse(decodeURIComponent(queryVal.split('=')[1]))
+            console.log('params', typeof mydata);
+        }
+ });
+
+前端编码原因：
+   1. 当传递的参数值中包含特殊字符 比如&， 需要编码，否则会被后端认为是截断
+   2. 当在路径上需要传递回调地址 不能url+url，所以需要编码。
+encodeURI 和encodeURIComponent都是编码url，只是编码的范围不同
+ encodeURI 不会对 ASCII字母数字 ~！@#￥%&*（）：？/，+ 进行编码
+ encodeURIComponent 不会对ASCII 字母数字 ~！*（）进行编码
+ encodeURIComponent相较于encodeURI，会对 @#$=/&:,;+ 进行编码。
+ 所以encodeURI适用于编码整个url，因为不会编码// 还能正常使用.
+ encodeURIComponent适用于编码URL中的参数，此时需要对于部分的参数进行更进一步的编码。
+

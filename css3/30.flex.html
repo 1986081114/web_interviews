@@ -1,4 +1,9 @@
 <!-- 
+https://www.w3cplus.com/css/unknown-details-of-the-flexbox-layout.html
+display: flex/ inline-flex
+  display: flex， 容器宽度和父容器等宽，即width:100%，也称为块flexbox容器
+  display: inline-flex 宽度由子元素内容决定，即width: auto，也称为内联flexbox容器
+
 flex 1原理： flex是 flex-grow, flex-shrink, flex-basis三个属性的缩写 ，
        该属性有两个快捷值：auto (1 1 auto) 和 none (0 0 auto)
        flex默认属性时 0 1 auto（不会放大会缩小）
@@ -34,7 +39,7 @@ flex-basis：定义在分配剩余空间之前，项目占据的主轴空间， 
     column： 主轴为垂直方向，起点在上测
     column-reverse： 主轴为垂直，起点在下侧
   
-  2.flex-wrap：nowrap| wrap| wrap-reverse
+  2.flex-wrap：nowrap| wrap| wrap-reverse  遇到flex:1; 不能生效。
        如果一条轴排不下，如何换行。
        nowrap（默认）： 不换行
        wrap： 换行，第一行在上方

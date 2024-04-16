@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+        }
+        #main {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+    </style>
+</head>
+
+
+<body>
+<!-- canvas 抗锯齿，模糊 -->
+    <!--  
+        canvas绘制有时候会从某个点向两边扩散,如果位置在某个像素点的顶点，1px/2= 0.5px;
+        左右两侧应该都是0.5px,但是无法绘制半个像素，最小也是1px，两边都扩展，就变成了2px元素,
+        而自动补足的这一部分不是之前的颜色，而是根据算法生成的
+
+        canvas元素与其它元素不同，它是一个基于像素的位图容器,当将canvas元素的宽高只通过css设置时，
+        实际上仅设置了对用的设备独立像素尺寸，在处理像素图形时，浏览器无法自动确定如何将
+        设备独立像素映射到物理像素
+
+        canvas.width: 表示物理像素，画布内的实际像素值
+        canvas.clientWidth: 画布的显示宽度，单位是设备独立像素
+
+        canvas有两个尺寸，
+           绘制缓冲区大小： 表示可以绘制内容的最大区域，单位是物理像素(可以通过canvas的heght，width设置)
+           canvas显示大小，表示canvas在页面显示的大小clinehtWidth
+        
+        正常情况下需要 绘图缓冲区大小和 画布大小一致，否则会产生锯齿
+        我们可以通过canvas.width 和 canvas.clientWidth 来分别获取绘图缓冲区宽度和画布宽度，
+          如果不同，可以调用相关API来重新设置绘图缓冲区宽度。
+        例如在three.js中，可以利用 renderer.setSize函数实现 canvas 绘图缓冲区的大小设置。
+
+        
+    -->
+   <canvas id="main"></canvas>
+
+</body>
+<!-- <script src="https://cdn.bootcss.com/three.js/r83/three.min.js"></script> -->
+<script type="importmap">{
+	"imports": {
+		"three": "https://threejs.org/build/three.module.js"
+	}
+}</script>
+<script type="module">
+    import * as THREE from 'three';
+    // import * as THREE from 'three';
+    function main() {
+        const canvas = document.querySelector('#main');
+       const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+
+        const fov = 75;
+        const aspect = 2;
+        const near = 0.1;
+        const far = 5;
+        const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+        // camera.position.z = 2;
+        camera.position.set(0 ,0, 2)
+
+        const scene = new THREE.Scene();
+        // 灯光
+        {
+            const color = 0xFFFFFF;
+            const intensity = 3;
+            const light = new THREE.DirectionalLight(color, intensity);
+            light.position.set(1, -1, 4);
+            scene.add(light);
+        }
+
+        // 几盒立方体
+        const boxWidth = 1;
+        const boxHeight = 1;
+        const boxDepth = 1;
+        const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+        const material = new THREE.MeshPhongMaterial({ color: 0x44aa88 }); // greenish blue
+
+        const cube = new THREE.Mesh(geometry, material);
+
+        scene.add(cube);
+       
+
+        // 判读是否更新canvas尺寸. 防止模糊
+        // canvas 有两个尺寸，一个是页面的显示尺寸，一个是内部属性分辨率（绘图缓冲区）
+        // 需要让 页面css尺寸和 内部尺寸一致，否则就更新
+        function resizeRendererToDisplaySize(renderer) {
+            const canvas = renderer.domElement;
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            const needResize = canvas.width !== width || canvas.height !== height;
+            if (needResize) {
+                // setSize设置canvas的绘图缓冲区
+                renderer.setSize(width, height, false);
+            }
+            return needResize;
+        }
+
+        function render(time) {
+            // 6.28 旋转一圈
+            time *= 0.001;
+            if (resizeRendererToDisplaySize(renderer)) {
+                // 防止拉伸变形，将相机的宽高比设置为canvas的宽高比
+                const canvas = renderer.domElement;
+                camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                camera.updateProjectionMatrix();
+
+            }
+            cube.rotation.x = time;
+            cube.rotation.y = time;
+            renderer.render(scene, camera);
+            requestAnimationFrame(render);
+        }
+        requestAnimationFrame(render)
+    }
+    main();
+</script>
+
+</html>

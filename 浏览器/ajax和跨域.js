@@ -46,6 +46,14 @@ XMLHttpRequest（XHR）对象用于与服务器交互， 通过xhr可以在不�
             });
                    
          2.跨域资源共享CORS：主流的跨域解决方案
+
+           浏览器限制，不一定是 限制发起跨站请求，也可能会是跨站请求正常发起，但是返回后i结果北欧浏览器拦截了
+           浏览器将不同域名的内容隔绝在不同的进程中，网络进程负责下载资源并发送到渲染进城，但是由于域限制
+           某些资源被阻止加载到渲染进程，通过CORB过滤恶意的返回内容（CORB是一种安全机制。防止跨域请求恶意访问跨域响应的内容）  
+
+           跨源资源共享CORS是指一种机制，允许在受控的条件下，不同源的网络能够请求和共享资源。
+           CORS 提供了一种方式来解决在 Web 应用中进行跨域数据交换的问题。
+
            普通跨域请求：只服务端设置Access-Control-Allow-Origin即可，前端无须设置，若要带cookie请求：
            前后端都需要设置。需注意的是：由于同源策略的限制，所读取的cookie为跨域请求接口所在域的cookie，
            而非当前页。如果想实现当前页cookie的写入
@@ -60,7 +68,7 @@ XMLHttpRequest（XHR）对象用于与服务器交互， 通过xhr可以在不�
                    accept acept-language， content-language last-event-id content-type仅限于 application/x-www-form-urlencoded multipart/form-data， text/plain
 
             简单请求就是前端什么也不做， 如果需要携带cookie，前后端都要设置一下， 
-            非简单请求会发出一次遇检测请求，返回码204菜通过预检测， 浏览器先询问服务器，当前网页所在的域名是否在服务器的许可名单之中
+            非简单请求(跨域)会发出一次遇检测请求，返回码204菜通过预检测， 浏览器先询问服务器，当前网页所在的域名是否在服务器的许可名单之中
             ，以及可以使用哪些HTTP动词和头信息字段。只有得到肯定答复，浏览器才会发出正式的XMLHttpRequest请求，否则就报错。
 
             如： access-control-allow-origin： 它的值是请求时origin字段的值， 如果是*，标识接受任域名请求
@@ -130,6 +138,12 @@ ajax和jsonp区别：
   ajax存在同源检查， jsonp是一个同步检查
   ajax支持各种检查， jsonp只支持get请求
   
+
+CSP: n内容安全策略， 为了页面内容安全而制定的一系列防护策略，通过cps所约束的规则指定可信的内容来源。
+     本质是建立一个白名单， 告诉浏览器那些外部资源可以加载，那些要被拦截。
+     通常有两种方式来开启 CSP，一种是设置 HTTP 首部中的 Content-Security-Policy，一种是设置 meta 标签的方式：<meta http-equiv="Content-Security-Policy">
+      Content-Security-Policy: <policy-directive>; <policy-directive
+     
 
 同源策略： 
         origin： web内容的源由用于访问它的url的协议  主机域名 端口定义。 只有当方案 主机 端口都匹配时两个对象具有相同的起源

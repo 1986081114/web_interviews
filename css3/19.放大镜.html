@@ -67,9 +67,11 @@
     </div>
     <!-- 
            offset client style scroll 区别：
-           offset 可以得到任意样式的样式值
+           offset 页面偏移 可以得到任意样式的样式值
                    获取的数值没有单位
-                    offsetWidth包括 padding + border + width
+                    offsetWidth：元素的可见宽度 包括 padding + border + width+ 滚动条宽度
+                    offsetLeft: 元素距离父元素左边框的距离
+                    offsetX：鼠标位置相对于事件源元素的x坐标(ie属性)
                     只读属性，不能复制
                     获取元素大小更适合
             style：只能得到行内样式表中的样式值
@@ -78,9 +80,19 @@
                    可读写。可以获取也可以赋值
                    元素更改更合适
             client: 
-              clientWidth: 得到 padding + width  不包括边框 border ，不带单位
-              clientTop/Left： 返回元素上/左边框大小
-            scroll： content + padding + 溢出内容尺寸 返回值不带单位 返回自身的宽度 滚动距离
+                clientWidth:元素内容的可见宽度， 得到内边距和内容宽度 padding + width  不包括边框 border和 滚动条 ，不带单位
+                clientTop/Left：元素可见上边框宽度(border) 返回元素上/左边框大小
+                clientX: 鼠标位置相对于浏览器窗口可视区域的x坐标,可视区域不包括滚动条和工具栏
+                pageX: 相当于包含了滚动条的clientX
+            
+            scroll:
+                scrollWidth：可滚动的宽度(可视宽度+隐藏宽度) hidden 也包含 返回值不带单位
+                          
+                scrollTop: 内容层顶部到可视区域顶部的距离
+
+            screenLeft: 代表窗口相对于屏幕左边的位置
+            window.innerWidth: 表示容器中间页面视图的大小。
+            window.outerWidth：整个浏览器窗口的宽度
 
     
              mouseenter： 鼠标只有经过自身盒子才会触发。 不会冒泡

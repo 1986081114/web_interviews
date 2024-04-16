@@ -1,0 +1,111 @@
+<!-- 
+    虚拟列表，
+    https://www.zhihu.com/question/525562842
+    虚拟列表其实是按需显示的一种实现，即只对可视区域进行渲染，对非可视区域不渲染或者部分渲染的技术
+    首屏渲染时，只加载可视区域内的列表项，当滚动发生时动态通过计算获取可视区域列表项，将非可视区域内的删除
+
+    
+ -->
+<html>
+    <head>
+        <style>
+            /* 可视区域的容器*/
+            html body {
+                height: 100%;
+            }
+            .container {
+                height: 100%;
+                overflow: auto;
+                position: relative;
+                -webkit-overflow-scrolling: touch;
+                border: 1px solid black;
+                height: 500px;
+                width: 200px;
+                margin-top: 300px;
+
+            }
+            /* 容器内的占位，高度为总列表的高度，用于形成滚动条 */
+            .phantom {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0;
+                z-index: -1;
+
+            }
+            /* 列表的渲染区域 */
+            .list {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                text-align: center;
+            }
+
+        </style>
+    </head>
+    <body>
+        <input>
+        <div>
+            <div class="container" id="container">
+                <div class="phantom" id="phantom"></div>
+                <div class="list" id="list"></div>
+            </div>
+        </div>
+       
+        <script>
+            // 总数
+            let total = 100000;
+            // 每项高度
+            let itemSize = 100;
+            let start = 0;
+            let startOffset = 0;
+            let listData = [];
+            for(let i = 0; i< total; i++) {
+                listData.push({id: i, value: i});
+            }
+            // 列表项总高度
+            let listHeight = total * itemSize;
+            let phantom = document.getElementById('phantom');
+            phantom.style.height = listHeight + 'px';
+            let container = document.getElementById('container');
+            container.addEventListener('scroll', scrollEvent)
+            let screenHeight = container.clientHeight;
+            console.log(screenHeight);
+            // 可显示的列表项
+            let visibleCount = Math.ceil(screenHeight / itemSize);
+            let list = document.getElementById('list');
+            let end = start + Math.ceil(screenHeight / itemSize);
+            function scrollEvent() {
+                // 当前滚动位置
+               let scrollTop = container.scrollTop;
+               start = Math.floor(scrollTop / itemSize);
+               end = start + visibleCount;
+               startOffset = scrollTop - (scrollTop % itemSize);
+               render(start, end, startOffset, true);
+
+            }
+            function render(start, end, startOffset, isScroll) {
+
+                 // 获取真实显示的列表项
+                 let visibleData = listData.slice(start, Math.min(end, total));
+                 for(item of visibleData) {
+                    if(isScroll) {
+                        let div1 = document.querySelector('#item');
+                        div1 && div1.parentNode.removeChild(div1)
+                        console.log(div1)
+                    }
+                    let div = document.createElement('div');
+                    div.innerHTML = item.value;
+                    div.id = 'item';
+                    div.style.height = itemSize + 'px';
+                    div.style.lineHeight = itemSize + 'px';
+                   // list.removeChild(div1);
+                    list.appendChild(div)
+                    list.style.transform = `translate3d(0, ${startOffset}px, 0)`;
+                 }
+            }
+            render(start, end, 0, false)
+        </script>
+    </body>
+</html>

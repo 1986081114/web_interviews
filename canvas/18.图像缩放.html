@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>A Simple Text Cursor</title>
+
+    <style>
+      body {
+         background: #eeeeee;
+      }
+
+      #fontSelectDiv {
+         position: absolute;
+         left: 20px;
+         top: 20px;
+      }
+      #scaleSlider {
+        vertical-align: 10px;
+        width: 100px;
+        margin-left: 90px;
+      }
+      #controls {
+        margin-left: 15px;
+        padding: 0;
+      }
+      #scaleOutput {
+        position: absolute;
+        width: 60px;
+        height: 30px;
+        margin-left: 10px;
+        text-align: center;
+        color: blue;
+        font: 18px;
+        text-shadow: 2px 2px 4px rgba(100, 140, 250, 0.8);
+      }
+
+      #canvas {
+         background: #ffffff;
+         cursor: text;
+         margin-left: 10px;
+         margin-top: 10px;
+         -webkit-box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+         -moz-box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+         box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+           border: 1px solid rgba(0,0,0,0.2);
+      }
+    </style>
+  </head>
+
+   <body>
+    <div id="controls">
+        <output id="scaleOutput">1.0</output>
+        <input id="scaleSlider" type="range" min="1" max="3" step="0.01" value="1.0"/>
+    </div>
+      <canvas id='canvas' width='780' height='440'>
+         Canvas not supported
+      </canvas>
+
+     
+     
+    <script>
+        const canvas = document.getElementById('canvas'),
+              context = canvas.getContext('2d'),
+              image = new Image(),
+
+              scaleSlider = document.getElementById('scaleSlider'),
+              scale = 1,
+              MINIMUM_SCALE = 1.0,
+              MAXIMUM_SCALE = 3.0;
+
+              function drawImage() {
+                let w = canvas.width,
+                    h = canvas.height,
+                    sw = w * scale,
+                    sh = h * scale;
+
+                    context.clearRect(0, 0, w, h);
+                    context.drawImage(image, -sw/2 + w/2, -sh/2 + h/2, sw, sh);
+              }
+
+
+
+              image.src = './test.png';
+              image.onload = function(e) {
+                drawImage();
+                drawScaleText(scaleSlider.value);
+              }
+       
+    </script>
+  </body>
+</html>

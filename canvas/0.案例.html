@@ -1,0 +1,165 @@
+<html>
+    <head></head>
+    <body>
+        <canvas id="can" width="1000" height="3000" style="border: 1px solid #ccc;"></canvas>
+       
+        <script>
+            // 获取canvas对象
+            const can = document.getElementById('can');
+            // 获取canvas 上下文环境对象
+            const cxt = can.getContext('2d');
+
+            /* 
+              1. 画线 stroke
+             */
+            cxt.moveTo(20, 20) // 开始坐标
+            cxt.lineTo(200, 20) // 终点坐标
+            cxt.lineWidth = 20 // 线的粗细 canvas单位都不加px
+            cxt.strokeStyle = 'green' // 线的颜色
+            cxt.lineCap = 'butt' // 线两端的样式 默认butt ； 圆形 round； 方行 square、
+            cxt.stroke() // 样式要卸载前边 将起点和终点链接
+          /*   //  如果不想相互污染，需要做2件事：
+            // 使用 beginPath() 方法，重新开一个路径
+            // 设置新线段的样式（必须项） */
+            cxt.beginPath() // 重新开启一个路径 防止互相污染
+            cxt.moveTo(20, 90.5)
+            cxt.lineTo(200, 90.5)
+            cxt.lineWidth = 20 // 线的粗细 canvas单位都不加px
+            cxt.strokeStyle = 'red' // 线的颜色
+            cxt.lineCap = 'butt' // 线两端的样式 默认butt ； 圆形 round； 方行 square、
+            //cxt.setLineDash([10, 20, 5]) //描边设为虚线， 一个值10，实线，虚线都是10px； 两个值， 10 20，实线 10 虚线20； 三个值 10， 20， 5， 实线10， 虚线 20，实线5，虚线 10.。。
+            cxt.stroke()
+        
+            /* 
+             j矩阵 线条受到前面的影响 rect
+            */
+             cxt.fillRect(20,150,250, 150) // 填充矩形
+             cxt.fillStyle = 'red' // 填充颜色
+             cxt.strokeStyle = 'pink'; // 边界颜色 注意看 边界和填充的位置
+             cxt.strokeRect(20,150,200,100) // 样式要写在前边 ，描述矩形 边（x,y,width,height） x,y是矩形的左上角起点， 宽高
+
+             cxt.strokeStyle = 'green';
+             cxt.fillStyle = 'pink'
+             cxt.rect(20, 350, 200,100); // 与fillRect和strokeRect类似，但是需要调用fill和stoke辅助渲染
+             cxt.fill()
+             cxt.stroke()
+            
+             cxt.beginPath()
+             cxt.strokeStyle = 'black'
+             cxt.fillStyle= 'pink'
+             cxt.rect(400, 350, 200,100);
+             cxt.fill();// 内部填充
+             cxt.stroke();// 边界
+             cxt.clearRect(400,350,50,50) // 清空
+
+             /* 
+              多边形
+             */
+
+             cxt.moveTo(20,500);
+             cxt.lineTo(200,500);
+             cxt.lineTo(200,600);
+            // cxt.lineTo(20,500) // 手动闭合，当线宽度不为一会不正常
+             cxt.lineJoin= 'bevel' // 线条连接处样式， 默认 miter， bevel： 斜面， round：圆角
+            cxt.closePath() // 闭合
+             cxt.stroke()
+
+             cxt.moveTo(300, 600)
+             cxt.lineTo(500, 500)
+             cxt.lineTo(700,500)
+             cxt.lineTo(500, 600)
+             cxt.closePath()
+             cxt.stroke()
+
+             /* 
+              圆形 弧线
+              arc(x,y,r,sAngle,eAngle, counterclosekwise) 
+                  x,y 圆心坐标， 半径， 开始角度， 结束角度,  绘制方向（默认false 顺时针， true 逆时针）
+                  绘制圆形需要 beginPath()开始， closePath()结束。
+                  角度为Math.PI 表示180℃
+             */
+            cxt.beginPath();
+            cxt.arc(80, 800, 50, 0, 360 * Math.PI/180)
+            cxt.closePath()
+            cxt.stroke()
+
+            cxt.beginPath()
+            cxt.lineWidth = 1
+            cxt.arc(300, 800, 50, 30, 180*Math.PI/180)
+            cxt.closePath()
+            cxt.stroke()
+
+            cxt.beginPath()
+            cxt.arc(400, 800, 50, 0, 90 * Math.PI/180)
+            cxt.stroke(); // 边界的圆形， 如果是实心圆 需要fill
+
+            /* 
+              文本 text
+             */
+            cxt.font = '100px Arial';
+            cxt.strokeStyle = 'red'
+            cxt.strokeText('文本', 20, 1000) // 描边文本strokeText(text, x,y, maxWidth) , 绘制内容， 坐标， 最大宽度
+            cxt.fillStyle = 'red' // 填充颜色
+            cxt.textAlign = 'start' // textalign 蚊子水平对齐方式
+            cxt.fillText('文本start',400,1000) // 填充文本 参数与上类似
+            cxt.textAlign = 'end'
+            cxt.fillText('文本end', 400, 1100 );
+            cxt.textAlign = 'start'
+            cxt.fillText ('文本left', 400,1200)
+            cxt.textAlign = 'right'
+            cxt.fillText('文本right', 300, 1300)
+            cxt.textAlign = 'center'
+            cxt.fillText('文本center', 300, 1400)
+            cxt.textBaseline = 'top' // 文字的垂直方向
+
+            /* 
+             图片 drawImage(image, dx,dy， width，height)
+              渲染图片分两种， js里面加载图片在渲染，； dom里面图片拿到canvas里渲染。
+               js:
+                  创建image对象
+                  引入图片
+                  等待图片加载完成
+                  使用drawImage渲染图片
+                dom:
+                   从dom里面获取图片， 在使用drawImage
+            */
+            const image = new Image()
+            image.src = './redball.png'
+            image.onload = () => {
+                cxt.drawImage(image, 20, 1500, 200, 200);
+                
+            }
+            
+            /* 
+             moveTO(X0, Y0)
+             arcTo(x1, y1, x2, y2, radius)
+              创建圆弧路径方法,相当于从(x0, y0) -> (x1, y1) -> (x2, y2)
+            */
+            cxt.beginPath()
+            cxt.strokeStyle = 'blue'
+            cxt.moveTo(80, 1700)
+            cxt.arcTo(160, 1700, 160, 1800, 100)
+            cxt.stroke()
+          //   圆角矩阵
+            function drawRoundedRect(strokeStyle, fillStyle, cornerX, cornerY, width, height, cornerRadius) {
+              cxt.beginPath();
+                 cxt.moveTo(cornerX, cornerY);
+                //  else          cxt.moveTo(cornerX - cornerRadius, cornerY);
+                
+                // 子路径和圆弧相连 ,在每一次次arcTo后相当于 moveTo的点变成了这次的x1， y1
+                 cxt.arcTo(cornerX + width, cornerY, cornerX + width, cornerY + height, cornerRadius);
+                 cxt.arcTo(cornerX + width, cornerY + height, cornerX, cornerY + height, cornerRadius);
+                 cxt.arcTo(cornerX, cornerY + height, cornerX, cornerY, cornerRadius);
+                 cxt.arcTo(cornerX, cornerY, cornerX + cornerRadius, cornerY, cornerRadius);
+              
+                 cxt.strokeStyle = strokeStyle;
+                 cxt.fillStyle = fillStyle;
+
+                 cxt.stroke();
+                 cxt.fill();
+          }
+          drawRoundedRect('blue', 'yellow', 80, 1900, 100, 100, 10)
+        </script>
+    </body>
+
+</html

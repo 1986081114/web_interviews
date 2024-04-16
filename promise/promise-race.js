@@ -14,7 +14,6 @@ const race = function (promises) {
     })
 
   })
-
 }
 
 /* const p1 = new Promise(function (resolve) { setTimeout(resolve, 200, 1) })

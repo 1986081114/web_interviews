@@ -17,3 +17,6 @@ object.defineproperty
     2.对数组内部对象劫持
       递归对对象内的值进行get和set劫持
 
+如何将把非data数据响应式：
+  1. Vue.observable()
+  2. Object.defineProperty数据拦截

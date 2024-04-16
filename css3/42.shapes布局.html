@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>shape布局</title>
+    <!--  让元素以非直线形式排布
+        shape-outside 的本质其实是生成几何图形，并且裁剪掉其几何图形之外周围的区域，让内容能排列在这些被裁剪区域之内。
+        css shape布局和浮动可以实现不规则文字的环绕效果。移动端可用
+             属性：   shape-outside
+                    shape-margin
+                    shape-image-threshold 
+
+                    shape-outside : none,默认
+                                   shape-box, 图形盒子，分别是margin-box，border-box，padding-box和content-box。要来指定文字环绕的时候是依照哪个盒子的边缘来计算的。
+                                   basic-shape, 基本形状函数， 类似于 clip-path
+                                   image, 图像类，
+                    /* 关键字值 */
+                    shape-outside: none;
+                    shape-outside: margin-box;
+                    shape-outside: content-box;
+                    shape-outside: border-box;
+                    shape-outside: padding-box;
+
+                    /* 函数值 定义形状*/
+                    shape-outside: circle();
+                    shape-outside: ellipse();
+                    shape-outside: inset(10px 10px 10px 10px);
+                    shape-outside: polygon(10px 10px, 20px 20px, 30px 30px);
+
+                    /* <url>值 */
+                    shape-outside: url(image.png);
+
+                    /* 渐变值 */
+                    shape-outside: linear-gradient(45deg, rgba(255, 255, 255, 0) 150px, red 150px);
+     -->
+     <style>
+        .box {
+            width: 400px;
+            height: 400px;
+            border: 1px solid green;
+        }
+        .box1 .shape {
+            float: left;
+            height: 200px; /* 控制大小 */
+            width: 200px;
+            shape-outside: circle();/* 圆形环绕 */
+            clip-path: circle();  /* 帮助辨认形状 */
+             background-color: yellow;
+            border: 1px solid red;
+        }
+        .box2 .shape {
+            float: left;
+            height: 200px; /* 控制大小 */
+            width: 200px;
+            shape-outside: polygon(0 0, 0 100px, 100px 100px); /* 形状函数 */
+            clip-path: polygon(0 0, 0 100px, 100px 100px);
+             background-color: yellow;
+        }
+        .right {
+            float: right;
+            shape-outside: polygon(100px 0, 190px 200px, 200px 100px, 150px 0);
+            clip-path: polygon(100px 0, 190px 200px, 200px 100px, 150px 0);
+            background: linear-gradient(to bottom left, #67D7F5, #86F7CC);
+            height: 200px; /* 控制大小 */
+            width: 200px;
+            /* https://chrome.google.com/webstore/detail/css-shapes-editor/nenndldnbcncjmeacmnondmkkfedmgmp?hl=en-US 创建多边形图形 */
+        }
+        .star {
+            float: left;
+            height: 150px;
+            width: 150px;
+            shape-outside: url('./star.png'); /* 本地会跨域， 所以需要自己构建服务器 */
+        }
+        .gradient {
+            float: left;
+            height: 200px;
+            width: 100%;
+            background: linear-gradient(to bottom right, #86F7CC, transparent);
+            shape-outside: linear-gradient(to bottom right, #86F7CC, transparent);
+            shape-image-threshold: .5; /* shape-image-threshold 定义形状的 alpha 通道阈值，或者图像透明的百分比值。 */
+        }
+
+        
+        .box-wrap {
+            width: 600px;
+            height: 250px;
+            border: 1px solid black;
+            overflow: hidden;
+            
+        }
+        .wrap li {
+            width: 50px;
+            height: 60px; 
+            background: #fff;
+            clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
+            margin: 0 4px;
+            display: inline-block;
+            margin-bottom: -8px;
+            z-index: 2;
+        }
+        .wrap {
+            position: relative;
+            height: 300px;
+            width: 120%;
+            font-size: 0;
+           transform: translate(-10%, -10%);
+            background: #000;
+        }
+        .wrap::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, #f44336, #ff9800, #ffe607, #09d7c4, #1cbed3, #1d8ae2, #bc24d6);
+            z-index: 1;
+            mix-blend-mode: hard-light;  /*  mix-blend-mode 描述了元素的内容应该与元素的直系父元素的内容和元素的背景如何混合*/
+            animation: change 10s infinite linear;
+        }
+        @keyframes change {
+            from {
+                filter: hue-rotate(0deg); /* filter滤镜属性 hue-rotate给图像应用色相旋转 */
+                }
+            to {
+                filter: hue-rotate(-360deg);
+            }
+        }
+        .wrap::before {
+            content: "";
+            height: 100%;
+            width: 28px; /* 挤的宽度等于六边形一半和边距 */
+            float: left;
+            shape-outside: repeating-linear-gradient( /* repeating-linear-gradient() 函数用于创建重复的线性渐变 "图像"。 */
+                transparent 0,
+                transparent 52px,
+                #000 52px,
+                #000 104px /* 利用每间隔的高度渲染元素实现偶数行拥挤li元素，实现li错位。 相当于0到60px 透明， 60到元素高，有元素，把第二行挤进去 */
+            );
+            /* background: repeating-linear-gradient(
+                transparent 0,
+                transparent 52px,
+                #f00 52px,
+                #f00 104px
+            ); */
+        }
+  
+     </style>
+</head>
+<body>
+    <div class="box1 box">
+        <span class="shape"></span>
+        <p>在CSS问世之前是几点开始你点外卖你是济南的双面女间谍三年级都忙啥呢都没收到几千万什么的就开始电脑上多久时间你都没说就是就是嘛那是那是时快时慢马上结束呢</p>
+    </div>
+    <div class="box box2">
+        <span class="shape"></span>
+        <div class="right"></div>
+        <p>在CSS问世之前是几点开始你点外卖你是济南的双面女间谍三年级都忙啥呢都没收到几千万什么的就开始电脑上多久时间你都没说就是就是嘛那是那是时快时慢马上结束呢</p>
+    </div>
+    <div class="box">
+        <img src="./star.png" class="star" >
+        <p>在CSS问世之前是几点开始你点外卖你是济南的双面女间谍三年级都忙啥呢都没收到几千万什么的就开始电脑上多久时间你都没说就是就是嘛那是那是时快时慢马上结束呢</p>
+    </div>
+    <div class="box">
+        <div class="gradient"></div>
+        <p>在CSS问世之前是几点开始你点外卖你是济南的双面女间谍三年级都忙啥呢都没收到几千万什么的就开始电脑上多久时间你都没说就是就是嘛那是那是时快时慢马上结束呢</p>
+    </div>
+    <div class="box-wrap">
+        <ul class="wrap">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+          <ul>
+    </div>
+</body>
+</html>

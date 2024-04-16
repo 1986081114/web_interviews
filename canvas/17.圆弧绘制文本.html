@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Drawing Circular Text</title>
+
+    <style>
+      body {
+         background: #eeeeee;
+      }
+
+      #canvas {
+         background: #ffffff;
+         cursor: crosshair;
+         margin-left: 10px;
+         margin-top: 10px;
+         -webkit-box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+         -moz-box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+         box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+      }
+
+    </style>
+  </head>
+
+   <body>
+      <canvas id='canvas' width='750' height='750'>
+         Canvas not supported
+      </canvas>
+
+    <script>
+        let canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            CENTROID_RADIUS = 10,
+            CENTROID_STROKE_STYLE = 'rgba(0, 0, 0, 0.5)',
+            CENTROID_FILL_STYLE ='rgba(80, 190, 240, 0.6)',
+
+            GUIDEWIRE_STROKE_STYLE = 'goldenrod',
+            GUIDEWIRE_FILL_STYLE = 'rgba(85, 190, 240, 0.6)',
+
+            TEXT_FILL_STYLE = 'rgba(100, 130, 240, 0.5)',
+            TEXT_STROKE_STYLE = 'rgba(200, 0, 0, 0.7)',
+            TEXT_SIZE = 64,
+
+            circle = {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                radius: 200
+            }
+
+        function drawGrid(color, stepx, stepy) {
+            context.shadowColor = undefined;
+            context.shadowOffsetX = 0;
+            context.shadowOffsetY = 0;
+            
+            context.strokeStyle = color;
+            context.fillStyle = '#ffffff';
+            context.lineWidth = 0.5;
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            for(let i = stepx + 0.5; i < canvas.width; i += stepx) {
+                context.beginPath();
+                context.moveTo(i, 0);
+                context.lineTo(i, canvas.height);
+                context.stroke();
+            }
+            for(let j = stepy + 0.5; j < canvas.height; j += stepy) {
+                context.beginPath();
+                context.moveTo(0, j);
+                context.lineTo(canvas.width, j);
+                context.stroke();
+            }
+        }
+        function drawCentroid() {
+            context.beginPath();
+            context.strokeStyle = CENTROID_STROKE_STYLE;
+            context.fillStyle = CENTROID_FILL_STYLE;
+            context.arc(circle.x, circle.y, CENTROID_RADIUS, 0, Math.PI*2, false);
+            context.stroke();
+            context.fill();
+        }
+
+        function drawCircularText(string, startAngle, endAngle) {
+            let radius = circle.radius,
+            angleDecrement = (startAngle - endAngle) / (string.length -1),
+            angle = parseFloat(startAngle),
+            index = 0,
+            cahracter;
+    
+          
+            context.fillStyle = TEXT_FILL_STYLE;
+            context.strokeStyle = TEXT_STROKE_STYLE;
+            context.font = TEXT_SIZE + 'px Lucida Sans'; 
+            while(index < string.length) {
+                character = string.charAt(index);
+                context.save();
+                context.translate(
+                    circle.x + Math.cos(angle) * radius,
+                    circle.y - Math.sin(angle) * radius
+                )
+                context.rotate(Math.PI/2 - angle);
+                context.fillText(character, 0, 0);
+                context.strokeText(character, 0, 0);
+                angle -= angleDecrement;
+                index++;
+                context.restore();
+            }
+           
+        }
+
+
+        drawGrid('red', 10, 10);
+        drawCentroid();
+        drawCircularText("Clockwise around the circle", Math.PI*2, Math.PI/8);
+    </script>
+  </body>
+</html>

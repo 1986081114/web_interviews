@@ -1,6 +1,6 @@
 JSX是js的语法扩展， 但他具有js的全部功能
 
-react认为i模板不是最佳实现，因为模板会分离技术栈， 分散了组件内的关注点， 其次， 模板还会引入更多概念
+react认为模板不是最佳实现，因为模板会分离技术栈， 分散了组件内的关注点， 其次， 模板还会引入更多概念
 类似于模板语法，模板指令等。但是jsx并没有引入更多新的概念， 仍然是js，就连条件表达式都是js方式，贴近html。
 
 jsx仅仅就是react.createElement函数的语法糖， 最终会被编译成react.createElement函数的语法糖函数调用，并返回react元素。
@@ -9,12 +9,10 @@ jsx仅仅就是react.createElement函数的语法糖， 最终会被编译成rea
         从上面的内容我们可以发现，JSX是一种描述当前组件内容的数据结构，他不包含组件schedule、reconcile、render所需的相关信息。
 
         比如如下信息就不包括在JSX中：
-
         组件在更新中的优先级
         组件的state
         组件被打上的用于Renderer的标记
         这些内容都包含在Fiber节点中。
-
         所以，在组件mount时，Reconciler根据JSX描述的组件内容生成组件对应的Fiber节点。
 
         在update时，Reconciler将JSX与Fiber节点保存的数据对比，生成组件对应的Fiber节点，并根据对比结果为Fiber节点打上标记。

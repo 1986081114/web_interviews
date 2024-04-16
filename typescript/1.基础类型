@@ -7,6 +7,14 @@ ts中的数据要求带有明确的类型， js不要求
 ts引入了js没有的类概念
 ts引入了模块的概念， 可以把数据，声明函数和类封装在模块中。
 
+优势：有利于代码的静态分析。 有了静态类型，不必运行代码，就可以确定变量的类型，从而推断代码有没有错误。这就叫做代码的静态分析。
+     有利于发现错误。 由于每个值、每个变量、每个运算符都有严格的类型约束
+     有助于代码重构。类型信息大大减轻了重构的成本。一般来说，只要函数或对象的参数和返回值保持类型不变，就能基本确定，重构后的代码也能正常运行
+    
+缺点： 丧失了动态类型的代码灵活性。
+      增加了编程工作量。
+      更高的学习成本。
+      兼容性问题。
 
 布尔值
      let isDone: boolean = false;
@@ -20,8 +28,8 @@ ts引入了模块的概念， 可以把数据，声明函数和类封装在模�
       let sentence: string = `hello, my name ${name}`
 数组：
      两种方式定义数组：
-      1） let list: number [] = [1,2,3]   在元素类型后面接上[];
-      2)let list: Array<number> = [1,2,3] Array<元素类型>
+      1） let list: (number|string)[] = [1,2,3]   在元素类型后面接上[];
+      2)let list: Array<number|string> = [1,2,3] Array<元素类型>
 元组 tuple:
   元组类型允许表示一个以知元素数量和类型的数组，各元素的类型不必须相同， 但是类型顺序是特定的
      let x: [string, number];
@@ -56,6 +64,26 @@ Any：
 
     这可能与object十分相似， 但是object类型的变量只是允许你给他赋值，但是却不能在它上面调用任意的方法， 即使真的有这些方法
 
+  然而any会操成变量污染：
+    let x:any = 'hello';
+    let y:number;
+    y = x; // 不报错
+    y * 123 // 不报错
+    y.toFixed() // 不报错
+    y继续进行各种数值运算，TypeScript 也检查不出错误，问题就这样留到运行时才会暴露。
+
+unknown： 为了解决any变量污染，ts3.0引入unknown
+  。它与any含义相同，表示类型不确定，可能是任意类型，但是它的使用有一些限制，
+        不能直接赋值给其它类型的变量(除了any类型和unknown类型）
+        不能调用unknown类型变量的方法和属性(可以进行简单的比较运算)
+           let v1:unknown = { foo: 123 };
+            v1.foo  // 报错
+            let v2:unknown = 'hello';
+            v2.trim() // 报错
+
+
+  
+
 void : 
    void与any相反，表示没有任何类型， 当一个函数没有返回值，通常返回类型就是void
      function voidFun(): void {
@@ -70,24 +98,31 @@ null和undefined：
     如果指定了strictNullChecks标记， null undefined只能复制给自身和void
 
 Never：
-   never表示的是那些用不存在的值的类型，例如never类型是那些总是抛出异常，或不会有返回值的函数得返回值类型。
-   never类型是任何类型的子类型， 也可以赋予任何类型， 但是他们子类型， 即使是any也不能赋值给never
-        function error(message: string): never {
-            throw new Error(message);
+   不存在任何属于“空类型”的值，所以该类型被称为never，即不可能有这样的值,不可能赋给它任何值，否则都会报错。
+   never类型是任何类型的子类型， 也可以赋予任何类型. 但是他们子类型， 即使是any也不能赋值给never
+        function f():never {
+          throw new Error('Error');
         }
 
-        // 推断的返回值类型为never
-        function fail() {
-            return error("Something failed");
-        }
+        let v1:number = f(); // 不报错
+        let v2:string = f(); // 不报错
+        let v3:boolean = f(); // 不报错
+       
 
-        // 返回never的函数必须存在无法达到的终点
-        function infiniteLoop(): never {
-            while (true) {
+        function fn(x:string|number) {
+            if (typeof x === 'string') {
+              // ...
+            } else if (typeof x === 'number') {
+              // ...
+            } else {
+              x; // never 类型
             }
-        }
+          }
+        如果一个变量可能有多种类型（即联合类型），通常需要使用分支处理每一种类型。这时，处理所有可能的类型之后，剩余的情况就属于never类型。
 
-Object:
+TypeScript 有两个“顶层类型”（any和unknown），但是“底层类型”只有never唯一一个。
+
+object:
     表示非原始类型， 也就是除了number， string boolean， symbol， null， undefined之外的类型。
     使用object类型，就好像使用object。create这样的api
 
@@ -102,6 +137,7 @@ Object:
 
 断言类型：
    断言类型相当于其它语言中的类型转换，但是不进行特殊的数据类型和解构
+   类型断言就是告诉编译器, 你不要帮我们检查了, 相信我，它就是这个类型。
      两种形式：
         1）尖括号： 
           let someval:any = "this is"
@@ -110,11 +146,48 @@ Object:
           let someval:any = "this is"
           let stringval: number = (someval as string).length;
         
-联合类型： 
+联合类型： union type
 合类型表示一个值可以是几种类型之一。 我们用竖线（ |）分隔每个类型，所以 number | string | boolean表示一个值可以是 number，
      string，或 boolean。
 
+值类型： 单个值也是一种类型，
+    let x:'hello';
+
+    x = 'hello'; // 正确
+    x = 'world'; // 报错
+
+交叉类型： 指的多个类型组成的一个新类型，使用符号&表示。
+     交叉类型A&B表示，任何一个类型必须同时属于A和B，才属于交叉类型A&B，即交叉类型同时满足A和B的特征。
+     交叉类型的主要用途是表示对象的合成。
+
+      let obj:
+        { foo: string } &
+        { bar: string };
+
+      obj = {
+        foo: 'hello',
+        bar: 'world'
+      };
 
       
-  类型别名
+类型别名:type 命令
+    在块级作用域内有效
+    别名可以让类型的名字变得更有意义，也能增加代码的可读性，还可以使复杂类型用起来更方便，便于以后修改变量的类型。
+    type Age = number;
+
+    let age:Age = 55;
+
+Object: 广义对象和 狭义对象
+
+
+'hello' // 字面量
+new String('hello') // 包装对象
+
+大写类型同时包含包装对象和字面量两种情况，小写类型只包含字面量，不包含包装对象。
+  Boolean 和 boolean
+  String 和 string
+  Number 和 number
+  BigInt 和 bigint
+  Symbol 和 symbol
+      
   类型断言

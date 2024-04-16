@@ -1,0 +1,99 @@
+<html>
+    <head>
+        <!-- 
+           vertical-align 属性设置元素的垂直对齐方式,用于行内元素和置换元素（图像或表单输入框），不继承。
+            取值：baseline， sub， super， top， text-top, middle, bottom, text-bottom
+
+            文字包含，顶线（top）, 中线（middle），基线（baseline）， 底线（bottom）；
+
+         -->
+         <style>
+            div {
+                width: 1000px;
+                margin: 10px;
+                background-color: aquamarine;
+                line-height: 100px;
+                font-size: 40px;
+            }
+            .default {
+                 /* 
+                  默认 元素基线和父元素基线对齐， 
+                      如果目标元素没有基线，如（图片， 表单输入框或其他置换元素），那么目标元素底部与父元素基线对齐。
+                      vertical-align 默认值是baseline，不写就是默认基线，这也就是为什么图片和文字在同一行，图片下方有间距。
+                */
+            }
+            .sub {
+                vertical-align: sub;
+                /* 
+                    sub把元素放在下标处，即元素的基线低于父元素的基线， 抵多少没有规定，不通用虎代理中有不同
+                */
+            }
+            .super {
+                vertical-align: super;
+                /* 
+                    super 让元素的基线高于父元素的基线，高多少没有规定，由用户代理决定
+                */
+            }
+            .top {
+                vertical-align: top;
+                /* 
+                    top 使元素及其后代元素的顶部和整行的顶部对齐
+                */
+            }
+            .bottom {
+                vertical-align: bottom;
+                /* 
+                    bottom与top相反， 使元素和后代元素的底部和整行底部对齐
+                */
+            }
+            .text-top {
+                vertical-align: text-top;
+                /* 
+                    text-top 使元素的顶部和父元素的字体顶部对齐， 这个是与父元素的字体顶部对齐，即使给子元素子元素设置不同的fontsize，也按照父元素字体对齐
+                */
+            }
+            .text-bottom {
+                vertical-align: text-bottom;
+                /* 
+                    text-bottom 使元素底部与父元素字体底部对齐
+                */
+            }
+            .middle {
+                vertical-align: middle;
+                /* 
+                   middle 使元素的中部与父元素的基线向上偏移 0.5*fontsize处的线对齐
+                */
+            }
+            .value {
+                vertical-align: 20px;
+                /* 
+                    把元素从默认位置向上抬升10px，长度为负，向下
+                
+                */
+            }
+            img {
+                width: 40px;
+            }
+            span {
+                background-color: antiquewhite;
+            }
+
+         </style>
+    </head>
+    <body>
+        <div>
+            xx
+            <img class="default" src="./dog.jpg" alt="">
+            <img class="sub" src="./dog.jpg" alt="">
+            <img class="super" src="./dog.jpg" alt="">
+            <img class="top" src="./dog.jpg" alt="">
+            <img class="bottom" src="./dog.jpg" alt="">
+            <img class="text-top" src="./dog.jpg" alt="">
+            <img class="text-bottom" src="./dog.jpg" alt="">
+            <img class="middle" src="./dog.jpg" alt="">
+            <img class="value" src="./dog.jpg" alt="">
+          
+            <span>I am a page</span>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,55 @@
+<!-- 
+    时间分片\分批渲染，适用于列表项结构简单
+    https://juejin.cn/post/6844903938894872589
+
+    可以使用settimeout实现分批渲染
+      使用settimeout的原因是防止在渲染的过程中无法进行其他操作
+      但是settimeout会有白屏的现象,: fps是每秒钟画面更新的次数，大多数电脑显示器刷新频率是60HZ，
+        这个值收到屏幕分辨率，尺寸和显卡的影响。settimeout只能设置一个固定的时间间隔，可能与屏幕刷新时间
+        不一致，导致中间某一帧操作被跨越，导致丢帧。
+        与settimeout相比，requestAnimationFrame最大的优势是由系统决定回调函数的执行时机。
+    再次优化：DocumentFragment 文档片段接口,一个没有父级对象的最小文档对象，是dom节点，但不是dom树部分，
+            存储在内存中,不是真实dom树的一部分，所以他的变化不会触发dom树的渲染，且不会导致性能问题。
+            在使用appendchild或insertbefore时候，使用documentframent插入的是片段的所有子节点，
+            且一次性插入，所以只发生一次重渲染操作。而不是每个节点被插入到文档中，发生很多次渲染。
+ -->
+<html>
+    <body>
+        <input>
+        <ul id="box"></ul>
+        <script>
+            let ul = document.getElementById('box');
+            let total = 100000;
+            let once = 20;
+            let page = Math.ceil(total/once);
+            // 每条记录的索引
+            let index = 0;
+            function loop(curTotal, curIndex) {
+                if(curTotal <= 0){
+                    return false;
+                }
+                let pageCount = Math.min(curTotal, once);
+                /* setTimeout(() => {
+                    for (let i = 0; i < pageCount; i++) {
+                        let li = document.createElement('li');
+                        li.innerHTML = curIndex + i;
+                        ul.appendChild(li);
+                    }
+                    loop(curTotal - pageCount, curIndex + pageCount);
+                }, 0); */
+                window.requestAnimationFrame(function() {
+                    let frame = document.createDocumentFragment();
+                    for (let i = 0; i < pageCount; i++) {
+                        let li = document.createElement('li');
+                        li.innerHTML = curIndex + i;
+                        frame.appendChild(li);
+                    }
+                    ul.appendChild(frame);
+                    loop(curTotal - pageCount, curIndex + pageCount);
+                })
+
+            }
+        loop(total, index);
+        </script>
+    </body>
+</html>
